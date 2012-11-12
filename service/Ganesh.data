@@ -1,0 +1,5 @@
+{"support_data": { "feed": { "title":"support data", "entries":[
+	{ "case": "147446", "description": "ITSM Ticket 147446: Cannot save annotation in WinViewer 10.0.0", "status": "Feedback", "details": "28.10.2012 - Test binary submitted<br/>21.10.2012 - Problem analysed in detail. Root cause identified, test binary planned for next week.", "leaf": "true" },
+	{ "case": "147447", "description": "ITSM Ticket 147446: Cannot save annotation in WinViewer 9.7.0", "status": "Feedback", "details": "28.10.2012 - Test binary submitted<br/>21.10.2012 - Problem analysed in detail. Root cause identified, test binary planned for next week.", "leaf": "true" },
+	{ "case": "147448", "description": "ITSM Ticket 147446: Printing PDF document results into blank pages.", "status": "Progress To-Do", "details": "28.10.2012 - Test binary submitted<br/>21.10.2012 - Problem analysed in detail. Root cause identified, test binary planned for next week.", "leaf": "true" }
+]}},"responseDetails":null,"responseStatus":200}

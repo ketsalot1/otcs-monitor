@@ -1,0 +1,13 @@
+{"support_data": { "descriptor": { "title":"support data", "entries":[
+	{ "category": "Desktop", "title": "OTCS Cases", "code": "Ganesh" },
+	{ "category": "Desktop", "title": "Patches", "code": "WIV" },
+	{ "category": "Scan", "title": "OTCS Cases", "code": "Husain" },
+	{ "category": "Scan", "title": "Patches", "code": "ESC" },
+	{ "category": "WebViewer", "title": "OTCS Cases", "code": "Pavana" },
+	{ "category": "WebViewer", "title": "Patches", "code": "WEV" },
+	{ "category": "E-Mail", "title": "OTCS Cases", "code": "Michelle" },
+	{ "category": "E-Mail", "title": "Patches Exchange", "code": "EX" },
+	{ "category": "E-Mail", "title": "Patches Notes", "code": "NO" },
+	{ "category": "FSA", "title": "OTCS Cases", "code": "Baumann" },
+	{ "category": "FSA", "title": "Patches", "code": "FSA" }
+]}},"responseDetails":null,"responseStatus":200}

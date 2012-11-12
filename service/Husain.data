@@ -1,0 +1,5 @@
+{"support_data": { "feed": { "title":"support data", "entries":[
+	{ "case": "147456", "description": "ITSM Ticket 147456: OAWD transaction problems in TC/Citrix", "status": "Feedback", "details": "28.10.2012 - Test binary submitted<br/>21.10.2012 - Problem analysed in detail. Root cause identified, test binary planned for next week.", "leaf": "true" },
+	{ "case": "147457", "description": "ITSM Ticket 147457: Scan 9.7.1 problem - cannot export color documents", "status": "Feedback", "details": "28.10.2012 - Test binary submitted<br/>21.10.2012 - Problem analysed in detail. Root cause identified, test binary planned for next week.", "leaf": "true" },
+	{ "case": "147458", "description": "ITSM Ticket 147458: Enterprise Scan 10.0.0 problem. Initial notes does not support Unicode format.", "status": "Progress To-Do", "details": "28.10.2012 - Test binary submitted<br/>21.10.2012 - Problem analysed in detail. Root cause identified, test binary planned for next week.", "leaf": "true" }
+]}},"responseDetails":null,"responseStatus":200}
