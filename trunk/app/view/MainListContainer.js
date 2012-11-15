@@ -10,10 +10,23 @@ Ext.define("itsm.view.MainListContainer", {
 	initialize: function () { // <<<
 		this.callParent(arguments);
 
+		var searchButton = {
+			xtype: "button",
+			ui: "action",
+//			text: "Search",
+			iconCls: 'search',
+			iconMask: true,
+			listeners: {
+				tap: { fn: this.onSearchButtonTap, scope: this }
+			}
+		};
+
 		var settingsButton = {
 			xtype: "button",
 			ui: "action",
-			text: "Settings",
+//			text: "Settings",
+			iconCls: 'settings',
+			iconMask: true,
 			listeners: {
 				tap: { fn: this.onSettingsButtonTap, scope: this }
 			}
@@ -24,6 +37,7 @@ Ext.define("itsm.view.MainListContainer", {
 			title: 'OTCS Monitor',
 			docked: "top",
 			items: [
+				searchButton,
 				{ xtype: "spacer" },
 				settingsButton
 			]
@@ -61,6 +75,11 @@ Ext.define("itsm.view.MainListContainer", {
 	onNotesListDisclose: function (list, record, target, index, evt, options) {
 		console.log("view.mainListContainer.disclose");
 		this.fireEvent('itsmDetailCommand', this, record.data.code);
+	},
+
+	onSearchButtonTap: function () {
+		console.log("view.mainListContainer.SearchButtonTap");
+		this.fireEvent('searchCommand', this );
 	},
 
 	onSettingsButtonTap: function () {
