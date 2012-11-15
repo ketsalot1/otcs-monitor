@@ -12,7 +12,8 @@ Ext.application({
 		'MainListContainer', 
 		'itsmList', 
 		'itsmDetail', 
-		'ConfigurationView'
+		'ConfigurationView',
+		'searchForm'
 	],
 
 	icon: {
@@ -53,13 +54,16 @@ Ext.application({
 		var configurationView = {
 				xtype: "configurationview"
 		};
+		var searchForm = {
+				xtype: 'searchform'
+		};
 
 		Ext.getStore('settings').load();
 //		console.log( 'Main, retrieved conf: ' + Ext.getStore('settings').getAt(0).get('settingsContainer')[0] );
 
 		// Initialize the main view
-		// Ext.Viewport.add(itsmDetail);
-		Ext.Viewport.add([mainListContainer,itsmList,itsmDetail,configurationView]);
+		//Ext.Viewport.add(configurationView);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView]);
 	},
 
 	onUpdated: function() {

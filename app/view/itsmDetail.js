@@ -73,13 +73,14 @@ Ext.define("itsm.view.itsmDetail", {
 						}
 					}
 				},
-				>>> */
+				*/
 
 					/* Originally lined declaration of the object was the 
 					 * only working model. After some time - by chnaging the
 					 * container for view itself the external store start 
 					 * working as well. MVC pattern was tough in this case :-(
 					 */
+				// >>>
 				detailCard: {
 					xtype: 'panel',
 					scrollable: true,
@@ -89,7 +90,7 @@ Ext.define("itsm.view.itsmDetail", {
 				listeners: {
 					itemtap: function(nestedList, list, index, element, post) {
 									console.log('nestedList.itemtap event');
-//                  			this.getDetailCard().setHtml(post.get('description') + '<br/><div class="list-item-underlined">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/></div>' + post.get('status') + '<br/><div class="list-item-underlined">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><br/>' + post.get('details'));
+//                  			this.getDetailCard().setHtml(post.get('description') + '<br/><div class="list-item-underlined">&nbsp;<br/></div>' + post.get('status') + '<br/><div class="list-item-underlined">&nbsp;</div><br/>' + post.get('details'));
                   			this.getDetailCard().setHtml(post.get('description') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('details'));
 					}
 				}

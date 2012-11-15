@@ -18,7 +18,8 @@ Ext.define("itsm.controller.itsm", {
 				mainListContainer: "mainlistcontainer",
 				itsmList: "itsmlist",
 				itsmDetail: "itsmdetail",
-				configurationView: "configurationview"
+				configurationView: "configurationview",
+				searchForm: "searchform"
 		},
 		control: {
 				mainListContainer: {
@@ -27,7 +28,8 @@ Ext.define("itsm.controller.itsm", {
 //					deleteNoteCommand: "onDeleteNoteCommand",
 //					editNoteCommand: "onEditNoteCommand"
 					itsmDetailCommand: "onITSMDetail",
-					settingsCommand: "onSettings"
+					settingsCommand: "onSettings",
+					searchCommand: "onSearch"
 				},
 				itsmDetail: {
 //					showAboutBox: "onShowAboutBox",
@@ -38,6 +40,9 @@ Ext.define("itsm.controller.itsm", {
 				configurationView: {
 					saveSettingsCommand:	"onSaveSettings",
 					purgeSettingsCommand: "onPurgeSettings"
+				},
+				searchForm: {
+					searchCaseCommand: 'onSearchCase'
 				}
 		}
 	},
@@ -159,6 +164,9 @@ Ext.define("itsm.controller.itsm", {
 		Ext.Viewport.animateActiveItem(this.getConfigurationView(), this.slideLeftTransition);
 	},
 
+	onSearch: function() {
+		Ext.Viewport.animateActiveItem(this.getSearchForm(), this.slideLeftTransition);
+	},
 
 	activateITSMDetail: function (record) {
 		console.log("controller.itsm.activateITSMDetail");
@@ -212,6 +220,10 @@ Ext.define("itsm.controller.itsm", {
 		this.activateMainView();
 	},
 
+	onSearchCase: function(caseNo) {
+		console.log('controller search for case No.>' + caseNo + '<' );
+		this.activateMainView();
+	},
 
 	onPurgeSettings: function() {
 		console.log('controller: purging Configuration');

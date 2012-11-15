@@ -24,6 +24,7 @@ set helplang=en
 set history=50
 set hlsearch
 set ignorecase
+set iminsert=0
 set nomodeline
 set mouse=a
 set printoptions=paper:letter
@@ -49,14 +50,14 @@ badd +1 app.js
 badd +1 app/controller/itsm.js
 badd +1 app/view/MainListContainer.js
 badd +16 app/view/itsmList.js
-badd +46 app/view/itsmDetail.js
+badd +1 app/view/itsmDetail.js
 badd +51 app/store/itsm.js
 badd +1 app/view/ConfigurationView.js
-badd +0 app/model/settings.js
-badd +0 app/store/settings.js
+badd +1 app/model/settings.js
+badd +1 app/store/settings.js
 badd +7 app/model/itsm.js
-badd +0 app/store/desktopITSM.js
-badd +0 app/model/desktopITSM.js
+badd +1 app/store/desktopITSM.js
+badd +1 app/model/desktopITSM.js
 silent! argdel *
 edit app.js
 set splitbelow splitright
@@ -173,12 +174,12 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 74 - ((55 * winheight(0) + 30) / 60)
+let s:l = 58 - ((50 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-74
-normal! 03l
+58
+normal! 083l
 wincmd w
 argglobal
 edit app/controller/itsm.js
@@ -285,11 +286,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 220 - ((40 * winheight(0) + 30) / 60)
+let s:l = 181 - ((1 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-220
+181
 normal! 01l
 wincmd w
 exe 'vert 1resize ' . ((&columns * 89 + 97) / 195)
@@ -345,7 +346,8 @@ setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
+set foldmarker=<<<,>>>
+setlocal foldmarker=<<<,>>>
 set foldmethod=marker
 setlocal foldmethod=marker
 setlocal foldminlines=1
@@ -409,12 +411,14 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 60 - ((53 * winheight(0) + 30) / 60)
+10
+normal zo
+let s:l = 47 - ((46 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-60
-normal! 0
+47
+normal! 02l
 wincmd w
 argglobal
 edit app/store/itsm.js
@@ -599,7 +603,7 @@ setlocal formatexpr=
 setlocal formatoptions=tqcro
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
-setlocal iminsert=2
+setlocal iminsert=0
 setlocal imsearch=2
 setlocal include=
 setlocal includeexpr=
@@ -653,16 +657,12 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-26
-normal zo
-26
-normal zo
-let s:l = 49 - ((48 * winheight(0) + 30) / 60)
+let s:l = 22 - ((21 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-49
-normal! 024l
+22
+normal! 023l
 wincmd w
 argglobal
 edit app/store/desktopITSM.js
@@ -769,12 +769,12 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 31 - ((30 * winheight(0) + 16) / 32)
+let s:l = 39 - ((38 * winheight(0) + 16) / 32)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-31
-normal! 016l
+39
+normal! 01l
 wincmd w
 argglobal
 edit app/model/desktopITSM.js
@@ -950,7 +950,8 @@ setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
+set foldmarker=<<<,>>>
+setlocal foldmarker=<<<,>>>
 set foldmethod=marker
 setlocal foldmethod=marker
 setlocal foldminlines=1
@@ -1014,12 +1015,14 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 71 - ((49 * winheight(0) + 30) / 60)
+11
+normal zo
+let s:l = 70 - ((50 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-71
-normal! 02l
+70
+normal! 0
 wincmd w
 argglobal
 edit app/model/settings.js
@@ -1061,6 +1064,7 @@ setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
+set foldmarker=<<<,>>>
 setlocal foldmarker={{{,}}}
 set foldmethod=marker
 setlocal foldmethod=marker
@@ -1172,6 +1176,7 @@ setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
+set foldmarker=<<<,>>>
 setlocal foldmarker={{{,}}}
 set foldmethod=marker
 setlocal foldmethod=marker
@@ -1248,7 +1253,7 @@ exe '2resize ' . ((&lines * 26 + 31) / 62)
 exe 'vert 2resize ' . ((&columns * 96 + 97) / 195)
 exe '3resize ' . ((&lines * 33 + 31) / 62)
 exe 'vert 3resize ' . ((&columns * 96 + 97) / 195)
-tabnext 1
+tabnext 4
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif
