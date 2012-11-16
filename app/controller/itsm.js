@@ -19,7 +19,9 @@ Ext.define("itsm.controller.itsm", {
 				itsmList: "itsmlist",
 				itsmDetail: "itsmdetail",
 				configurationView: "configurationview",
-				searchForm: "searchform"
+				searchForm: "searchform",
+				searchResultView: "searchresultview",
+				searchResultDetail: "searchresultdetail",
 		},
 		control: {
 				mainListContainer: {
@@ -43,6 +45,9 @@ Ext.define("itsm.controller.itsm", {
 				},
 				searchForm: {
 					searchCaseCommand: 'onSearchCase'
+				},
+				searchResultView: {
+					searchBackCommand: 'onSearchBack'
 				}
 		}
 	},
@@ -150,6 +155,11 @@ Ext.define("itsm.controller.itsm", {
 		this.activateMainView();
 	},
 
+	onSearchBack: function() {
+		console.log("controller.itsm.onSearchBackCommand");
+		this.activateMainView();
+	},
+
 	onITSMDetail: function(obj, record) {
 		console.log("controller.itsm.onITSMDetail");
 		console.log( record );
@@ -194,7 +204,7 @@ Ext.define("itsm.controller.itsm", {
 	},
 
 
-	onSaveSettings: function(hostName) {
+	onSaveSettings: function(hostName) { // <<<
 		var rec;
 		var data = [];
 		var settings = Ext.getStore("settings");
@@ -219,10 +229,29 @@ Ext.define("itsm.controller.itsm", {
 
 		this.activateMainView();
 	},
+	// >>>
 
 	onSearchCase: function(caseNo) {
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('searchresult');
+
 		console.log('controller search for case No.>' + caseNo + '<' );
-		this.activateMainView();
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+			s.getProxy().setUrl( hostName + '?search=' + caseNo );
+			console.log('controller setting search request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+
+			Ext.Viewport.animateActiveItem(this.getSearchResultView(), this.slideLeftTransition);
+		}
+		catch(e) {
+			console.error( e.message );
+		}
 	},
 
 	onPurgeSettings: function() {

@@ -5,10 +5,19 @@ var	http = require('http'),
 http.createServer(function (req, res) {
 	req.on('end', function () {
 		var params = url.parse(req.url, true).query;
+		var search = params['search'];
 		var dataName = '/tmp/' + params['otcs'] + '.data';
 		var callBack = params['processSupportData'];
 
-		console.log('Requested file: ' + dataName + '\n');
+		console.log('Searching for OTCS Case: ' + search );
+		console.log('Requested file: ' + dataName );
+
+		console.log( typeof search );
+
+		if( typeof search !== 'undefined' ) {
+			console.log( 'sending back search result');
+			var dataName = '/tmp/search.data';
+		} 
 
 		fs.readFile(dataName, 'utf-8', function (error, data) {
 			res.writeHead(200, {
