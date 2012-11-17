@@ -6,7 +6,7 @@ Ext.define("itsm.view.itsmList", {
     },
     config: {
         loadingText: "Loading Cases...",
-        emptyText: '</pre><div class="notes-list-empty-text">No notes found.</div><pre>',
+        emptyText: '</pre><div class="notes-list-empty-text">No case found.</div><pre>',
         onItemDisclosure: true,
         grouped: true,
 //        itemTpl: '</pre><div class="list-item-title">{title}</div><pre>'

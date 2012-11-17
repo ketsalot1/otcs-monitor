@@ -19,6 +19,45 @@ JSON Service:
       object. nodejs is a server and again for internet access is
       recommended to hide it behind a reverse proxy.
 
+		- Debugging in Node.js
+
+		  Debugging in in-build debugger is trully frustrating experience. It
+		  changes however very quickly, if node-inspector:
+
+		  		https://github.com/dannycoates/node-inspector
+
+		  gets installed. The GIT home page contain full description how to deply
+		  node-inspector and how to connect to it from Chrome. All worked just
+		  great. The key moments are:
+
+		  - install node-inspector: npm install -g node-inspector
+
+		  	 the installation takes some time and seems to freeze for longer time
+			 just before end of installation process. It looks like some process
+			 enters listening mode:
+
+> ws@0.4.22 install /usr/local/lib/node_modules/node-inspector/node_modules/socket.io/node_modules/socket.io-client/node_modules/ws
+> node install.js
+
+[ws v0.4.22] Attempting to compile blazing fast native extensions.
+[ws v0.4.22] Native extension compilation successful!
+/usr/local/bin/node-inspector -> /usr/local/lib/node_modules/node-inspector/bin/inspector.js
+node-inspector@0.2.0beta3 /usr/local/lib/node_modules/node-inspector
+├── async@0.1.22
+├── connect@1.8.7 (mime@1.2.7, formidable@1.0.11, qs@0.5.2)
+└── socket.io@0.9.11 (policyfile@0.0.4, redis@0.7.3, socket.io-client@0.9.11)
+
+			 It is actually just copiling someting and after a while it resumes
+			 the control returns to the prompt. The installation is done.			  
+
+		  - start the node-inspector and follow the instruction displayed on the
+		    screen. There is a little change comapred to what the home page says,
+			 the local address to connect to is 0.0.0.0.
+
+		  Debugging experience is great, ecactly the saem as using the script in
+		  your HTML projects.
+
+
 2. Configure Reverse proxy:
 
    Take standard Apache 2. 

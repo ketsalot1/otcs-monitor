@@ -20,23 +20,15 @@ Ext.define("itsm.controller.itsm", {
 				itsmDetail: "itsmdetail",
 				configurationView: "configurationview",
 				searchForm: "searchform",
-				searchResultView: "searchresultview",
-				searchResultDetail: "searchresultdetail",
 		},
 		control: {
 				mainListContainer: {
 					// The commands fired by the notes list container.
-//					newNoteCommand: "onNewNoteCommand",
-//					deleteNoteCommand: "onDeleteNoteCommand",
-//					editNoteCommand: "onEditNoteCommand"
 					itsmDetailCommand: "onITSMDetail",
 					settingsCommand: "onSettings",
 					searchCommand: "onSearch"
 				},
 				itsmDetail: {
-//					showAboutBox: "onShowAboutBox",
-//					saveNoteCommand: "onSaveNoteCommand",
-//					deleteNoteCommand: "onDeleteNoteCommand",
 					detailBackCommand: "onBackMainList"
 				},
 				configurationView: {
@@ -45,9 +37,6 @@ Ext.define("itsm.controller.itsm", {
 				},
 				searchForm: {
 					searchCaseCommand: 'onSearchCase'
-				},
-				searchResultView: {
-					searchBackCommand: 'onSearchBack'
 				}
 		}
 	},
@@ -185,6 +174,7 @@ Ext.define("itsm.controller.itsm", {
 		var data = [];
 		var settings = Ext.getStore("settings");
 		var s = Ext.getStore('desktopITSM');
+		var v;
 
 		try {
 			rec = settings.getAt(0);
@@ -196,7 +186,16 @@ Ext.define("itsm.controller.itsm", {
 			s.getProxy().setUrl( hostName + '?otcs=' + record );
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
 			s.load();
-			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+
+			v = this.getItsmDetail();
+			for ( var i in v.getItems().keys) {
+				if( v.getItems().keys[i].search('detailPanel') !== -1 ) {
+					v.getItems().items[i].setTitle('OTCS Cases');
+				}
+			}
+			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
+
+//			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
 		}
 		catch(e) {
 			Ext.Msg.alert( e.name );
@@ -235,7 +234,8 @@ Ext.define("itsm.controller.itsm", {
 		var rec,hostName;
 		var data = [];
 		var settings = Ext.getStore("settings");
-		var s = Ext.getStore('searchresult');
+		var s = Ext.getStore('desktopITSM');
+		var v;
 
 		console.log('controller search for case No.>' + caseNo + '<' );
 
@@ -247,7 +247,15 @@ Ext.define("itsm.controller.itsm", {
 			console.log('controller setting search request >' + s.getProxy().getUrl() + '<' );
 			s.load();
 
-			Ext.Viewport.animateActiveItem(this.getSearchResultView(), this.slideLeftTransition);
+			v = this.getItsmDetail();
+			for ( var i in v.getItems().keys) {
+				if( v.getItems().keys[i].search('detailPanel') !== -1 ) {
+					v.getItems().items[i].setTitle('Search Result');
+				}
+			}
+			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
+
+//			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
 		}
 		catch(e) {
 			console.error( e.message );

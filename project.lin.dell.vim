@@ -26,6 +26,7 @@ set guioptions=aegimrLt
 set helplang=en
 set history=50
 set hlsearch
+set iminsert=0
 set nomodeline
 set mouse=a
 set printoptions=paper:letter
@@ -38,25 +39,30 @@ set showmatch
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
 set tabstop=3
 set termencoding=utf-8
-set window=55
+set window=43
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
-cd /home/martinme/www/itsm
+cd ~/Documents/Develop/google/itsm
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +39 app.js
+badd +1 app.js
 badd +143 app/controller/itsm.js
-badd +13 app/view/itsmList.js
+badd +5 app/view/itsmList.js
 badd +3 app/store/itsm.js
 badd +12 app/model/itsm.js
-badd +22 app/view/MainListContainer.js
-badd +6 app/view/itsmDetail.js
-badd +0 app/store/desktopITSM.js
-badd +0 app/model/desktopITSM.js
+badd +1 app/view/MainListContainer.js
+badd +91 app/view/itsmDetail.js
+badd +1 app/store/desktopITSM.js
+badd +1 app/model/desktopITSM.js
 badd +9604 resources/css/app.css
+badd +0 app/view/searchForm.js
+badd +34 app/view/searchResultView.js
+badd +10 app/view/searchResultDetail.js
+badd +8 app/model/searchresult.js
+badd +0 app/store/searchresult.js
 silent! argdel *
 edit app.js
 set splitbelow splitright
@@ -68,8 +74,8 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 88 + 87) / 175)
-exe 'vert 2resize ' . ((&columns * 86 + 87) / 175)
+exe 'vert 1resize ' . ((&columns * 70 + 87) / 175)
+exe 'vert 2resize ' . ((&columns * 104 + 87) / 175)
 argglobal
 setlocal keymap=
 setlocal noarabic
@@ -166,12 +172,12 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 14 - ((9 * winheight(0) + 20) / 41)
+let s:l = 64 - ((23 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-14
-normal! 011l
+64
+normal! 028l
 wincmd w
 argglobal
 edit app/controller/itsm.js
@@ -271,15 +277,15 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 162 - ((128 * winheight(0) + 20) / 41)
+let s:l = 39 - ((29 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-162
-normal! 018l
+39
+normal! 02l
 wincmd w
-exe 'vert 1resize ' . ((&columns * 88 + 87) / 175)
-exe 'vert 2resize ' . ((&columns * 86 + 87) / 175)
+exe 'vert 1resize ' . ((&columns * 70 + 87) / 175)
+exe 'vert 2resize ' . ((&columns * 104 + 87) / 175)
 tabedit app/view/itsmDetail.js
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -295,9 +301,9 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 88 + 87) / 175)
-exe '2resize ' . ((&lines * 20 + 21) / 43)
+exe '2resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 86 + 87) / 175)
-exe '3resize ' . ((&lines * 20 + 21) / 43)
+exe '3resize ' . ((&lines * 20 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 86 + 87) / 175)
 argglobal
 setlocal keymap=
@@ -396,16 +402,16 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-24
+27
 normal zo
-24
+27
 normal zo
-let s:l = 49 - ((25 * winheight(0) + 20) / 41)
+let s:l = 43 - ((31 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-49
-normal! 0
+43
+normal! 031l
 wincmd w
 argglobal
 edit app/store/desktopITSM.js
@@ -505,11 +511,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 41 - ((32 * winheight(0) + 10) / 20)
+let s:l = 8 - ((7 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-41
+8
 normal! 0
 wincmd w
 argglobal
@@ -609,18 +615,17 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 10 - ((9 * winheight(0) + 10) / 20)
+let s:l = 5 - ((4 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-10
-normal! 0
+5
+normal! 08l
 wincmd w
-3wincmd w
 exe 'vert 1resize ' . ((&columns * 88 + 87) / 175)
-exe '2resize ' . ((&lines * 20 + 21) / 43)
+exe '2resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 86 + 87) / 175)
-exe '3resize ' . ((&lines * 20 + 21) / 43)
+exe '3resize ' . ((&lines * 20 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 86 + 87) / 175)
 tabedit app/view/MainListContainer.js
 set splitbelow splitright
@@ -637,9 +642,9 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 87 + 87) / 175)
-exe '2resize ' . ((&lines * 16 + 21) / 43)
+exe '2resize ' . ((&lines * 20 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 87 + 87) / 175)
-exe '3resize ' . ((&lines * 24 + 21) / 43)
+exe '3resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 87 + 87) / 175)
 argglobal
 setlocal keymap=
@@ -676,7 +681,7 @@ setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
 set foldmarker=<<<,>>>
-setlocal foldmarker={{{,}}}
+setlocal foldmarker=<<<,>>>
 set foldmethod=marker
 setlocal foldmethod=marker
 setlocal foldminlines=1
@@ -738,16 +743,18 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 16 - ((15 * winheight(0) + 20) / 41)
+10
+normal zo
+let s:l = 42 - ((41 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-16
-normal! 0
-lcd /home/martinme/www/itsm
+42
+normal! 017l
+lcd ~/Documents/Develop/google/itsm
 wincmd w
 argglobal
-edit /home/martinme/www/itsm/app/model/itsm.js
+edit ~/Documents/Develop/google/itsm/app/model/itsm.js
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
@@ -843,15 +850,15 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 12 - ((10 * winheight(0) + 8) / 16)
+let s:l = 1 - ((0 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-12
-normal! 051l
+1
+normal! 06l
 wincmd w
 argglobal
-edit /home/martinme/www/itsm/app/store/itsm.js
+edit ~/Documents/Develop/google/itsm/app/store/itsm.js
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
@@ -885,7 +892,8 @@ setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
+set foldmarker=<<<,>>>
+setlocal foldmarker=<<<,>>>
 set foldmethod=marker
 setlocal foldmethod=marker
 setlocal foldminlines=1
@@ -947,20 +955,127 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 16 - ((11 * winheight(0) + 12) / 24)
+let s:l = 31 - ((30 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-16
+31
 normal! 0
 wincmd w
-3wincmd w
 exe 'vert 1resize ' . ((&columns * 87 + 87) / 175)
-exe '2resize ' . ((&lines * 16 + 21) / 43)
+exe '2resize ' . ((&lines * 20 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 87 + 87) / 175)
-exe '3resize ' . ((&lines * 24 + 21) / 43)
+exe '3resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 87 + 87) / 175)
-tabnext 2
+tabedit ~/Documents/Develop/google/itsm/app/view/searchForm.js
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winheight=1 winwidth=1
+argglobal
+setlocal keymap=
+setlocal noarabic
+setlocal noautoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal cindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+setlocal commentstring=/*%s*/
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal noexpandtab
+if &filetype != 'javascript'
+setlocal filetype=javascript
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldmarker={{{,}}}
+set foldmethod=marker
+setlocal foldmethod=marker
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tqcro
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=2
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+set linebreak
+setlocal linebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal nomodeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+setlocal nonumber
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=3
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=
+setlocal swapfile
+setlocal synmaxcol=3000
+if &syntax != 'javascript'
+setlocal syntax=javascript
+endif
+setlocal tabstop=3
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+let s:l = 48 - ((40 * winheight(0) + 21) / 43)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+48
+normal! 04l
+tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif
