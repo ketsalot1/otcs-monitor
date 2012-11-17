@@ -18,9 +18,10 @@ Ext.define("itsm.view.itsmDetail", {
  	alias: "widget.itsmdetail",
 
 	config:{
+		id: 'itsmDetail',
 		fullscreen: true,
 		scrollable:'vertical',
-		title: 'ITSM Monitor'
+		title: 'OTCS Monitor'
 	},
 
     initialize: function () { // <<<
@@ -39,15 +40,16 @@ Ext.define("itsm.view.itsmDetail", {
         var bottomToolbar = {
             xtype: "toolbar",
             docked: "bottom",
-            title: "Details",
+            title: "OTCS Monitor",
             items: [
 					backButton
 		  		]
         };
 
 		  var detailPanel = {
+			   id: 'detailPanel',
 			 	xtype: 'nestedlist',
-				title: 'ITSM Cases',
+				title: 'OTCS Cases',
 				displayField: 'description',
 				store: Ext.getStore('desktopITSM'),
 				/* <<<

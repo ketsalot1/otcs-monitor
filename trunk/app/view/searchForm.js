@@ -23,6 +23,7 @@ Ext.define("itsm.view.searchForm", {
 			text: 'Search',
 			iconCls: 'search',
 			iconMask: true,
+			ui: 'round',
 			listeners: {
 				tap: { fn: this.onSearchButtonTap, scope: this }
 			}
