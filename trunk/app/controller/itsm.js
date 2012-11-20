@@ -33,7 +33,8 @@ Ext.define("itsm.controller.itsm", {
 				},
 				configurationView: {
 					saveSettingsCommand:	"onSaveSettings",
-					purgeSettingsCommand: "onPurgeSettings"
+					purgeSettingsCommand: "onPurgeSettings",
+					backSettingsCommand: "onBackSettings"
 				},
 				searchForm: {
 					searchCaseCommand: 'onSearchCase'
@@ -271,6 +272,11 @@ Ext.define("itsm.controller.itsm", {
 		catch(e) {
 			Ext.Msg.alert(e.name + "Error purging settings" );
 		}
+	},
+
+	onBackSettings: function() {
+		console.log('controller: back from Configuration');
+		this.activateMainView();
 	},
 
 

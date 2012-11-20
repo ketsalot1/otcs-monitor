@@ -36,11 +36,22 @@ Ext.define("itsm.view.ConfigurationView", {
 			}
 		};
 
+		var backButton = {
+			xtype: 'button',
+			text: 'Back',
+			ui: 'back',
+			listeners: {
+				tap: { fn: this.onBackButtonTap, scope: this }
+			}
+		};
+
 		var saveButtonPanel = {
 			xtype: 'toolbar',
 			docked: 'bottom',
-			layout: { pack: 'center' },
+//			layout: { pack: 'center' },
 			items: [
+				backButton,
+				{ xtype: 'spacer'},
 				purgeButton,
 				saveButton
 			]
@@ -95,6 +106,11 @@ Ext.define("itsm.view.ConfigurationView", {
 	onPurgeButtonTap: function() {
 		console.log("view.ConfigurationView.purgeButtonTap");
 		this.fireEvent('purgeSettingsCommand', this );
+	},						
+
+	onBackButtonTap: function() {
+		console.log("view.ConfigurationView.purgeButtonTap");
+		this.fireEvent('backSettingsCommand', this );
 	}						
 
 

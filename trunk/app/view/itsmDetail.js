@@ -93,7 +93,7 @@ Ext.define("itsm.view.itsmDetail", {
 					itemtap: function(nestedList, list, index, element, post) {
 									console.log('nestedList.itemtap event');
 //                  			this.getDetailCard().setHtml(post.get('description') + '<br/><div class="list-item-underlined">&nbsp;<br/></div>' + post.get('status') + '<br/><div class="list-item-underlined">&nbsp;</div><br/>' + post.get('details'));
-                  			this.getDetailCard().setHtml(post.get('description') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('details'));
+                  			this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('details'));
 					}
 				}
 		  };
