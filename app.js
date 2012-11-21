@@ -12,6 +12,7 @@ Ext.application({
 		'MainListContainer', 
 		'itsmList', 
 		'itsmDetail', 
+		'itsmOverview',
 		'ConfigurationView',
 		'searchForm'
 	],
@@ -51,6 +52,9 @@ Ext.application({
 		var itsmDetail =  {
 				xtype: "itsmdetail"
 		};
+		var itsmOverview =  {
+				xtype: "itsmoverview"
+		};
 		var configurationView = {
 				xtype: "configurationview"
 		};
@@ -63,7 +67,7 @@ Ext.application({
 
 		// Initialize the main view
 		//Ext.Viewport.add(configurationView);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview]);
 	},
 
 	onUpdated: function() {

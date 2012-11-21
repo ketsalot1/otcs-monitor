@@ -9624,6 +9624,12 @@ right: 0.44em;
     padding:10px;
 }
 
+.itsm-case-overview
+{
+  background-image:url(http://149.235.117.216/itsm/resources/images/otcs.png);
+  background-size: 220px auto;
+}
+
 
 @-webkit-keyframes x-loading-spinner-rotate {
   /* line 85, ../themes/stylesheets/sencha-touch/default/widgets/_loading-spinner.scss */
