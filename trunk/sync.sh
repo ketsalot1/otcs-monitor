@@ -33,7 +33,9 @@ service/json.data \
 service/nodejs/start.js \
 service/tomcat/senchaTouchServlet.java \
 service/tomcat/web.xml \
-resources/css/app.css"
+resources/css/app.css \
+resources/images/otcs-1y.png \
+resources/images/otcs-6m.png"
 
 echo "** Synchronize SVN Application OTCS Monitor **"
 

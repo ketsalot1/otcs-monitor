@@ -53,10 +53,35 @@ Ext.define("itsm.view.MainListContainer", {
 			}
 		};
 
+		/*
 		var itsmOverview = {
 			xtype: 'panel',
 			flex: 2,
 			html: "<div class='itsm-case-overview'>&nbsp;</div>"
+		};
+		*/
+		var itsmOverview = {
+//			xtype: 'itsmoverview',
+//			flex: 2
+			xtype: 'carousel',
+			defaults: {
+				styleHtmlContent: true
+			},
+			items: [
+				{
+//					html: "<div id='otcs-image-container-1y'></div>"
+					html: "<img src='resources/images/otcs-6m.png' width='248px'/>"
+				},
+				{
+//					html: "<div id='otcs-image-container-1y'></div>"
+					html: "<img src='resources/images/otcs-1y.png' width='248px'/>"
+				},
+				{
+//					html: "<div id='otcs-image-container-6m'></div"
+					html: "<img src='resources/images/otcs-5y.png' width='248px'/>"
+				}
+			],
+			flex: 2 
 		};
 
 		var settings = Ext.getStore('settings');
@@ -75,6 +100,22 @@ Ext.define("itsm.view.MainListContainer", {
 			console.error('Configuration purged or not saved yet')
 			Ext.Msg.alert("Configure the application first");
 		}
+
+/*
+		var i = new Image();
+		var c = document.getElementById('otcs-image-container-1y');
+		console.log('Found ' + c.length + ' elements of the same class otcs-image-container-1y' );
+		var cont = c.getAttribute('id');
+		console.log('Using ' + cont + ' object' );
+		i.setAttribute('src',  + index);
+												console.log( new_page.src );
+												// TODO - remove me
+												// new_page.src = 'resources/images/barcode.jpg';
+												new_page.setAttribute('width', '460');
+												new_page.setAttribute('id', 'img001_mame');
+												c.removeChild(document.getElementById('img001_mame'));
+												c.appendChild(new_page);
+*/
 
 		this.add([topToolbar,itsmList,itsmOverview]);
     },
