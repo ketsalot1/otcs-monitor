@@ -3,7 +3,8 @@ Ext.define("itsm.view.MainListContainer", {
 	alias: "widget.mainlistcontainer",
 	config: {
 		layout: {
-			type: 'fit'
+//			type: 'fit'
+			type: 'vbox'
 		}
 	},
 
@@ -45,10 +46,16 @@ Ext.define("itsm.view.MainListContainer", {
 
 		var itsmList = {
 			xtype: "itsmlist",
+			flex: 3,
 			store: Ext.getStore("itsm"),
 			listeners: {
 				disclose: { fn: this.onNotesListDisclose, scope: this }
 			}
+		};
+
+		var itsmOverview = {
+			xtype: 'itsmoverview',
+			flex: 2
 		};
 
 		var settings = Ext.getStore('settings');
@@ -68,7 +75,7 @@ Ext.define("itsm.view.MainListContainer", {
 			Ext.Msg.alert("Configure the application first");
 		}
 
-		this.add([topToolbar,itsmList]);
+		this.add([topToolbar,itsmList,itsmOverview]);
     },
 	 // >>>
 

@@ -25,6 +25,7 @@ app/view/MainListContainer.js \
 app/view/searchForm.js \
 app/view/searchResultView.js \
 app/view/searchResultDetail.js \
+app/view/itsmOverview.js \
 service/Descriptor.data \
 service/Ganesh.data \
 service/Husain.data \
