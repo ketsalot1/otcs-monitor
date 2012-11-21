@@ -9626,8 +9626,11 @@ right: 0.44em;
 
 .itsm-case-overview
 {
-  background-image:url(http://149.235.117.216/itsm/resources/images/otcs.png);
-  background-size: 220px auto;
+	background-image:url(http://149.235.117.216/itsm/resources/images/otcs.png);
+	background-size: 282px auto;
+	background-repeat: no-repeat;
+	height: 169px;
+	width: 282px;
 }
 
 

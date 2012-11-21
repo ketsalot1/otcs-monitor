@@ -54,8 +54,9 @@ Ext.define("itsm.view.MainListContainer", {
 		};
 
 		var itsmOverview = {
-			xtype: 'itsmoverview',
-			flex: 2
+			xtype: 'panel',
+			flex: 2,
+			html: "<div class='itsm-case-overview'>&nbsp;</div>"
 		};
 
 		var settings = Ext.getStore('settings');
