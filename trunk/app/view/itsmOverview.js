@@ -1,17 +1,21 @@
 Ext.define("itsm.view.itsmOverview", {
-	extend: 'Ext.Carousel',
+	extend: 'Ext.Container',
+	requires: [
+		'Ext.carousel.Carousel'
+	],
 	alias: 'widget.itsmoverview',
-	defaults: {
-		styleHtmlContent: true
-	},
-	items: [
-		{
-			html: '1 year overview',
-			style: "id: otcs-image-container-1y"
-		},
-		{
-			html: '6 months overview',
-			style: "id: otcs-image-container-6m"
-		}
-	]
+	confing: {
+		xtype: 'carousel',
+		items: [
+			{
+				html: "<img src='resources/images/otcs-6m.png' width='284px'/>"
+			},
+			{
+				html: "<img src='resources/images/otcs-1y.png' width='284px'/>"
+			},
+			{
+				html: "<img src='resources/images/otcs-5y.png' width='284px'/>"
+			}
+		],
+	}
 });

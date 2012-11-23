@@ -25,6 +25,7 @@ set history=50
 set hlsearch
 set ignorecase
 set iminsert=0
+set imsearch=0
 set nomodeline
 set mouse=a
 set printoptions=paper:letter
@@ -48,8 +49,8 @@ endif
 set shortmess=aoO
 badd +1 app.js
 badd +1 app/controller/itsm.js
-badd +1 app/view/MainListContainer.js
-badd +16 app/view/itsmList.js
+badd +48 app/view/MainListContainer.js
+badd +13 app/view/itsmList.js
 badd +1 app/view/itsmDetail.js
 badd +51 app/store/itsm.js
 badd +1 app/view/ConfigurationView.js
@@ -58,8 +59,8 @@ badd +1 app/store/settings.js
 badd +7 app/model/itsm.js
 badd +1 app/store/desktopITSM.js
 badd +1 app/model/desktopITSM.js
-badd +8 app/view/itsmOverview.js
-badd +0 resources/css/app.css
+badd +1 app/view/itsmOverview.js
+badd +1 resources/css/app.css
 silent! argdel *
 edit app.js
 set splitbelow splitright
@@ -176,7 +177,7 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 47 - ((27 * winheight(0) + 30) / 60)
+let s:l = 47 - ((45 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -415,12 +416,14 @@ setlocal wrap
 setlocal wrapmargin=0
 11
 normal zo
-let s:l = 47 - ((28 * winheight(0) + 30) / 60)
+11
+normal zo
+let s:l = 94 - ((2 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-47
-normal! 017l
+94
+normal! 0
 wincmd w
 argglobal
 edit app/store/itsm.js
@@ -527,11 +530,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 47 - ((0 * winheight(0) + 30) / 60)
+let s:l = 69 - ((22 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-47
+69
 normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 83 + 97) / 195)
@@ -551,7 +554,7 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe '1resize ' . ((&lines * 47 + 31) / 62)
-exe 'vert 1resize ' . ((&columns * 78 + 97) / 195)
+exe 'vert 1resize ' . ((&columns * 111 + 97) / 195)
 exe '2resize ' . ((&lines * 25 + 31) / 62)
 exe 'vert 2resize ' . ((&columns * 83 + 97) / 195)
 exe '3resize ' . ((&lines * 21 + 31) / 62)
@@ -892,7 +895,7 @@ normal! zt
 normal! 0
 wincmd w
 exe '1resize ' . ((&lines * 47 + 31) / 62)
-exe 'vert 1resize ' . ((&columns * 78 + 97) / 195)
+exe 'vert 1resize ' . ((&columns * 111 + 97) / 195)
 exe '2resize ' . ((&lines * 25 + 31) / 62)
 exe 'vert 2resize ' . ((&columns * 83 + 97) / 195)
 exe '3resize ' . ((&lines * 21 + 31) / 62)
@@ -1374,11 +1377,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 7 - ((6 * winheight(0) + 30) / 60)
+let s:l = 5 - ((4 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-7
+5
 normal! 02l
 wincmd w
 argglobal
@@ -1486,7 +1489,7 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 9630 - ((46 * winheight(0) + 30) / 60)
+let s:l = 9630 - ((58 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1495,7 +1498,7 @@ normal! 028l
 wincmd w
 exe 'vert 1resize ' . ((&columns * 98 + 97) / 195)
 exe 'vert 2resize ' . ((&columns * 96 + 97) / 195)
-tabnext 5
+tabnext 2
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif
