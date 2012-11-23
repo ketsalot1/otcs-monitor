@@ -46,42 +46,33 @@ Ext.define("itsm.view.MainListContainer", {
 
 		var itsmList = {
 			xtype: "itsmlist",
-			flex: 3,
+			flex: "2.7",
 			store: Ext.getStore("itsm"),
 			listeners: {
 				disclose: { fn: this.onNotesListDisclose, scope: this }
 			}
 		};
 
-		/*
-		var itsmOverview = {
-			xtype: 'panel',
-			flex: 2,
-			html: "<div class='itsm-case-overview'>&nbsp;</div>"
-		};
-		*/
 		var itsmOverview = {
 //			xtype: 'itsmoverview',
-//			flex: 2
+/* <<< */
 			xtype: 'carousel',
 			defaults: {
 				styleHtmlContent: true
 			},
 			items: [
 				{
-//					html: "<div id='otcs-image-container-1y'></div>"
-					html: "<img src='resources/images/otcs-6m.png' width='248px'/>"
+					html: "<img src='resources/images/otcs-6m.png' width='284px'/>"
 				},
 				{
-//					html: "<div id='otcs-image-container-1y'></div>"
-					html: "<img src='resources/images/otcs-1y.png' width='248px'/>"
+					html: "<img src='resources/images/otcs-1y.png' width='284px'/>"
 				},
 				{
-//					html: "<div id='otcs-image-container-6m'></div"
-					html: "<img src='resources/images/otcs-5y.png' width='248px'/>"
+					html: "<img src='resources/images/otcs-5y.png' width='284px'/>"
 				}
 			],
-			flex: 2 
+/* >>> */
+			flex: "2.3"
 		};
 
 		var settings = Ext.getStore('settings');
