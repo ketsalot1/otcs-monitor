@@ -51,6 +51,8 @@ Ext.define("itsm.view.itsmDetail", {
 			 	xtype: 'nestedlist',
 				title: 'OTCS Cases',
 				displayField: 'description',
+//				data: { 'case': '111111', 'description': '--empty--' }, 
+//				tpl: '<div>{case} - {description}</div>',
 				store: Ext.getStore('desktopITSM'),
 				/* <<<
 				store: {
