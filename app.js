@@ -1,6 +1,8 @@
 Ext.application({
 	name: 'itsm',
 
+//	Ext.Loader.setConfig({disableCaching: false});
+
 	requires: [
 		'Ext.MessageBox'
 	],
@@ -42,6 +44,7 @@ Ext.application({
 	launch: function() {
 		// Destroy the #appLoadingIndicator element
 		Ext.fly('appLoadingIndicator').destroy();
+
 
 		var mainListContainer = {
 				xtype: "mainlistcontainer"

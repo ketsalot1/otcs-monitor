@@ -1,15 +1,24 @@
+var opentext = {};
+opentext.data = {};
+
 Ext.define("itsm.view.MainListContainer", {
 	extend: "Ext.Container",
+	xtype: 'mainlistcontainer',
 	alias: "widget.mainlistcontainer",
 	config: {
 		layout: {
 //			type: 'fit'
 			type: 'vbox'
+		},
+		listeners: {
+			painted: 'initImages'
 		}
 	},
 
 	initialize: function () { // <<<
 		this.callParent(arguments);
+
+		console.log("view.mainListContainer.initialize event fired");
 
 		var searchButton = {
 			xtype: "button",
@@ -60,20 +69,28 @@ Ext.define("itsm.view.MainListContainer", {
 			defaults: {
 				styleHtmlContent: true
 			},
+			listeners: {
+				activeitemchange: { fn: this.onCarouseItemChange, scope: this }
+			},
 			items: [
 				{
-					html: "<img src='resources/images/otcs-6m.png' width='284px'/>"
+//					html: "<img src='resources/images/otcs-6m.png' width='284px'/>"
+					html: "<div id='otcs-image-container-6m'></div>"
 				},
 				{
-					html: "<img src='resources/images/otcs-1y.png' width='284px'/>"
+//					html: "<img src='resources/images/otcs-1y.png' width='284px'/>"
+					html: "<div id='otcs-image-container-1y'></div>"
 				},
 				{
-					html: "<img src='resources/images/otcs-5y.png' width='284px'/>"
+//					html: "<img src='resources/images/otcs-5y.png' width='284px'/>"
+					html: "<div id='otcs-image-container-5y'></div>"
 				}
 			],
 /* >>> */
 			flex: "2.3"
 		};
+
+		opentext.data.carousel = itsmOverview;
 
 		var settings = Ext.getStore('settings');
 		var rec = settings.getAt(0);
@@ -92,25 +109,64 @@ Ext.define("itsm.view.MainListContainer", {
 			Ext.Msg.alert("Configure the application first");
 		}
 
-/*
-		var i = new Image();
-		var c = document.getElementById('otcs-image-container-1y');
-		console.log('Found ' + c.length + ' elements of the same class otcs-image-container-1y' );
-		var cont = c.getAttribute('id');
-		console.log('Using ' + cont + ' object' );
-		i.setAttribute('src',  + index);
-												console.log( new_page.src );
-												// TODO - remove me
-												// new_page.src = 'resources/images/barcode.jpg';
-												new_page.setAttribute('width', '460');
-												new_page.setAttribute('id', 'img001_mame');
-												c.removeChild(document.getElementById('img001_mame'));
-												c.appendChild(new_page);
-*/
-
 		this.add([topToolbar,itsmList,itsmOverview]);
-    },
-	 // >>>
+
+		/*
+		setTimeout( function() {
+			var i = new Image();
+			i.setAttribute('src', 'resources/images/otcs-6m.png');
+			i.setAttribute('id', 'image-6m' );
+			var c = document.getElementById('otcs-image-container-6m');
+			var cont = c.getAttribute('id');
+			console.log('Using ' + cont + ' object' );
+			var iw = c.getClientRects()[0].width 
+			console.log('Reqiured width for image: ' + iw );
+			i.setAttribute( 'width', iw + 'px' );
+//			c.removeChild(document.getElementById('img001_mame'));
+			c.appendChild(i);
+		}, 10000 );
+		*/
+
+		console.log("view.mainListContainer.initialize event leaving");
+   },
+
+	initImages: function(obj,opts) {
+		console.log("view.mainListContainer.painted event fired");
+//		debugger;
+		var iterator;
+		var imageSources = ['resources/images/otcs-6m.png','resources/images/otcs-1y.png','resources/images/otcs-5y.png'];
+		var imageContainers = ['otcs-image-container-6m','otcs-image-container-1y','otcs-image-container-5y'];
+		var imageIds = ['image-6m','image-1y','image-5y'];
+
+		for (var iterator=0; iterator<3; iterator++) {
+			if( window.document.getElementById( imageIds[iterator] ) !== null ) continue;
+			var i = new Image();
+			console.log('Index: ' + iterator + ' Container ID: ' + imageContainers[iterator] + ' ImagePath: ' + imageSources[iterator] );
+			i.setAttribute('src', imageSources[iterator] );
+			i.setAttribute('id',  imageIds[iterator] );
+			var c = document.getElementById( imageContainers[iterator] );
+			var cont;
+			try {
+				cont = c.getAttribute('id');
+				console.log('Using ' + cont + ' object' );
+				var iw = c.getClientRects()[0].width; 
+				console.log('Reqiured width for image: ' + iw );
+				i.setAttribute( 'width', iw + 'px' );
+//				c.removeChild(document.getElementById('img001_mame'));
+				c.appendChild(i);
+			} 
+			catch(e) {
+				console.warn('trying to access a non-existing element!');
+			}
+
+		}
+		console.log("view.mainListContainer.painted event leaving");
+	},	
+
+	onCarouseItemChange: function() {
+		console.log("view.mainListContainer.carousel.itemChange event fired");
+		this.initImages();
+	},
 
 	onNotesListDisclose: function (list, record, target, index, evt, options) {
 		console.log("view.mainListContainer.disclose");
