@@ -13,10 +13,12 @@ app/model/desktopITSM.js \
 app/model/itsm.js \
 app/model/settings.js \
 app/model/searchresult.js \
+app/model/aboutInfo.js \
 app/store/desktopITSM.js \
 app/store/itsm.js \
 app/store/settings.js \
 app/store/searchresult.js \
+app/store/aboutInfo.js \
 app/view/ConfigurationView.js \
 app/view/itsmDetail.js \
 app/view/itsmList.js \
@@ -26,6 +28,7 @@ app/view/searchForm.js \
 app/view/searchResultView.js \
 app/view/searchResultDetail.js \
 app/view/itsmOverview.js \
+app/view/aboutScreen.js \
 service/Descriptor.data \
 service/Ganesh.data \
 service/Husain.data \

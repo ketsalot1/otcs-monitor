@@ -7,8 +7,8 @@ Ext.application({
 		'Ext.MessageBox'
 	],
 
-	models: ['itsm', 'desktopITSM', 'settings' ],
-	stores: ['itsm', 'desktopITSM', 'settings' ],
+	models: ['itsm', 'desktopITSM', 'settings', 'aboutInfo' ],
+	stores: ['itsm', 'desktopITSM', 'settings', 'aboutInfo' ],
 	controllers: ['itsm'],
 	views: [
 		'MainListContainer', 
@@ -16,7 +16,8 @@ Ext.application({
 		'itsmDetail', 
 		'itsmOverview',
 		'ConfigurationView',
-		'searchForm'
+		'searchForm',
+		'aboutScreen'
 	],
 
 	icon: {
@@ -64,13 +65,16 @@ Ext.application({
 		var searchForm = {
 				xtype: 'searchform'
 		};
+		var aboutScreen = {
+				xtype: 'aboutscreen'
+		};
 
 		Ext.getStore('settings').load();
 //		console.log( 'Main, retrieved conf: ' + Ext.getStore('settings').getAt(0).get('settingsContainer')[0] );
 
 		// Initialize the main view
 		//Ext.Viewport.add(configurationView);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen]);
 	},
 
 	onUpdated: function() {

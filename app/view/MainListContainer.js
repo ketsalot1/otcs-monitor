@@ -84,6 +84,12 @@ Ext.define("itsm.view.MainListContainer", {
 				{
 //					html: "<img src='resources/images/otcs-5y.png' width='284px'/>"
 					html: "<div id='otcs-image-container-5y'></div>"
+				},
+				{
+//					html: "<img src='resources/images/otcs-5y.png' width='284px'/>"
+					xtype: 'aboutscreen',
+					store: Ext.getStore("aboutInfo"),
+					style: 'background-color: #5AB5F5; border: 4px; border-radius: 12px; border-shadow: 7px 7px 7px blue;'
 				}
 			],
 /* >>> */
@@ -111,56 +117,12 @@ Ext.define("itsm.view.MainListContainer", {
 
 		this.add([topToolbar,itsmList,itsmOverview]);
 
-		/*
-		setTimeout( function() {
-			var i = new Image();
-			i.setAttribute('src', 'resources/images/otcs-6m.png');
-			i.setAttribute('id', 'image-6m' );
-			var c = document.getElementById('otcs-image-container-6m');
-			var cont = c.getAttribute('id');
-			console.log('Using ' + cont + ' object' );
-			var iw = c.getClientRects()[0].width 
-			console.log('Reqiured width for image: ' + iw );
-			i.setAttribute( 'width', iw + 'px' );
-//			c.removeChild(document.getElementById('img001_mame'));
-			c.appendChild(i);
-		}, 10000 );
-		*/
-
 		console.log("view.mainListContainer.initialize event leaving");
    },
 
 	initImages: function(obj,opts) {
 		console.log("view.mainListContainer.painted event fired");
-//		debugger;
-		var iterator;
-		var imageSources = ['resources/images/otcs-6m.png','resources/images/otcs-1y.png','resources/images/otcs-5y.png'];
-		var imageContainers = ['otcs-image-container-6m','otcs-image-container-1y','otcs-image-container-5y'];
-		var imageIds = ['image-6m','image-1y','image-5y'];
-
-		for (var iterator=0; iterator<3; iterator++) {
-			if( window.document.getElementById( imageIds[iterator] ) !== null ) continue;
-			var i = new Image();
-			console.log('Index: ' + iterator + ' Container ID: ' + imageContainers[iterator] + ' ImagePath: ' + imageSources[iterator] );
-			i.setAttribute('src', imageSources[iterator] );
-			i.setAttribute('id',  imageIds[iterator] );
-			var c = document.getElementById( imageContainers[iterator] );
-			var cont;
-			try {
-				cont = c.getAttribute('id');
-				console.log('Using ' + cont + ' object' );
-				var iw = c.getClientRects()[0].width; 
-				console.log('Reqiured width for image: ' + iw );
-				i.setAttribute( 'width', iw + 'px' );
-//				c.removeChild(document.getElementById('img001_mame'));
-				c.appendChild(i);
-			} 
-			catch(e) {
-				console.warn('trying to access a non-existing element!');
-			}
-
-		}
-		console.log("view.mainListContainer.painted event leaving");
+		this.fireEvent('initImageCommand', obj, opts);
 	},	
 
 	onCarouseItemChange: function() {
