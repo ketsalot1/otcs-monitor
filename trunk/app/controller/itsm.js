@@ -26,7 +26,8 @@ Ext.define("itsm.controller.itsm", {
 					// The commands fired by the notes list container.
 					itsmDetailCommand: "onITSMDetail",
 					settingsCommand: "onSettings",
-					searchCommand: "onSearch"
+					searchCommand: "onSearch",
+					initImageCommand: "onInitImages"
 				},
 				itsmDetail: {
 					detailBackCommand: "onBackMainList"
@@ -41,104 +42,6 @@ Ext.define("itsm.controller.itsm", {
 				}
 		}
 	},
-
-	// Commands.
-/* <<<
-	onEditNoteCommand: function (list, record) {
-		console.log("controller.Notes_1.onEditNoteCommand");
-		this.activateNoteEditor(record);
-	},
-
-	onBackNoteCommand: function() {
-		console.log("controller.Notes_1.onBackNoteCommand");
-		this.activateNotesList();
-	},
-
-	onNewNoteCommand: function () {
-		console.log("controller.Notes_1.onNewNoteCommand");
-
-		var now = new Date();
-		var noteId = (now.getTime()).toString() + (this.getRandomInt(0, 100)).toString();
-
-		var newNote = Ext.create("noteBook.model.Note", {
-			id: noteId,
-			dateCreated: now,
-			title: "",
-			narrative: ""
-		 });
-
-	 this.activateNoteEditor(newNote);
-	},
-
-	onDeleteNoteCommand: function() {
-		var noteEditor;
-		var currentNote;
-		var store;
-
-		console.log("controller.Notes_1.onDeleteNoteCommand");
-
-		try {
-			noteEditor = this.getNoteEditor();
-			currentNote = noteEditor.getRecord();
-			store = Ext.getStore('Notes'); 
-
-			store.remove(currentNote);
-			store.sync();
-
-			this.activateNotesList();
-		}
-		catch(e) {
-			console.error( "Exception: " + e.name + " - " + e.message );
-			Ext.Msg.alert("Exception", e.message, null, null );
-		}
-	},
-	
-	onSaveNoteCommand: function () {
-		console.log("controller.Notes_1.onSaveNoteCommand");
-
-		var noteEditor = this.getNoteEditor();
-		var currentNote = noteEditor.getRecord();
-		var newValues = noteEditor.getValues();
-
-		// Update the current note's fields with form values.
-		currentNote.set("title", newValues.title);
-		currentNote.set("narrative", newValues.narrative);
-
-		var errors = currentNote.validate();
-
-		if (!errors.isValid()) {
-			Ext.Msg.alert('Wait!', errors.getByField("title")[0].getMessage(), Ext.emptyFn);
-			currentNote.reject();
-			return;
-		}
-
-		var notesStore = Ext.getStore("Notes");
-
-		if (null == notesStore.findRecord('id', currentNote.data.id)) {
-			notesStore.add(currentNote);
-		}
-
-		notesStore.sync();
-
-		notesStore.sort([{ property: 'dateCreated', direction: 'DESC'}]);
-
-		this.activateNotesList();
-	},
-
-	getRandomInt: function (min, max) {
-		 return Math.floor(Math.random() * (max - min + 1)) + min;
-	},
-
-	activateNoteEditor: function (record) {
-		var noteEditor = this.getNoteEditor();
-		noteEditor.setRecord(record); // load() is deprecated.
-		Ext.Viewport.animateActiveItem(noteEditor, this.slideLeftTransition);
-	},
-
-	activateNotesList: function () {
-		Ext.Viewport.animateActiveItem(this.getNotesListContainer(), this.slideRightTransition);
-	},
->>> */
 
 	onBackMainList: function() {
 		console.log("controller.itsm.onBackCommand");
@@ -168,7 +71,8 @@ Ext.define("itsm.controller.itsm", {
 		Ext.Viewport.animateActiveItem(this.getSearchForm(), this.slideLeftTransition);
 	},
 
-	activateITSMDetail: function (record) {
+	activateITSMDetail: function (record) 
+	{ // <<<
 		console.log("controller.itsm.activateITSMDetail");
 
 		var rec;
@@ -202,9 +106,44 @@ Ext.define("itsm.controller.itsm", {
 			Ext.Msg.alert( e.name );
 		}
 	},
+	// >>>
 
+	onInitImages: function(obj, opts) 
+	{ // <<<
+//		debugger;
+		var iterator;
+		var imageSources = ['resources/images/otcs-6m.png','resources/images/otcs-1y.png','resources/images/otcs-5y.png'];
+		var imageContainers = ['otcs-image-container-6m','otcs-image-container-1y','otcs-image-container-5y'];
+		var imageIds = ['image-6m','image-1y','image-5y'];
 
-	onSaveSettings: function(hostName) { // <<<
+		for (var iterator=0; iterator<3; iterator++) {
+			if( window.document.getElementById( imageIds[iterator] ) !== null ) continue;
+			var i = new Image();
+			console.log('Index: ' + iterator + ' Container ID: ' + imageContainers[iterator] + ' ImagePath: ' + imageSources[iterator] );
+			i.setAttribute('src', imageSources[iterator] );
+			i.setAttribute('id',  imageIds[iterator] );
+			var c = document.getElementById( imageContainers[iterator] );
+			var cont;
+			try {
+				cont = c.getAttribute('id');
+				console.log('Using ' + cont + ' object' );
+				var iw = c.getClientRects()[0].width; 
+				console.log('Reqiured width for image: ' + iw );
+				i.setAttribute( 'width', iw + 'px' );
+//				c.removeChild(document.getElementById('img001_mame'));
+				c.appendChild(i);
+			} 
+			catch(e) {
+				console.warn('trying to access a non-existing element!');
+			}
+
+		}
+		console.log("view.itsm.controller initImage leaving");
+	},	
+	// >>>
+
+	onSaveSettings: function(hostName) 
+	{ // <<<
 		var rec;
 		var data = [];
 		var settings = Ext.getStore("settings");
@@ -231,7 +170,8 @@ Ext.define("itsm.controller.itsm", {
 	},
 	// >>>
 
-	onSearchCase: function(caseNo) {
+	onSearchCase: function(caseNo) 
+	{ // <<<
 		var rec,hostName;
 		var data = [];
 		var settings = Ext.getStore("settings");
@@ -262,8 +202,10 @@ Ext.define("itsm.controller.itsm", {
 			console.error( e.message );
 		}
 	},
+	// >>>
 
-	onPurgeSettings: function() {
+	onPurgeSettings: function() 
+	{ // <<<
 		console.log('controller: purging Configuration');
 		try {
 			localStorage.removeItem('new-otcs-monitor-settings');
@@ -273,12 +215,12 @@ Ext.define("itsm.controller.itsm", {
 			Ext.Msg.alert(e.name + "Error purging settings" );
 		}
 	},
+	// >>>
 
 	onBackSettings: function() {
 		console.log('controller: back from Configuration');
 		this.activateMainView();
 	},
-
 
 	// Base Class functions.
 	launch: function () {
