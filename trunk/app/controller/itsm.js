@@ -20,6 +20,7 @@ Ext.define("itsm.controller.itsm", {
 				itsmDetail: "itsmdetail",
 				configurationView: "configurationview",
 				searchForm: "searchform",
+				itsmOverview: "itsmoverview"
 		},
 		control: {
 				mainListContainer: {
@@ -39,6 +40,9 @@ Ext.define("itsm.controller.itsm", {
 				},
 				searchForm: {
 					searchCaseCommand: 'onSearchCase'
+				},
+				itsmOverview: {
+					initImageCommand: "onInitImages"
 				}
 		}
 	},
@@ -108,7 +112,14 @@ Ext.define("itsm.controller.itsm", {
 	},
 	// >>>
 
+
 	onInitImages: function(obj, opts) 
+/* This method is a poor man initiative to injets the Images
+ * that have the right dimentions. The IMG tah is dynamicaly 
+ * injected after the rendering the carousel container and 
+ * getting the available size. That is all obsoleted by using
+ * the tag IMG directly with the tag width=100%. 
+ */
 	{ // <<<
 //		debugger;
 		var iterator;
