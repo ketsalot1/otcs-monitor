@@ -63,8 +63,11 @@ Ext.define("itsm.view.MainListContainer", {
 		};
 
 		var itsmOverview = {
-//			xtype: 'itsmoverview',
-/* <<< */
+			xtype: 'itsmoverview',
+			listeners: {
+				activeitemchange: { fn: this.onCarouseItemChange, scope: this }
+			},
+/* <<<  
 			xtype: 'carousel',
 			defaults: {
 				styleHtmlContent: true
@@ -92,7 +95,7 @@ Ext.define("itsm.view.MainListContainer", {
 					style: 'background-color: #5AB5F5; border: 4px; border-radius: 12px; border-shadow: 7px 7px 7px blue;'
 				}
 			],
-/* >>> */
+>>> */
 			flex: "2.3"
 		};
 
@@ -119,15 +122,16 @@ Ext.define("itsm.view.MainListContainer", {
 
 		console.log("view.mainListContainer.initialize event leaving");
    },
+// >>>
 
 	initImages: function(obj,opts) {
 		console.log("view.mainListContainer.painted event fired");
 		this.fireEvent('initImageCommand', obj, opts);
 	},	
 
-	onCarouseItemChange: function() {
-		console.log("view.mainListContainer.carousel.itemChange event fired");
-		this.initImages();
+	onCarouseItemChange: function( obj, opts ) {
+		console.log("view.carousel.itemChange event fired");
+		this.fireEvent('initImageCommand', obj, opts);
 	},
 
 	onNotesListDisclose: function (list, record, target, index, evt, options) {

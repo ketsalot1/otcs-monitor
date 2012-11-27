@@ -67,11 +67,12 @@ node-inspector@0.2.0beta3 /usr/local/lib/node_modules/node-inspector
      in mods-available folder.
 
    - modify the Apache configuration to use the proxy for specific URLs. Inside
-     the configuration use the option: 
+     the configuration for your virtual host (/etc/apache2/sites-enabled/000-default)
+     find the sectiopn for <VirtualRoot *80> and add the configuration option: 
 
       ProxyPass /nd http://127.0.0.1:38080/
 
-     Assuming the node server is started on the same host. Calling the local
+     Assuming the node server and Apache2 are on the same host. Calling the local
      apache with /nd resource will reroute to nodejs server hosting the service
      for delivering the JSON objects. 
 
