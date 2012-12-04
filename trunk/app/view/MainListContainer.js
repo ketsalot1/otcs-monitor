@@ -35,6 +35,7 @@ Ext.define("itsm.view.MainListContainer", {
 			xtype: "button",
 			ui: "action",
 //			text: "Settings",
+//			iconCls: 'settings_black',
 			iconCls: 'settings',
 			iconMask: true,
 			listeners: {

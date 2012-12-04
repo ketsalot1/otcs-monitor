@@ -1,8 +1,1 @@
-{"support_data": { "descriptor": { "title":"support data", "entries":[
-	{ "category": "Patches", "title": "Patches for curretn products", "code": "Patches" },
-	{ "category": "Scan", "title": "OTCS Cases", "code": "Husain" },
-	{ "category": "Desktop", "title": "OTCS Cases", "code": "Ganesh" },
-	{ "category": "WebViewer", "title": "OTCS Cases", "code": "Pavana" },
-	{ "category": "E-Mail", "title": "OTCS Cases", "code": "Michelle" },
-	{ "category": "FSA", "title": "OTCS Cases", "code": "Baumann" },
-]}},"responseDetails":null,"responseStatus":200}
+{"support_data": { "descriptor": { "title":"support data", "entries":[{"category": "Patches", "title": "Patches for current products", "code": "Patches" },{ "category": "Scan", "title": "OTCS Cases (04.12.2012)", "code": "Husain" },{ "category": "Desktop", "title": "OTCS Cases (04.12.2012)", "code": "Ganesh" },{ "category": "WebViewer", "title": "OTCS Cases (04.12.2012)", "code": "Pavana" },{ "category": "E-Mail", "title": "OTCS Cases (04.12.2012)", "code": "Michelle" },{ "category": "FSA", "title": "OTCS Cases (04.12.2012)", "code": "Stephan" }]}},"responseDetails":null,"responseStatus":200}
