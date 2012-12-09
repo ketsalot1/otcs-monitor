@@ -25,6 +25,8 @@ function search( callback, pattern, res ) {
 		}
 		catch(e) {
 			console.error('requestHandlers.search: Error: ' + e.name + " - " + e.message );
+			res.writeHead(404);
+			res.end(e.name + ': ' + e.message);
 		}
 		 
 		res.writeHead(200, {

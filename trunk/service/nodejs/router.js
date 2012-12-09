@@ -17,6 +17,8 @@ function route(handle, params, res) {
 		handle[proc](callback,pattern,res);
 	} else {
 		console.log("router: No request handler found for incoming request" );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
 	}
 }
 
