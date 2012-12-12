@@ -6,6 +6,7 @@ app.json \
 index.html \
 packager.json \
 project.1204.vim \
+project.asus.vim \
 project.lin.dell.vim \
 readme.txt \
 app/controller/itsm.js \
@@ -29,11 +30,18 @@ app/view/searchResultView.js \
 app/view/searchResultDetail.js \
 app/view/itsmOverview.js \
 app/view/aboutScreen.js \
+service/all.data \
 service/Descriptor.data \
 service/Ganesh.data \
 service/Husain.data \
+service/Michelle.data \
+service/Stephan.data \
 service/json.data \
 service/nodejs/start.js \
+service/nodejs/itsm.js \
+service/nodejs/requestHandlers.js \
+service/nodejs/router.js \
+service/nodejs/service.js \
 service/tomcat/senchaTouchServlet.java \
 service/tomcat/web.xml \
 resources/css/app.css \
