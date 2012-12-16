@@ -1,6 +1,3 @@
-var opentext = {};
-opentext.data = {};
-
 Ext.define("itsm.view.MainListContainer", {
 	extend: "Ext.Container",
 	xtype: 'mainlistcontainer',
@@ -20,10 +17,21 @@ Ext.define("itsm.view.MainListContainer", {
 
 		console.log("view.mainListContainer.initialize event fired");
 
+		var chartButton = {
+			xtype: "button",
+			ui: "action",
+			iconCls: 'chart2',
+			iconMask: true,
+			listeners: {
+				tap: { fn: this.onChartButtonTap, scope: this }
+			}
+		};
+
 		var searchButton = {
 			xtype: "button",
 			ui: "action",
 //			text: "Search",
+//			iconCls: 'chart2',
 			iconCls: 'search',
 			iconMask: true,
 			listeners: {
@@ -35,6 +43,7 @@ Ext.define("itsm.view.MainListContainer", {
 			xtype: "button",
 			ui: "action",
 //			text: "Settings",
+//			iconCls: 'equalizer1',
 //			iconCls: 'settings_black',
 			iconCls: 'settings',
 			iconMask: true,
@@ -45,9 +54,11 @@ Ext.define("itsm.view.MainListContainer", {
 
 		var topToolbar = {
 			xtype: "toolbar",
-			title: 'OTCS Monitor',
+//			title: 'OTCS Monitor',
+			title: 'OTCS',
 			docked: "top",
 			items: [
+				chartButton,
 				searchButton,
 				{ xtype: "spacer" },
 				settingsButton
@@ -56,7 +67,8 @@ Ext.define("itsm.view.MainListContainer", {
 
 		var itsmList = {
 			xtype: "itsmlist",
-			flex: "2.7",
+//			flex: "2.7",
+			flex: "1",
 			store: Ext.getStore("itsm"),
 			listeners: {
 				disclose: { fn: this.onNotesListDisclose, scope: this }
@@ -65,9 +77,13 @@ Ext.define("itsm.view.MainListContainer", {
 
 		var itsmOverview = {
 			xtype: 'itsmoverview',
+//			height: 0, // hide this iniatially
+			flex: "0",
 			listeners: {
 				activeitemchange: { fn: this.onCarouseItemChange, scope: this }
 			},
+
+//			flex: "2.3" // Hide initially
 /* <<<  
 			xtype: 'carousel',
 			defaults: {
@@ -97,7 +113,6 @@ Ext.define("itsm.view.MainListContainer", {
 				}
 			],
 >>> */
-			flex: "2.3"
 		};
 
 		opentext.data.carousel = itsmOverview;
@@ -138,6 +153,11 @@ Ext.define("itsm.view.MainListContainer", {
 	onNotesListDisclose: function (list, record, target, index, evt, options) {
 		console.log("view.mainListContainer.disclose");
 		this.fireEvent('itsmDetailCommand', this, record.data.code);
+	},
+
+	onChartButtonTap: function () {
+		console.log("view.mainListContainer.ChartButtonTap");
+		this.fireEvent('swapChartCommand', this );
 	},
 
 	onSearchButtonTap: function () {

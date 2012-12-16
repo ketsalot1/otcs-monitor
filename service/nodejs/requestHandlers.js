@@ -55,6 +55,16 @@ function send( callback, dataName, res ) {
 	});
 }
 
+function save( callback, dataObj, res ) {
+	console.log('requestHandler.save: ' + dataObj.caseNo + ": " + dataObj.text );
+	res.writeHead(200, {
+		'Content-Type': 'text/plain'
+	});
+	res.end( 'data recieved and stored' );
+	res.end(callback + '(\"data received and stored\")' );
+}
+
 exports.search = search;
 exports.send = send;
+exports.save = save;
 

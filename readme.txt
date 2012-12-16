@@ -76,6 +76,44 @@ node-inspector@0.2.0beta3 /usr/local/lib/node_modules/node-inspector
      apache with /nd resource will reroute to nodejs server hosting the service
      for delivering the JSON objects. 
 
+3. Tools required for styling:
+
+	Sencha Touch 2 works SASS and Compass tools to manipulate CSS. The trick is
+	installation under Ubuntu. do nor use the 'compass' that is installed via the
+	standard repository (apt-get). That is an old version and does not work with
+	Senca Touch 2, SASS HAML 3.0respectively. The correct version must be
+	installed via 'gem' tool from ruby. This link discusses the problem in
+	details:
+
+ http://www.sencha.com/forum/showthread.php?119356-Running-Compass-on-Linux-gives-quot-no-such-file-to-load-quot
+ http://groups.google.com/group/compass-users/browse_thread/thread/6816d0f328031d64
+
+ 	First, install ruby libraries and gem:
+
+		$ sudo apt-get install ruby1.8 rubygems1.8
+
+		$ sudo gem install haml 
+		$ gem sources --add http://gems.github.com/ 
+		$ sudo gem uninstall chriseppstein-compass 
+		$ sudo gem install compass 
+
+	The right version of compass must say:
+
+		root@mameasus:/var/lib/gems/1.8/bin# ./compass -v
+		Compass 0.12.2 (Alnilam)
+		Copyright (c) 2008-2012 Chris Eppstein
+		Released under the MIT License.
+
+	You should avoid using:
+
+ 		$ sudo apt-get install libcompass-ruby1.8
+		$ sudo apt-get install compass-susy-plugin
+
+	That will install the 0.8.17 version of compass, which is incompatible with
+	SASS 3.0 (HAML).
+	
+
+
 Appendix A.
 
    get nodejs. Use URL http://nodejs.org and follow instructions for install.

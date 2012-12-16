@@ -30,6 +30,9 @@ app/view/searchResultView.js \
 app/view/searchResultDetail.js \
 app/view/itsmOverview.js \
 app/view/aboutScreen.js \
+app/view/itsmEditForm.js \
+styles/config.rb \
+styles/app.scss \
 service/all.data \
 service/Descriptor.data \
 service/Ganesh.data \
@@ -44,7 +47,6 @@ service/nodejs/router.js \
 service/nodejs/service.js \
 service/tomcat/senchaTouchServlet.java \
 service/tomcat/web.xml \
-resources/css/app.css \
 resources/images/otcs-5y.png \
 resources/images/otcs-1y.png \
 resources/images/otcs-6m.png"
@@ -107,6 +109,9 @@ echo "  node --debug ./service/nodejs/start.js"
 echo " "
 echo "start your remote debugger:"
 echo "  node-inspector &"
+echo " "
+echo "Make sure that you use the right version of the compass:"
+echo "  /var/lib/gems/1.8/bin/compass compile"
 echo " "
 echo "In chrome browser you can connect to inspector and debug your application server logic."
 echo "Make sure that the Sencha Touch application has been generated before"

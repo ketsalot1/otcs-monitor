@@ -6,13 +6,26 @@ function route(handle, params, res) {
 	var proc = 'send';
 	var callback = params['processSupportData'];
 	var pattern = params['search'];
+	var save = params['save'];
+	var otcs = params['otcs'];
 
 	if( typeof pattern !== 'undefined' ) { 
 		proc = 'search';
-	} else {
+	} 
+	
+	if( typeof save !== 'undefined' ) {
+		proc = 'save';
+		pattern = { caseNo: params['save'], text: params['text'] };
+	}
+
+	if( typeof otcs !== 'undefined' ) {
+		proc = 'send';
 		pattern = '/tmp/' + params['otcs'] + '.data';
 	}
 
+	/*
+	 *	Reflection pattern: assigned in 'itsm.js' object
+	 */
 	if (typeof handle[proc] === 'function') {
 		handle[proc](callback,pattern,res);
 	} else {
