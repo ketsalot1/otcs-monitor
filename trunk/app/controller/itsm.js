@@ -20,7 +20,8 @@ Ext.define("itsm.controller.itsm", {
 				itsmDetail: "itsmdetail",
 				configurationView: "configurationview",
 				searchForm: "searchform",
-				itsmOverview: "itsmoverview"
+				itsmOverview: "itsmoverview",
+				itsmEditForm: "itsmeditform"
 		},
 		control: {
 				mainListContainer: {
@@ -28,10 +29,12 @@ Ext.define("itsm.controller.itsm", {
 					itsmDetailCommand: "onITSMDetail",
 					settingsCommand: "onSettings",
 					searchCommand: "onSearch",
-					initImageCommand: "onInitImages"
+					initImageCommand: "onInitImages",
+					swapChartCommand: "onChartSwap"
 				},
 				itsmDetail: {
-					detailBackCommand: "onBackMainList"
+					detailBackCommand: "onBackMainList",
+					detailEditCommand: "onEditCase"
 				},
 				configurationView: {
 					saveSettingsCommand:	"onSaveSettings",
@@ -43,13 +46,23 @@ Ext.define("itsm.controller.itsm", {
 				},
 				itsmOverview: {
 					initImageCommand: "onInitImages"
+				},
+				itsmEditForm: {
+					saveCaseCommand: "onEditSave",
+					backCaseEditCommand: "onBackSettings"
 				}
 		}
 	},
 
 	onBackMainList: function() {
 		console.log("controller.itsm.onBackCommand");
+		opentext.data.activeCase = {}
 		this.activateMainView();
+	},
+
+	onEditCase: function(caseNo) {
+		console.log("controller.itsm.onEditCase: requesting Edit From for case: " + caseNo );
+		Ext.Viewport.animateActiveItem(this.getItsmEditForm(), this.slideLeftTransition);
 	},
 
 	onSearchBack: function() {
@@ -74,6 +87,8 @@ Ext.define("itsm.controller.itsm", {
 	onSearch: function() {
 		Ext.Viewport.animateActiveItem(this.getSearchForm(), this.slideLeftTransition);
 	},
+
+	
 
 	activateITSMDetail: function (record) 
 	{ // <<<
@@ -153,6 +168,25 @@ Ext.define("itsm.controller.itsm", {
 	},	
 	// >>>
 
+	onChartSwap: function(obj)
+	{ // <<<
+		var what = obj;
+		var mainView = this.getMainListContainer();
+
+		if( opentext.data.carouselVisibility !== "show" ) {
+			mainView.getLayout().setItemFlex(mainView.getItems().items[1], "2.7");
+			mainView.getLayout().setItemFlex(mainView.getItems().items[2], "2.3");
+			opentext.data.carouselVisibility = "show";
+		} else {
+			mainView.getLayout().setItemFlex(mainView.getItems().items[2], "0.001");
+			opentext.data.carouselVisibility = "hide";
+		}
+
+		console.log('controller.itsm.onChartSwap:' );
+
+		Ext.Viewport.animateActiveItem(mainView, this.slideRightTransition);
+	}, // >>>
+
 	onSaveSettings: function(hostName) 
 	{ // <<<
 		var rec;
@@ -208,6 +242,48 @@ Ext.define("itsm.controller.itsm", {
 			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
 
 //			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+	},
+	// >>>
+
+	onEditSave: function(caseNo, caseTxt) 
+	{ // <<<
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('desktopITSM');
+		var v;
+
+		console.log('controller search for case No.>' + caseNo + '<' );
+
+		debugger;
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			s.getProxy().setUrl( hostName + '?save=' + caseNo + '&text=' + caseTxt );
+			console.log('controller saving request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+
+/*			
+			s.getProxy().setUrl( hostName + '?search=' + caseNo );
+			console.log('controller setting search request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+
+			v = this.getItsmDetail();
+			for ( var i in v.getItems().keys) {
+				if( v.getItems().keys[i].search('detailPanel') !== -1 ) {
+					v.getItems().items[i].setTitle('Search Result');
+				}
+			}
+			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
+*/
+			this.activateMainView();
 		}
 		catch(e) {
 			console.error( e.message );

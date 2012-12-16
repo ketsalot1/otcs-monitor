@@ -37,19 +37,31 @@ Ext.define("itsm.view.itsmDetail", {
 				}
         };
 
+        var editButton = {
+            xtype: "button",
+            ui: "action",
+            iconCls: "doc_compose1",
+            iconMask: true,
+				listeners: {
+					tap: { fn: this.onDetailEdit, scope: this }
+				}
+        };
+
         var bottomToolbar = {
             xtype: "toolbar",
             docked: "bottom",
-            title: "OTCS Monitor",
+//            title: "OTCS Monitor",
             items: [
-					backButton
+					backButton,
+					{ xtype: 'spacer' },
+					editButton
 		  		]
         };
 
 		  var detailPanel = {
 			   id: 'detailPanel',
 			 	xtype: 'nestedlist',
-				title: 'OTCS Cases',
+				title: 'OTCS Case',
 				displayField: 'description',
 //				data: { 'case': '111111', 'description': '--empty--' }, 
 //				tpl: '<div>{case} - {description}</div>',
@@ -96,6 +108,7 @@ Ext.define("itsm.view.itsmDetail", {
 									console.log('nestedList.itemtap event');
 //                  			this.getDetailCard().setHtml(post.get('description') + '<br/><div class="list-item-underlined">&nbsp;<br/></div>' + post.get('status') + '<br/><div class="list-item-underlined">&nbsp;</div><br/>' + post.get('details'));
                   			this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('details'));
+									opentext.data.activeCase = post.get('case');
 					}
 				}
 		  };
@@ -142,5 +155,14 @@ Ext.define("itsm.view.itsmDetail", {
 	onDetailBack: function() {
 		console.log("view.itsmDetail.Back");
 		this.fireEvent("detailBackCommand", this);
+	},
+
+	onDetailEdit: function() {
+		console.log("view.itsmDetail.Edit");
+		if( typeof opentext.data.activeCase == 'string' ) { 
+			this.fireEvent("detailEditCommand", opentext.data.activeCase);
+		} else {
+			console.error("No case selected");
+		}
 	}
 });

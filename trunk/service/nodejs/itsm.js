@@ -5,6 +5,7 @@ var requestHandlers = require("./requestHandlers");
 var handle = {};
 handle['search'] = requestHandlers.search;
 handle['send'] = requestHandlers.send;
+handle['save'] = requestHandlers.save;
 /* Assign service routines to keyword in the 
  * parameters in the incoming query. Assuming
  * the quesry contain parameter 'search', the 

@@ -1,3 +1,7 @@
+var opentext = {};
+opentext.data = {};
+opentext.data.carouselVisibility = "hide";
+
 Ext.application({
 	name: 'itsm',
 
@@ -17,6 +21,7 @@ Ext.application({
 		'itsmOverview',
 		'ConfigurationView',
 		'searchForm',
+		'itsmEditForm',
 		'aboutScreen'
 	],
 
@@ -65,6 +70,9 @@ Ext.application({
 		var searchForm = {
 				xtype: 'searchform'
 		};
+		var itsmEditForm = {
+				xtype: 'itsmeditform'
+		};
 		var aboutScreen = {
 				xtype: 'aboutscreen'
 		};
@@ -74,7 +82,7 @@ Ext.application({
 
 		// Initialize the main view
 		//Ext.Viewport.add(configurationView);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm]);
 	},
 
 	onUpdated: function() {
