@@ -12,10 +12,11 @@ Ext.define("itsm.view.itsmEditForm", {
 		this.callParent(arguments);
 
 		var caseText = {
-			xtype: 'textfield',
+			xtype: 'textareafield',
 			label: 'Update:',
 			name: 'caseText',
-			labelWidth: '29%'
+			labelWidth: '25%',
+			minHeight: '5em'
 		};
 
 		var backButton = {

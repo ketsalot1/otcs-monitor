@@ -111,8 +111,15 @@ node-inspector@0.2.0beta3 /usr/local/lib/node_modules/node-inspector
 
 	That will install the 0.8.17 version of compass, which is incompatible with
 	SASS 3.0 (HAML).
-	
 
+4. Protocol specification:
+	http://host:port/otds?cmd=<command>&payload01=<data01>&payload02=<data02>
+
+	command  |	data01     |  data02
+	-----------------------------------
+	send		|	filename	  |  n/a
+   search	|	caseNo	  |  n/a
+	save		|	caseNo	  |  text 			
 
 Appendix A.
 

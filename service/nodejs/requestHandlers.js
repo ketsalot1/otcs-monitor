@@ -56,15 +56,54 @@ function send( callback, dataName, res ) {
 }
 
 function save( callback, dataObj, res ) {
+	var fileText;
+
 	console.log('requestHandler.save: ' + dataObj.caseNo + ": " + dataObj.text );
-	res.writeHead(200, {
-		'Content-Type': 'text/plain'
-	});
-	res.end( 'data recieved and stored' );
-	res.end(callback + '(\"data received and stored\")' );
+
+	try {
+		if( typeof dataObj.caseNo != 'string' ) throw( { name: 'Case Number Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
+		fileText = dataObj.caseNo + ': ' + dataObj.text + "\n" ;
+		fs.appendFile('/tmp/m.itsm.status', fileText, function (err) {
+  			if (err) throw err;
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			res.end( 'data recieved and stored' );
+			res.end(callback + '(\"data received and stored\")' );
+		});
+	} 
+	catch(e) {
+		console.log(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+
+
+function unlink( callback, dummy, res ) {
+	var fileText;
+
+	console.log('requestHandler.unlink');
+
+	try {
+		fs.unlink('/tmp/m.itsm.status', function (err) {
+  			if (err) throw err;
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			res.end( 'data recieved and stored' );
+			res.end(callback + '(\"data received and stored\")' );
+		});
+	} 
+	catch(e) {
+		console.log(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
 }
 
 exports.search = search;
 exports.send = send;
 exports.save = save;
+exports.unlink = unlink;
 

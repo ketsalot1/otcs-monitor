@@ -125,6 +125,10 @@ Ext.define("itsm.view.MainListContainer", {
 			var hostName = data[0];
 
 			var s = Ext.getStore("itsm");
+
+			/* new command structure */
+			s.getProxy().setUrl( hostName + '?cmd=send&payload01=Descriptor&payload02=null' );
+
 			s.getProxy().setUrl( hostName + '?otcs=Descriptor' );
 			console.log( 'controller: setting Descriptors URL=' + s.getProxy().getUrl() );
 			s.load();

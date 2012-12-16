@@ -115,7 +115,7 @@ setlocal formatexpr=
 setlocal formatoptions=tcq
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
-setlocal iminsert=2
+setlocal iminsert=0
 setlocal imsearch=2
 setlocal include=
 setlocal includeexpr=
@@ -167,12 +167,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 15 - ((14 * winheight(0) + 11) / 22)
+let s:l = 17 - ((16 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-15
-normal! 032l
+17
+normal! 035l
 wincmd w
 argglobal
 edit service.js
@@ -271,12 +271,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 8 - ((6 * winheight(0) + 9) / 19)
+let s:l = 5 - ((4 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-8
-normal! 0
+5
+normal! 039l
 wincmd w
 argglobal
 edit router.js
@@ -375,12 +375,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 3 - ((2 * winheight(0) + 21) / 42)
+let s:l = 18 - ((17 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3
-normal! 015l
+18
+normal! 043l
 wincmd w
 exe '1resize ' . ((&lines * 22 + 22) / 44)
 exe 'vert 1resize ' . ((&columns * 96 + 95) / 190)
@@ -437,7 +437,7 @@ setlocal formatexpr=
 setlocal formatoptions=tcq
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
-setlocal iminsert=2
+setlocal iminsert=0
 setlocal imsearch=2
 setlocal include=
 setlocal includeexpr=
@@ -489,13 +489,13 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 54 - ((36 * winheight(0) + 21) / 43)
+let s:l = 82 - ((31 * winheight(0) + 21) / 43)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-54
+82
 normal! 0
-tabnext 1
+tabnext 2
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif
