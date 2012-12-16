@@ -229,6 +229,11 @@ Ext.define("itsm.controller.itsm", {
 			rec = settings.getAt(0);
 			data = rec.get('settingsContainer');
 			hostName = data[0];
+
+			/* new command structure */
+			s.getProxy().setUrl( hostName + '?cmd=search&payload01=' + caseNo + '&payload02=null' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+
 			s.getProxy().setUrl( hostName + '?search=' + caseNo );
 			console.log('controller setting search request >' + s.getProxy().getUrl() + '<' );
 			s.load();
@@ -265,6 +270,10 @@ Ext.define("itsm.controller.itsm", {
 			rec = settings.getAt(0);
 			data = rec.get('settingsContainer');
 			hostName = data[0];
+
+			/* new command structure */
+			s.getProxy().setUrl( hostName + '?cmd=save&payload01=' + caseNo + '&payload02=' + caseText );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
 
 			s.getProxy().setUrl( hostName + '?save=' + caseNo + '&text=' + caseTxt );
 			console.log('controller saving request >' + s.getProxy().getUrl() + '<' );

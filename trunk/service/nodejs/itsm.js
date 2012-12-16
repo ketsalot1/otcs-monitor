@@ -6,6 +6,7 @@ var handle = {};
 handle['search'] = requestHandlers.search;
 handle['send'] = requestHandlers.send;
 handle['save'] = requestHandlers.save;
+handle['unlink'] = requestHandlers.unlink;
 /* Assign service routines to keyword in the 
  * parameters in the incoming query. Assuming
  * the quesry contain parameter 'search', the 

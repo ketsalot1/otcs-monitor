@@ -304,7 +304,6 @@ normal! zt
 286
 normal! 03l
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 96 + 95) / 190)
 exe 'vert 2resize ' . ((&columns * 93 + 95) / 190)
 tabedit app/view/itsmDetail.js
@@ -642,7 +641,6 @@ normal! zt
 4
 normal! 0
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 96 + 95) / 190)
 exe '2resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 93 + 95) / 190)
@@ -988,7 +986,6 @@ normal! zt
 44
 normal! 09l
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe '2resize ' . ((&lines * 18 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
@@ -1104,7 +1101,6 @@ exe s:l
 normal! zt
 6
 normal! 0
-2wincmd w
 tabedit app/view/ConfigurationView.js
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -1441,7 +1437,6 @@ normal! zt
 5
 normal! 0
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe '2resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
@@ -1662,12 +1657,14 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 92 - ((91 * winheight(0) + 21) / 42)
+11
+normal zo
+let s:l = 19 - ((18 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-92
-normal! 010l
+19
+normal! 017l
 wincmd w
 2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
@@ -2009,7 +2006,7 @@ wincmd w
 2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-tabnext 1
+tabnext 6
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif
