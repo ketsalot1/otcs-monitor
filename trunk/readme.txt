@@ -19,22 +19,22 @@ JSON Service:
       object. nodejs is a server and again for internet access is
       recommended to hide it behind a reverse proxy.
 
-		- Debugging in Node.js
+      - Debugging in Node.js
 
-		  Debugging in in-build debugger is trully frustrating experience. It
-		  changes however very quickly, if node-inspector:
+        Debugging in in-build debugger is trully frustrating experience. It
+        changes however very quickly, if node-inspector:
 
-		  		https://github.com/dannycoates/node-inspector
+            https://github.com/dannycoates/node-inspector
 
-		  gets installed. The GIT home page contain full description how to deply
-		  node-inspector and how to connect to it from Chrome. All worked just
-		  great. The key moments are:
+        gets installed. The GIT home page contain full description how to deply
+        node-inspector and how to connect to it from Chrome. All worked just
+        great. The key moments are:
 
-		  - install node-inspector: npm install -g node-inspector
+        - install node-inspector: npm install -g node-inspector
 
-		  	 the installation takes some time and seems to freeze for longer time
-			 just before end of installation process. It looks like some process
-			 enters listening mode:
+          the installation takes some time and seems to freeze for longer time
+          just before end of installation process. It looks like some process
+          enters listening mode:
 
 > ws@0.4.22 install /usr/local/lib/node_modules/node-inspector/node_modules/socket.io/node_modules/socket.io-client/node_modules/ws
 > node install.js
@@ -47,15 +47,15 @@ node-inspector@0.2.0beta3 /usr/local/lib/node_modules/node-inspector
 ├── connect@1.8.7 (mime@1.2.7, formidable@1.0.11, qs@0.5.2)
 └── socket.io@0.9.11 (policyfile@0.0.4, redis@0.7.3, socket.io-client@0.9.11)
 
-			 It is actually just copiling someting and after a while it resumes
-			 the control returns to the prompt. The installation is done.			  
+          It is actually just copiling someting and after a while it resumes
+          the control returns to the prompt. The installation is done.          
 
-		  - start the node-inspector and follow the instruction displayed on the
-		    screen. There is a little change comapred to what the home page says,
-			 the local address to connect to is 0.0.0.0.
+        - start the node-inspector and follow the instruction displayed on the
+          screen. There is a little change comapred to what the home page says,
+          the local address to connect to is 0.0.0.0.
 
-		  Debugging experience is great, ecactly the saem as using the script in
-		  your HTML projects.
+        Debugging experience is great, ecactly the saem as using the script in
+        your HTML projects.
 
 
 2. Configure Reverse proxy:
@@ -78,48 +78,49 @@ node-inspector@0.2.0beta3 /usr/local/lib/node_modules/node-inspector
 
 3. Tools required for styling:
 
-	Sencha Touch 2 works SASS and Compass tools to manipulate CSS. The trick is
-	installation under Ubuntu. do nor use the 'compass' that is installed via the
-	standard repository (apt-get). That is an old version and does not work with
-	Senca Touch 2, SASS HAML 3.0respectively. The correct version must be
-	installed via 'gem' tool from ruby. This link discusses the problem in
-	details:
+   Sencha Touch 2 works SASS and Compass tools to manipulate CSS. The trick is
+   installation under Ubuntu. do nor use the 'compass' that is installed via the
+   standard repository (apt-get). That is an old version and does not work with
+   Senca Touch 2, SASS HAML 3.0respectively. The correct version must be
+   installed via 'gem' tool from ruby. This link discusses the problem in
+   details:
 
  http://www.sencha.com/forum/showthread.php?119356-Running-Compass-on-Linux-gives-quot-no-such-file-to-load-quot
  http://groups.google.com/group/compass-users/browse_thread/thread/6816d0f328031d64
 
- 	First, install ruby libraries and gem:
+   First, install ruby libraries and gem:
 
-		$ sudo apt-get install ruby1.8 rubygems1.8
+      $ sudo apt-get install ruby1.8 rubygems1.8
 
-		$ sudo gem install haml 
-		$ gem sources --add http://gems.github.com/ 
-		$ sudo gem uninstall chriseppstein-compass 
-		$ sudo gem install compass 
+      $ sudo gem install haml 
+      $ gem sources --add http://gems.github.com/ 
+      $ sudo gem uninstall chriseppstein-compass 
+      $ sudo gem install compass 
 
-	The right version of compass must say:
+   The right version of compass must say:
 
-		root@mameasus:/var/lib/gems/1.8/bin# ./compass -v
-		Compass 0.12.2 (Alnilam)
-		Copyright (c) 2008-2012 Chris Eppstein
-		Released under the MIT License.
+      root@mameasus:/var/lib/gems/1.8/bin# ./compass -v
+      Compass 0.12.2 (Alnilam)
+      Copyright (c) 2008-2012 Chris Eppstein
+      Released under the MIT License.
 
-	You should avoid using:
+   You should avoid using:
 
- 		$ sudo apt-get install libcompass-ruby1.8
-		$ sudo apt-get install compass-susy-plugin
+      $ sudo apt-get install libcompass-ruby1.8
+      $ sudo apt-get install compass-susy-plugin
 
-	That will install the 0.8.17 version of compass, which is incompatible with
-	SASS 3.0 (HAML).
+   That will install the 0.8.17 version of compass, which is incompatible with
+   SASS 3.0 (HAML).
 
 4. Protocol specification:
-	http://host:port/otds?cmd=<command>&payload01=<data01>&payload02=<data02>
+   http://host:port/otds?cmd=<command>&payload01=<data01>&payload02=<data02>
 
-	command  |	data01     |  data02
-	-----------------------------------
-	send		|	filename	  |  n/a
-   search	|	caseNo	  |  n/a
-	save		|	caseNo	  |  text 			
+   command  |  data01     |  data02
+   -----------------------------------
+   send     |  filename   |  n/a
+   search   |  caseNo     |  n/a
+   save     |  caseNo     |  text         
+   unlink   |  n/a        |  n/a
 
 Appendix A.
 
