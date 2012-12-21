@@ -62,7 +62,7 @@ function save( callback, dataObj, res ) {
 
 	try {
 		if( typeof dataObj.caseNo != 'string' ) throw( { name: 'Case Number Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
-		fileText = dataObj.caseNo + ': ' + dataObj.text + "\n" ;
+		fileText = dataObj.caseNo + ':' + dataObj.text + "\n" ;
 		fs.appendFile('/tmp/m.itsm.status', fileText, function (err) {
   			if (err) throw err;
 			res.writeHead(200, {

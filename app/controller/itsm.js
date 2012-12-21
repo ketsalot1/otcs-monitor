@@ -272,7 +272,7 @@ Ext.define("itsm.controller.itsm", {
 			hostName = data[0];
 
 			/* new command structure */
-			s.getProxy().setUrl( hostName + '?cmd=save&payload01=' + caseNo + '&payload02=' + caseText );
+			s.getProxy().setUrl( hostName + '?cmd=save&payload01=' + caseNo + '&payload02=' + caseTxt );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 
 			s.getProxy().setUrl( hostName + '?save=' + caseNo + '&text=' + caseTxt );
