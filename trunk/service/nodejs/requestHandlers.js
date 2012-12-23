@@ -37,9 +37,11 @@ function search( callback, pattern, res ) {
 	});
 }
 
+
 function send( callback, dataName, res ) {
-	console.log('requestHandler.send: requested file: ' + dataName );
-	fs.readFile(dataName, 'utf-8', function (error, data) {
+	var dataFile = '/tmp/' + dataName + '.data';
+	console.log('requestHandler.send: requested file: ' + dataFile );
+	fs.readFile(dataFile, 'utf-8', function (error, data) {
 		res.writeHead(200, {
 			'Content-Type': 'text/plain'
 		});
@@ -55,14 +57,16 @@ function send( callback, dataName, res ) {
 	});
 }
 
+
 function save( callback, dataObj, res ) {
 	var fileText;
-
-	console.log('requestHandler.save: ' + dataObj.caseNo + ": " + dataObj.text );
+	var data;
 
 	try {
-		if( typeof dataObj.caseNo != 'string' ) throw( { name: 'Case Number Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
-		fileText = dataObj.caseNo + ':' + dataObj.text + "\n" ;
+		data = JSON.parse(dataObj);
+		console.log('requestHandler.save: ' + data.caseNo + ": " + data.caseTxt );
+		if( typeof data.caseNo != 'string' ) throw( { name: 'Case Number Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
+		fileText = data.caseNo + ':' + data.caseTxt + "\n" ;
 		fs.appendFile('/tmp/m.itsm.status', fileText, function (err) {
   			if (err) throw err;
 			res.writeHead(200, {

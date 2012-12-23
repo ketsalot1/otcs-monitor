@@ -2,32 +2,34 @@
 function route(handle, params, res) {
 	console.log("router: got routing request");
 
+/* <<<
 	var dataName = "";
 	var proc = 'send';
-	var callback = params['processSupportData'];
 	var pattern = params['search'];
 	var save = params['save'];
 	var otcs = params['otcs'];
+>>> */
 
-/* New experiemntal code, requires new structure of incoming request!! 
+
+/* New experiemntal code, requires new structure of incoming request!!  */
 	try {
+		var callback = params['processSupportData'];
 		var cmd = params['cmd'];
-		var p1 = params['payload01'];
-		var p2 = params['payload02'];
+		var pars = params['data'];
 
-		if( typeof cmd == 'undefined' ) throw({});
+		if( typeof cmd == 'undefined' ) throw({"name":"Command not available the query"});
 
-		if (typeof handle[proc] !== 'function') throw({});
-		handle[proc](callback,{'p1':p1,'p2':p2},res);
+		if (typeof handle[cmd] !== 'function') throw({"name":"Unknow command received"});
+		handle[cmd](callback,pars,res);
 	}
 	catch(e) {
-		console.log("router: No request handler found for incoming request" );
+		console.log("Exception caught" );
+		console.log(e.name);
 		res.writeHead(404);
 		res.end(e.name + ': ' + e.message);
 	}
-*/
 
-
+/* <<<
 	if( typeof pattern !== 'undefined' ) { 
 		proc = 'search';
 	} 
@@ -42,9 +44,7 @@ function route(handle, params, res) {
 		pattern = '/tmp/' + params['otcs'] + '.data';
 	}
 
-	/*
-	 *	Reflection pattern: assigned in 'itsm.js' object
-	 */
+	// Reflection pattern: assigned in 'itsm.js' object
 	if (typeof handle[proc] === 'function') {
 		handle[proc](callback,pattern,res);
 	} else {
@@ -52,6 +52,7 @@ function route(handle, params, res) {
 		res.writeHead(404);
 		res.end(e.name + ': ' + e.message);
 	}
+>>> */
 }
 
 exports.route = route;

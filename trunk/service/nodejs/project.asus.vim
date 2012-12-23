@@ -25,6 +25,7 @@ set guioptions=aegimrLt
 set helplang=en
 set history=50
 set hlsearch
+set iminsert=0
 set nomodeline
 set mouse=a
 set printoptions=paper:letter
@@ -38,7 +39,7 @@ set spellfile=~/custom.en.ascii.add
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
 set tabstop=3
 set termencoding=utf-8
-set window=47
+set window=43
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
@@ -47,10 +48,10 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +15 itsm.js
+badd +1 itsm.js
 badd +5 service.js
 badd +19 requestHandlers.js
-badd +0 router.js
+badd +1 router.js
 silent! argdel *
 edit itsm.js
 set splitbelow splitright
@@ -66,9 +67,9 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 22 + 22) / 44)
+exe '1resize ' . ((&lines * 24 + 22) / 44)
 exe 'vert 1resize ' . ((&columns * 96 + 95) / 190)
-exe '2resize ' . ((&lines * 19 + 22) / 44)
+exe '2resize ' . ((&lines * 17 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 96 + 95) / 190)
 exe 'vert 3resize ' . ((&columns * 93 + 95) / 190)
 argglobal
@@ -167,12 +168,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 17 - ((16 * winheight(0) + 11) / 22)
+let s:l = 14 - ((13 * winheight(0) + 12) / 24)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-17
-normal! 035l
+14
+normal! 046l
 wincmd w
 argglobal
 edit service.js
@@ -271,12 +272,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 5 - ((4 * winheight(0) + 9) / 19)
+let s:l = 11 - ((9 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-5
-normal! 039l
+11
+normal! 032l
 wincmd w
 argglobal
 edit router.js
@@ -313,7 +314,8 @@ setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
+set foldmarker=<<<,>>>
+setlocal foldmarker=<<<,>>>
 set foldmethod=marker
 setlocal foldmethod=marker
 setlocal foldminlines=1
@@ -375,16 +377,18 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 18 - ((17 * winheight(0) + 21) / 42)
+32
+normal zo
+let s:l = 34 - ((19 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-18
-normal! 043l
+34
+normal! 0
 wincmd w
-exe '1resize ' . ((&lines * 22 + 22) / 44)
+exe '1resize ' . ((&lines * 24 + 22) / 44)
 exe 'vert 1resize ' . ((&columns * 96 + 95) / 190)
-exe '2resize ' . ((&lines * 19 + 22) / 44)
+exe '2resize ' . ((&lines * 17 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 96 + 95) / 190)
 exe 'vert 3resize ' . ((&columns * 93 + 95) / 190)
 tabedit requestHandlers.js
@@ -489,12 +493,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 82 - ((31 * winheight(0) + 21) / 43)
+let s:l = 95 - ((39 * winheight(0) + 21) / 43)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-82
-normal! 0
+95
+normal! 022l
 tabnext 2
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
