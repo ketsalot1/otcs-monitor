@@ -88,7 +88,6 @@ Ext.define("itsm.controller.itsm", {
 		Ext.Viewport.animateActiveItem(this.getSearchForm(), this.slideLeftTransition);
 	},
 
-	
 
 	activateITSMDetail: function (record) 
 	{ // <<<
@@ -105,10 +104,13 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			var hostName = data[0];
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
-//			s.getProxy().setUrl('http://localhost:18080/jsfks/sencha?otcs=' + record + '&data02=wolle_lehni' );
 //			var hostName = settings.getData().items[0].data.hostName;
-			s.getProxy().setUrl( hostName + '?otcs=' + record );
+			/* New command structure */
+			s.getProxy().setUrl( hostName + '?cmd=send&data=' + record );
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
+
+//			s.getProxy().setUrl( hostName + '?otcs=' + record );
+//			console.log( 'controller: URL=' + s.getProxy().getUrl() );
 			s.load();
 
 			v = this.getItsmDetail();
@@ -207,8 +209,11 @@ Ext.define("itsm.controller.itsm", {
 		}
 		settings.sync();
 
-		s.getProxy().setUrl( hostName + '?otcs=Descriptor' );
-		console.log( 'controller: setting Descriptors URL=' + s.getProxy().getUrl() );
+		s.getProxy().setUrl( hostName + '?cmd=send&data=Descriptior' );
+		console.log( 'controller: URL=' + s.getProxy().getUrl() );
+
+//		s.getProxy().setUrl( hostName + '?otcs=Descriptor' );
+//		console.log( 'controller: setting Descriptors URL=' + s.getProxy().getUrl() );
 		s.load();
 
 		this.activateMainView();
@@ -231,11 +236,11 @@ Ext.define("itsm.controller.itsm", {
 			hostName = data[0];
 
 			/* new command structure */
-			s.getProxy().setUrl( hostName + '?cmd=search&payload01=' + caseNo + '&payload02=null' );
+			s.getProxy().setUrl( hostName + '?cmd=search&data=' + caseNo );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 
-			s.getProxy().setUrl( hostName + '?search=' + caseNo );
-			console.log('controller setting search request >' + s.getProxy().getUrl() + '<' );
+//			s.getProxy().setUrl( hostName + '?search=' + caseNo );
+//			console.log('controller setting search request >' + s.getProxy().getUrl() + '<' );
 			s.load();
 
 			v = this.getItsmDetail();
@@ -264,7 +269,7 @@ Ext.define("itsm.controller.itsm", {
 
 		console.log('controller search for case No.>' + caseNo + '<' );
 
-		debugger;
+//		debugger;
 
 		try {
 			rec = settings.getAt(0);
@@ -272,11 +277,11 @@ Ext.define("itsm.controller.itsm", {
 			hostName = data[0];
 
 			/* new command structure */
-			s.getProxy().setUrl( hostName + '?cmd=save&payload01=' + caseNo + '&payload02=' + caseTxt );
+			s.getProxy().setUrl( hostName + '?cmd=save&data={"caseNo":"' + caseNo + '","caseTxt":"' + caseTxt + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 
-			s.getProxy().setUrl( hostName + '?save=' + caseNo + '&text=' + caseTxt );
-			console.log('controller saving request >' + s.getProxy().getUrl() + '<' );
+//			s.getProxy().setUrl( hostName + '?save=' + caseNo + '&text=' + caseTxt );
+//			console.log('controller saving request >' + s.getProxy().getUrl() + '<' );
 			s.load();
 
 /*			
