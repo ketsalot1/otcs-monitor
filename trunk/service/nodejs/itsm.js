@@ -5,8 +5,10 @@ var requestHandlers = require("./requestHandlers");
 var handle = {};
 handle['search'] = requestHandlers.search;
 handle['send'] = requestHandlers.send;
+handle['describe'] = requestHandlers.describe;
 handle['save'] = requestHandlers.save;
 handle['unlink'] = requestHandlers.unlink;
+handle['queryDB'] = requestHandlers.queryDB;
 /* Assign service routines to keyword in the 
  * parameters in the incoming query. Assuming
  * the quesry contain parameter 'search', the 

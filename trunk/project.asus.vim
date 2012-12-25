@@ -6,18 +6,18 @@ inoremap <F12> :TlistToggle
 inoremap <Down> g<Down>a
 inoremap <Up> g<Up>a
 map! <S-Insert> <MiddleMouse>
-imap ã :call JCommentWriter()
-imap î :call SearchInvalidComment(0)a
 imap ð :call SearchInvalidComment(1)a
+imap î :call SearchInvalidComment(0)a
+imap ã :call JCommentWriter()
 nmap gx <Plug>NetrwBrowseX
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
 noremap <F12> :TlistToggle
 noremap <Down> g<Down>
 noremap <Up> g<Up>
 map <S-Insert> <MiddleMouse>
-map ã :call JCommentWriter()
-map î :call SearchInvalidComment(0)
 map ð :call SearchInvalidComment(1)
+map î :call SearchInvalidComment(0)
+map ã :call JCommentWriter()
 iabbr }- }h%?\w:nohl:call JCommentWriter()
 let &cpo=s:cpo_save
 unlet s:cpo_save
@@ -64,7 +64,7 @@ badd +11 app/view/itsmList.js
 badd +3 app/store/itsm.js
 badd +17 app/model/itsm.js
 badd +1 app/view/MainListContainer.js
-badd +1 app/view/itsmDetail.js
+badd +88 app/view/itsmDetail.js
 badd +1 app/store/desktopITSM.js
 badd +1 app/model/desktopITSM.js
 badd +9618 resources/css/app.css
@@ -73,13 +73,13 @@ badd +1 app/model/settings.js
 badd +1 app/store/settings.js
 badd +1 app/view/search.jsp
 badd +1 app/view/searchForm.js
-badd +1 app/view/itsmOverview.js
+badd +26 app/view/itsmOverview.js
 badd +20 app/styles/app.scss
 badd +13 app/styles/config.rb
 badd +1 styles/app.scss
 badd +1 styles/config.rb
 badd +1 app/view/itsmEditForm.js
-badd +45 app/store/aboutInfo.js
+badd +46 app/store/aboutInfo.js
 silent! argdel *
 edit app.js
 set splitbelow splitright
@@ -190,12 +190,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 93 - ((36 * winheight(0) + 21) / 42)
+let s:l = 13 - ((12 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-93
-normal! 029l
+13
+normal! 0
 wincmd w
 argglobal
 edit app/controller/itsm.js
@@ -296,16 +296,15 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-140
+193
 normal zo
-let s:l = 141 - ((57 * winheight(0) + 21) / 42)
+let s:l = 204 - ((31 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-141
-normal! 04l
+204
+normal! 016l
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 96 + 95) / 190)
 exe 'vert 2resize ' . ((&columns * 93 + 95) / 190)
 tabedit app/view/itsmDetail.js
@@ -573,6 +572,7 @@ setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
+set foldmarker=<<<,>>>
 setlocal foldmarker={{{,}}}
 set foldmethod=marker
 setlocal foldmethod=marker
@@ -643,7 +643,6 @@ normal! zt
 10
 normal! 03l
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 96 + 95) / 190)
 exe '2resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 93 + 95) / 190)
@@ -876,12 +875,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 8 - ((7 * winheight(0) + 9) / 18)
+let s:l = 10 - ((9 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-8
-normal! 024l
+10
+normal! 09l
 wincmd w
 argglobal
 edit app/store/itsm.js
@@ -982,14 +981,13 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 44 - ((43 * winheight(0) + 11) / 23)
+let s:l = 51 - ((20 * winheight(0) + 11) / 23)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-44
-normal! 09l
+51
+normal! 033l
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe '2resize ' . ((&lines * 18 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
@@ -1105,7 +1103,6 @@ exe s:l
 normal! zt
 6
 normal! 0
-2wincmd w
 tabedit app/view/ConfigurationView.js
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -1442,7 +1439,6 @@ normal! zt
 5
 normal! 0
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe '2resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
@@ -1673,7 +1669,6 @@ normal! zt
 19
 normal! 017l
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
 tabedit app/view/itsmOverview.js
@@ -1780,13 +1775,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 10 - ((9 * winheight(0) + 21) / 43)
+let s:l = 26 - ((25 * winheight(0) + 21) / 43)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-10
-normal! 03l
-2wincmd w
+26
+normal! 02l
 tabedit styles/app.scss
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -2010,10 +2004,9 @@ normal! zt
 16
 normal! 023l
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-tabnext 1
+tabnext 7
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif
