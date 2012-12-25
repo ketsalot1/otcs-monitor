@@ -127,7 +127,7 @@ Ext.define("itsm.view.MainListContainer", {
 			var s = Ext.getStore("itsm");
 
 			/* new command structure */
-			s.getProxy().setUrl( hostName + '?cmd=send&data=Descriptor' );
+			s.getProxy().setUrl( hostName + '?cmd=describe&data=Descriptor' );
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
 
 //			s.getProxy().setUrl( hostName + '?otcs=Descriptor' );

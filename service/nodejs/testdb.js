@@ -79,7 +79,7 @@ http.createServer(function (req, res) {
 	req.on('end', function () {
 		// Query the database.
 		try {
-			connection.query('SELECT * FROM t01_main;', function (error, rows, fields) {
+			connection.query('SELECT * FROM t01_case;', function (error, rows, fields) {
 				if( error ) throw(error);
 				res.writeHead(200, {
 					'Content-Type': 'x-application/json'

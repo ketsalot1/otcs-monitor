@@ -44,11 +44,11 @@ Ext.define("itsm.store.itsm", {
 		proxy: {
 			type: 'jsonp',
 //			url: 'http://localhost:18080/jsfks/sencha?otcs=Descriptor&data02=wole',
-			url: 'http://localhost/nd?otcs=Descriptor',
+			url: 'http://localhost/nd?cmd=help&p=help',
 			callbackKey: 'processSupportData',
 			reader: {
 				type: 'json',
-				rootProperty: 'support_data.descriptor.entries'
+				rootProperty: 'support_data.feed.entries'
 			}
 		},
 
