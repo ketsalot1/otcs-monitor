@@ -1,5 +1,19 @@
 var fs = require('fs'),
-	 db = require('mysql');
+	 db = require('mysql'),
+	 log4js = require('log4js');
+
+log4js.configure('log4js.configuration.json', {});
+
+var logger = log4js.getLogger('absolute-logger');
+
+logger.setLevel('TRACE');
+
+//logger.trace('Entering cheese testing');
+//logger.debug('Got cheese.');
+//logger.info('Cheese is Gouda.');
+//logger.warn('Cheese is quite smelly.');
+//logger.error('Cheese is too ripe!');
+//logger.fatal('Cheese was breeding ground for listeria.');
 
 
 var database = {};
@@ -19,8 +33,8 @@ database.tools = (function() {
 
 		encodeHTML: function(str) {
 			var tmp = (str).replace(/\n/g, '<br/>').replace(/\r/g, '');
-			log4js.log( 'tools.encodeHTML input = ' + str );
-			log4js.log( 'tools.encodeHTML result = ' + tmp );
+			logger.trace( 'tools.encodeHTML input = ' + str );
+			logger.trace( 'tools.encodeHTML result = ' + tmp );
 			return tmp;
 		},
 
@@ -36,26 +50,6 @@ database.tools = (function() {
 		}
 	};
 }());
-
-var log4js = (function() {
-	var me = this;
-	me.data = {};
-	me.data.loglevel = 0;
-	return {
-		data: this.data,
-
-		setLogLevel: function(level) {
-			this.data.loglevel = level;	
-		},
-
-		log: function( str ) {
-			if( this.data.loglevel > 0 ) {
-				console.log( str );
-			}
-		}
-	};
-}());
-
 
 
 /*
