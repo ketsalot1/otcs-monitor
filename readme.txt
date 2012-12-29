@@ -128,3 +128,11 @@ Appendix A.
    The UNIX variante is build for the system from sources and installed. No
    problem found with it.
       
+Appending B - additional modules installed to Node.js
+
+	Install the modules to the filder, where the node scripts are stored. Module
+	installation will add sub-folders in the root directory.
+
+	npm install mysql@2.0.0-alpha2
+	npm install log4js
+

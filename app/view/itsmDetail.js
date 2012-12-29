@@ -21,7 +21,12 @@ Ext.define("itsm.view.itsmDetail", {
 		id: 'itsmDetail',
 		fullscreen: true,
 		scrollable:'vertical',
-		title: 'OTCS Monitor'
+		title: 'OTCS Monitor',
+		listeners: {
+			painted: function() {
+				console.log("itsmDetail.paint!");
+			}
+		}
 	},
 
     initialize: function () { // <<<
@@ -42,8 +47,20 @@ Ext.define("itsm.view.itsmDetail", {
             ui: "action",
             iconCls: "doc_compose1",
             iconMask: true,
+				hidden: true,
 				listeners: {
 					tap: { fn: this.onDetailEdit, scope: this }
+				}
+        };
+
+        var linkButton = {
+            xtype: "button",
+            ui: "action",
+            iconCls: "link2",
+            iconMask: true,
+				hidden: true,
+				listeners: {
+					tap: { fn: this.onDetailLink, scope: this }
 				}
         };
 
@@ -54,6 +71,7 @@ Ext.define("itsm.view.itsmDetail", {
             items: [
 					backButton,
 					{ xtype: 'spacer' },
+					linkButton,
 					editButton
 		  		]
         };
@@ -108,7 +126,10 @@ Ext.define("itsm.view.itsmDetail", {
 									console.log('nestedList.itemtap event');
 //                  			this.getDetailCard().setHtml(post.get('description') + '<br/><div class="list-item-underlined">&nbsp;<br/></div>' + post.get('status') + '<br/><div class="list-item-underlined">&nbsp;</div><br/>' + post.get('details'));
                   			this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('details'));
-									opentext.data.activeCase = post.get('case');
+									opentext.data.activeCase = { 'case': post.get('case'), 'id': post.get('id') }; 
+									debugger;
+									this.getParent().getItems().items[2].getItems().items[3].show();
+									this.getParent().getItems().items[2].getItems().items[2].show();
 					}
 				}
 		  };
@@ -154,15 +175,31 @@ Ext.define("itsm.view.itsmDetail", {
 
 	onDetailBack: function() {
 		console.log("view.itsmDetail.Back");
+		this.getItems().items[2].getItems().items[3].hide();
+		this.getItems().items[2].getItems().items[2].hide();
 		this.fireEvent("detailBackCommand", this);
 	},
 
 	onDetailEdit: function() {
 		console.log("view.itsmDetail.Edit");
-		if( typeof opentext.data.activeCase == 'string' ) { 
+		if( typeof opentext.data.activeCase == 'object' ) { 
+			this.getItems().items[2].getItems().items[3].hide();
+			this.getItems().items[2].getItems().items[2].hide();
 			this.fireEvent("detailEditCommand", opentext.data.activeCase);
 		} else {
 			console.error("No case selected");
 		}
+	},
+
+	onDetailLink: function() {
+		console.log("view.itsmDetail.Link");
+		if( typeof opentext.data.activeCase == 'object' ) { 
+			this.getItems().items[2].getItems().items[3].hide();
+			this.getItems().items[2].getItems().items[2].hide();
+			this.fireEvent("detailLinkPatchCommand", opentext.data.activeCase);
+		} else {
+			console.error("No case selected");
+		}
 	}
+
 });

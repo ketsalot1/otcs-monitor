@@ -11,8 +11,8 @@ Ext.application({
 		'Ext.MessageBox'
 	],
 
-	models: ['itsm', 'desktopITSM', 'settings', 'aboutInfo' ],
-	stores: ['itsm', 'desktopITSM', 'settings', 'aboutInfo' ],
+	models: ['itsm', 'desktopITSM', 'settings', 'aboutInfo', 'patches' ],
+	stores: ['itsm', 'desktopITSM', 'settings', 'aboutInfo', 'patches' ],
 	controllers: ['itsm'],
 	views: [
 		'MainListContainer', 
@@ -22,6 +22,7 @@ Ext.application({
 		'ConfigurationView',
 		'searchForm',
 		'itsmEditForm',
+		'itsmPatchAssignForm',
 		'aboutScreen'
 	],
 
@@ -73,6 +74,9 @@ Ext.application({
 		var itsmEditForm = {
 				xtype: 'itsmeditform'
 		};
+		var itsmPatchForm = {
+				xtype: 'itsmpatchform'
+		};
 		var aboutScreen = {
 				xtype: 'aboutscreen'
 		};
@@ -82,7 +86,7 @@ Ext.application({
 
 		// Initialize the main view
 		//Ext.Viewport.add(configurationView);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm]);
 	},
 
 	onUpdated: function() {
