@@ -27,3 +27,38 @@ log4js.configure({
                 { type: 'file', filename: 'logs/cheese.log', category: 'cheese' }
         ]
 });
+
+
+==========================
+
+ // function to create employee
+exports.add_employee = function(data, callback) {
+ client.query("insert into employees (name, salary) values (?,?)", [data.name, data.salary], function(err, info) {
+    // callback function returns last insert id
+    callback(info.insertId);
+    console.log('Employee '+data.name+' has salary '+data.salary);
+  });
+}
+ 
+// function to get list of employees
+exports.get_employees = function(callback) {
+  client.query("select * from employees", function(err, results, fields) {
+    // callback function returns employees array
+    callback(results);
+  });
+}
+
+===============================
+
+for (var i = 0; i < recentBlogPostIds.length; i++) {
+	pending++;
+	asynchronousDB.getBlogPostById(blogPostId, function(err, post) {
+		results.push(post);
+ 	  	pending--;
+  		checkPending();
+	});
+}
+
+function checkPending() {
+	if (pending === 0) doCallback(results);
+}

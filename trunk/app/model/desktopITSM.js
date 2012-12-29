@@ -5,7 +5,8 @@ Ext.define('itsm.model.desktopITSM', {
 			{ name: 'case', type: 'string' },
 			{ name: 'description', type: 'string' },
 		   { name: 'status', type: 'string' },
-		   { name: 'details', type: 'string' }
+		   { name: 'details', type: 'string' },
+		   { name: 'id', type: 'int' },
 		]
    }
 });

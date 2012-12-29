@@ -21,7 +21,8 @@ Ext.define("itsm.controller.itsm", {
 				configurationView: "configurationview",
 				searchForm: "searchform",
 				itsmOverview: "itsmoverview",
-				itsmEditForm: "itsmeditform"
+				itsmEditForm: "itsmeditform",
+				itsmPatchAssignForm: "itsmpatchform"
 		},
 		control: {
 				mainListContainer: {
@@ -34,7 +35,8 @@ Ext.define("itsm.controller.itsm", {
 				},
 				itsmDetail: {
 					detailBackCommand: "onBackMainList",
-					detailEditCommand: "onEditCase"
+					detailEditCommand: "onEditCase",
+					detailLinkPatchCommand: "onPatchLinkCase"
 				},
 				configurationView: {
 					saveSettingsCommand:	"onSaveSettings",
@@ -50,19 +52,48 @@ Ext.define("itsm.controller.itsm", {
 				itsmEditForm: {
 					saveCaseCommand: "onEditSave",
 					backCaseEditCommand: "onBackSettings"
+				},
+				itsmPatchAssignForm: {
+					linkCaseCommand: "onLinkSave",
+					backCaseLinkCommand: "onBackSettings"
 				}
 		}
 	},
 
 	onBackMainList: function() {
 		console.log("controller.itsm.onBackCommand");
-		opentext.data.activeCase = {}
+		opentext.data.activeCase = {};
 		this.activateMainView();
 	},
 
-	onEditCase: function(caseNo) {
-		console.log("controller.itsm.onEditCase: requesting Edit From for case: " + caseNo );
+	onEditCase: function(data) {
+		console.log("controller.itsm.onEditCase: requesting Edit From for case: " + data.case );
 		Ext.Viewport.animateActiveItem(this.getItsmEditForm(), this.slideLeftTransition);
+	},
+
+	onPatchLinkCase: function(caseNo) {
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('patches');
+		var rec, data, hostName;
+
+		console.log("controller.itsm.onPatchLinkCase: requesting Patch Assign for case: " + caseNo.id + '<, >' + caseNo.case + '<' );
+
+		debugger;
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			s.getProxy().setUrl( hostName + '?cmd=patches&data=open' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+
+			Ext.Viewport.animateActiveItem(this.getItsmPatchAssignForm(), this.slideLeftTransition);
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
 	},
 
 	onSearchBack: function() {
@@ -184,7 +215,7 @@ Ext.define("itsm.controller.itsm", {
 			opentext.data.carouselVisibility = "hide";
 		}
 
-		console.log('controller.itsm.onChartSwap:' );
+		console.log('controller.itsm.onChartSwap: chart visibility swapped.' );
 
 		Ext.Viewport.animateActiveItem(mainView, this.slideRightTransition);
 	}, // >>>
@@ -267,7 +298,7 @@ Ext.define("itsm.controller.itsm", {
 		var s = Ext.getStore('desktopITSM');
 		var v;
 
-		console.log('controller search for case No.>' + caseNo + '<' );
+		console.log('controller search for case No.>' + caseNo.id + '<>' + caseNo.case + '<' );
 
 //		debugger;
 
@@ -277,7 +308,7 @@ Ext.define("itsm.controller.itsm", {
 			hostName = data[0];
 
 			/* new command structure */
-			s.getProxy().setUrl( hostName + '?cmd=save&data={"caseNo":"' + caseNo + '","caseTxt":"' + caseTxt + '"}' );
+			s.getProxy().setUrl( hostName + '?cmd=save&data={"caseId": "' + caseNo.id + '", "caseNo": "' + caseNo.case + '","caseTxt":"' + caseTxt + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 
 //			s.getProxy().setUrl( hostName + '?save=' + caseNo + '&text=' + caseTxt );
@@ -297,6 +328,37 @@ Ext.define("itsm.controller.itsm", {
 			}
 			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
 */
+			this.activateMainView();
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+	},
+	// >>>
+
+	onLinkSave: function(caseData, patch) 
+	{ // <<<
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('desktopITSM');
+		var v;
+
+		console.log('controller link case >' + caseData.case + '<>' + caseData.id + '< with Patch Id >' + patch + '<' );
+
+		debugger;
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			/* new command structure */
+			s.getProxy().setUrl( hostName + '?cmd=link&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","patchId":"' + patch + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+
+			s.load();
+
 			this.activateMainView();
 		}
 		catch(e) {

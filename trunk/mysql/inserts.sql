@@ -75,3 +75,19 @@ insert into t04_project (project_01,short_text_04, long_text_04) values (2, "Not
 insert into t04_project (project_01,short_text_04, long_text_04) values (3, "Husain", "Enterprise Scan" );
 insert into t04_project (project_01,short_text_04, long_text_04) values (4, "Ganesh", "Viewers & DesktopLink" );
 insert into t04_project (project_01,short_text_04, long_text_04) values (5, "Pavana", "WebViewer" );
+
+
+insert into t02_patch (name_02,release_02,status_02) values ("WIV-0970-022", "2013-02-28", "open");
+insert into t02_patch (name_02,release_02,status_02) values ("WIV-1000-006", "2013-03-15", "open" );
+insert into t02_patch (name_02,release_02,status_02) values ("WEV-0975-010", "2013-01-31", "open" );
+insert into t02_patch (name_02,release_02,status_02) values ("WEV-1020-002", "2012-02-14", "developed" );
+insert into t02_patch (name_02,release_02,status_02) values ("WEV-1000-003", "2012-11-30", "developed" );
+insert into t02_patch (name_02,release_02,status_02) values ("WIV-0970-021", "2012-09-28", "developed" );
+insert into t02_patch (name_02,release_02,status_02) values ("WIV-1000-005", "2012-10-15", "developed" );
+insert into t02_patch (name_02,release_02,status_02) values ("WIV-0970-023", "2013-02-28", "open" );
+insert into t02_patch (name_02,release_02,status_02) values ("WEV-1000-005", "2013-05-01", "open" );
+insert into t02_patch (name_02,release_02,status_02) values ("JAV-0970-007", "2013-01-07", "open" );
+insert into t02_patch (name_02,release_02,status_02) values ("JAV-1000-003", "2013-01-07", "open" );
+insert into t02_patch (name_02,release_02,status_02) values ("ESC-1020-002", "2013-04-01", "open" );
+insert into t02_patch (name_02,release_02,status_02) values ("WEV-1020-004", "2012-12-14", "developed" );
+insert into t02_patch (name_02,release_02,status_02) values ("LNA-1020-011", "2012-12-14", "developed" );

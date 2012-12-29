@@ -1,9 +1,9 @@
-Ext.define("itsm.view.itsmEditForm", {
+Ext.define("itsm.view.itsmPatchAssignForm", {
 	extend: "Ext.form.Panel",
-	alias: "widget.itsmeditform",
+	alias: "widget.itsmpatchform",
 	config: {
-		title: 'Edit Case',
-		id: 'editFormId',
+		title: 'Assign to Patch',
+		id: 'patchFormId',
 		iconCls: 'refresh',
 		layout: 'vbox'
 	},
@@ -11,18 +11,29 @@ Ext.define("itsm.view.itsmEditForm", {
 	initialize: function () { // <<<
 		this.callParent(arguments);
 
-		var caseText = {
-			xtype: 'textareafield',
-			label: 'Update:',
-			name: 'caseText',
+		var casePatch = {
+			xtype: 'selectfield',
+			label: 'Patch:',
+			name: 'patch',
 			labelWidth: '25%',
-			minHeight: '5em'
+			store: Ext.getStore('patches')
+			/*
+			options: [
+				{ text: "WEV-0975-011", value: 1},
+				{ text: "WEV-1020-004", value: 2},
+				{ text: "WIV-0970-022", value: 3},
+				{ text: "ESC-0971-008", value: 4}
+			]
+			*/
 		};
 
 		var backButton = {
 			xtype: 'button',
-			text: 'Back',
-			ui: 'back',
+//			text: 'Back',
+//			ui: 'back',
+			ui: 'action',
+			iconCls: 'delete1',
+			iconMask: true,
 			listeners: {
 				tap: { fn: this.onBackButtonTap, scope: this }
 			}
@@ -31,8 +42,8 @@ Ext.define("itsm.view.itsmEditForm", {
 		var saveButton = {
 			xtype: 'button',
 //			iconCls: 'doc_send',
-//			iconMask: true,
-			text: 'OK',
+			iconCls: 'check2',
+			iconMask: true,
 			ui: 'action',
 			listeners: {
 				tap: { fn: this.onSaveButtonTap, scope: this }
@@ -53,9 +64,9 @@ Ext.define("itsm.view.itsmEditForm", {
 		var formFrame = {
 			xtype: 'fieldset',
 			title: 'OTCS Case Update',
-			instructions: 'The text you type will be added to the description of the case in the central database.',
+			instructions: 'The case will be linked with the patch you selected from the picker control.',
 			items: [
-				caseText
+				casePatch
 			]
 		};	
 
@@ -78,7 +89,7 @@ Ext.define("itsm.view.itsmEditForm", {
 		console.log( 'ConfigurationView: ' + init );
 */
 
-		this.setValues( {caseNo: '147665' } );
+		this.setValues( {caseNo: 'WEV-0975-011' } );
 		console.log( 'searchPanel init' );
     },
 	 // >>>
@@ -86,12 +97,12 @@ Ext.define("itsm.view.itsmEditForm", {
 	onSaveButtonTap: function() {
 		var cn = "";
 		try {
-			cn = this.getFields().caseText.getValue();
+			cn = this.getFields().patch.getValue();
 			if( cn.length == 0 ) {
 			  throw( { message: 'The length of the number is zero' } );	
 			}
-			console.log("view.EditForm.saveButtonTap: >" + cn + "<" );
-			this.fireEvent('saveCaseCommand', opentext.data.activeCase, cn );
+			console.log("view.PatchForm.saveButtonTap: >" + cn + "<" );
+			this.fireEvent('linkCaseCommand', opentext.data.activeCase, cn );
 		}
 		catch(e) {
 			console.error( e.message );
@@ -110,8 +121,8 @@ Ext.define("itsm.view.itsmEditForm", {
 	},
 
 	onBackButtonTap: function() {
-		console.log("view.EditForm.backButtonTap" );
-		this.fireEvent('backCaseEditCommand' );
+		console.log("view.PatchForm.backButtonTap" );
+		this.fireEvent('backCaseLinkCommand' );
 	}
 
 /* <<<

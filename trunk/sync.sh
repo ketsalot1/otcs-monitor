@@ -15,11 +15,13 @@ app/model/itsm.js \
 app/model/settings.js \
 app/model/searchresult.js \
 app/model/aboutInfo.js \
+app/model/patches.js \
 app/store/desktopITSM.js \
 app/store/itsm.js \
 app/store/settings.js \
 app/store/searchresult.js \
 app/store/aboutInfo.js \
+app/store/patches.js \
 app/view/ConfigurationView.js \
 app/view/itsmDetail.js \
 app/view/itsmList.js \
@@ -31,6 +33,7 @@ app/view/searchResultDetail.js \
 app/view/itsmOverview.js \
 app/view/aboutScreen.js \
 app/view/itsmEditForm.js \
+app/view/itsmPatchAssignForm.js \
 styles/config.rb \
 styles/app.scss \
 service/all.data \
