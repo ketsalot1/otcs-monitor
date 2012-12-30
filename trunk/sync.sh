@@ -16,12 +16,14 @@ app/model/settings.js \
 app/model/searchresult.js \
 app/model/aboutInfo.js \
 app/model/patches.js \
+app/model/db.js \
 app/store/desktopITSM.js \
 app/store/itsm.js \
 app/store/settings.js \
 app/store/searchresult.js \
 app/store/aboutInfo.js \
 app/store/patches.js \
+app/store/db.js \
 app/view/ConfigurationView.js \
 app/view/itsmDetail.js \
 app/view/itsmList.js \

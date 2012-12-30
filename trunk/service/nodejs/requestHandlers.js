@@ -28,7 +28,10 @@ database.queries = (function() {
 		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
 		"DBQ006": 'select name_02 "text", id_02 "value" from t02_patch where status_02 like "open";',
 		"DBQ007": 'insert into t03_link (id_01, id_02) values ( ?,? );',
-		"DBQ008": 'nope'
+		"DBQ008": 'select t03.id_01 "id", t02.name_02 "patch" from t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02;',
+		"DBQ009": 'select description_01 "details" from t01_case where id_01 = ?;',
+		"DBQ010": 'update t01_case set description_01 = ? where id_01 = ?;',
+		"DBQ011": 'nope'
 	};
 }());
 // >>>
@@ -68,6 +71,18 @@ database.tools = (function() {
 				logger.error( 'tools.getConnection: connection object requested but connect was not called before or connect failed' );
 				return null;
 			}
+		},
+
+		toLocalDate: function( obj ) {
+			var tmp;
+			try {
+				tmp = obj.getDate() + '.' + (obj.getMonth() + 1) + '.' + obj.getFullYear();
+			}
+			catch(e) {
+				logger.error( "Exception: cannot convert date to local date: " + e.name );
+				tmp = "01-01-1970";
+			}
+			return tmp;
 		}
 	};
 }());
@@ -142,6 +157,7 @@ function queryDB( callback, q, res ) {
 
 function search( callback, pattern, res ) {
 // <<<
+	var cases = [];
 	logger.trace('requestHandler.search for patern: >' + pattern + '<');
 	pattern = "%" + pattern + "%";
 	try {
@@ -150,18 +166,27 @@ function search( callback, pattern, res ) {
 			res.writeHead(200, {
 				'Content-Type': 'x-application/json'
 			});
-			// Send data as JSON string.
-			// Rows variable holds the result of the query.
-			// Add new attribute required by Sencha Model to terminate the lists ...
-			for ( var iterator in rows ) {
-				rows[iterator].leaf="true";
-				rows[iterator].details = database.tools.encodeHTML( rows[iterator].details );
-			}
-			res.write( callback + '(' );
-			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-			res.write(JSON.stringify(rows));
-			res.write('}},"responseDetails":null,"responseStatus":200}');
-			res.end(')');
+			logger.trace('requestHandler: search found >' + rows.length + '< cases' );
+			cases = rows;
+			logger.trace('requestHandler: search running second quesry for patch information ...');
+			database.tools.getConnection().query(database.queries.DBQ008, function (error, rows, fields) {
+				for ( var iterator in cases ) {
+					cases[iterator].leaf="true";
+					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
+					cases[iterator].patches = "P: ";
+					for ( var iter in rows ) {
+						if( cases[iterator].id != rows[iter].id ) continue; 
+						logger.trace( 'requestHandler: search found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+						cases[iterator].patches += rows[iter].patch;
+						cases[iterator].patches += ", ";
+					}
+				}
+				res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(cases));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end(')');
+			});
 		});
 	}
 	catch(e) {
@@ -216,7 +241,7 @@ function search_in_file( callback, pattern, res ) {
 function send_file( callback, dataName, res ) {
 // <<<
 	var dataFile = '/tmp/' + dataName + '.data';
-	logger.trace('requestHandler.send: requested file: ' + dataFile );
+	logger.trace('requestHandler.send_file: requested file: ' + dataFile );
 	fs.readFile(dataFile, 'utf-8', function (error, data) {
 		res.writeHead(200, {
 			'Content-Type': 'text/plain'
@@ -249,9 +274,9 @@ function describe( callback, dataName, res ) {
 			// Add time stamp to the response
 			var tmp = new Date();
 			for ( var iterator in rows ) {
-				rows[iterator].title="OTCS Cases (" + tmp.toDateString() + ")";
+				rows[iterator].title="OTCS Cases (" + database.tools.toLocalDate(tmp) + ")";
 			}
-			logger.trace( 'requestHandler.describe: added timestamp ' + tmp.toDateString() + ' to response object' );
+			logger.trace( 'requestHandler.describe: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
 			// Add new entry for patches
 			var idx = rows.length;
 			rows[idx] = {};
@@ -368,6 +393,7 @@ function send( callback, dataName, res ) {
 
 function linkPatch( callback, data, res ) {
 // <<<
+	var resp = {};
 	var dataObj = JSON.parse(data);
 	logger.trace('requestHandler.linkPatch: linking case >' + dataObj.caseId + '< with patch id >' + dataObj.patchId );
 	try {
@@ -375,10 +401,17 @@ function linkPatch( callback, data, res ) {
 //		if( typeof dataObj.patchId != 'int' ) throw( { name: 'Patch ID Invalid', message: 'The patch id invalid or too complex. Use digits only' } );
 		database.tools.getConnection().query(database.queries.DBQ007, [dataObj.caseId, dataObj.patchId], function (error, info) {
 			if( error ) throw({name: "DB Error", message: error});
+			resp.code = "1000";
+			resp.message = "OK";
 			res.writeHead(200, {
 				'Content-Type': 'text/plain'
 			});
-			res.end( 'data recieved and stored' );
+			res.write( callback + '(' );
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(resp));
+			res.write('}},"responseDetails":null,"responseStatus":200}');
+			res.end(')');
+			logger.trace('requestHandler.send: response object flushed to client' );
 		});
 	}
 	catch(e) {
@@ -392,7 +425,7 @@ function linkPatch( callback, data, res ) {
 
 function _send( callback, dataName, res ) {
 // <<<
-	var dbq;
+	var cases = [];
 	logger.trace('requestHandler._send: requested project: ' + dataName );
 	try {
 		database.tools.getConnection().query(database.queries.DBQ002, [dataName], function (error, rows, fields) {
@@ -402,16 +435,27 @@ function _send( callback, dataName, res ) {
 			});
 			// Add terminators (leaf property) in the generated list and
 			// process details. Convert the line breaks into HTML markup.
-			for ( var iterator in rows ) {
-				rows[iterator].leaf="true";
-				rows[iterator].details = database.tools.encodeHTML( rows[iterator].details );
-			}
-			res.write( callback + '(' );
-			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-			res.write(JSON.stringify(rows));
-			res.write('}},"responseDetails":null,"responseStatus":200}');
-			res.end(')');
-			logger.trace('requestHandler.send: response object flushed to client' );
+			logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
+			cases = rows;
+			database.tools.getConnection().query(database.queries.DBQ008, function (error, rows, fields) {
+				for ( var iterator in cases ) {
+					cases[iterator].leaf="true";
+					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
+					cases[iterator].patches = "P: ";
+					for ( var iter in rows ) {
+						if( cases[iterator].id != rows[iter].id ) continue; 
+						logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+						cases[iterator].patches += rows[iter].patch;
+						cases[iterator].patches += ", ";
+					}
+				}
+				res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(cases));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end(')');
+				logger.trace('requestHandler.send: response object flushed to client' );
+			});
 		});
 	}
 	catch(e) {
@@ -426,10 +470,54 @@ function save( callback, dataObj, res ) {
 // <<<
 	var fileText;
 	var data;
+	var details;
+	var d = new Date();
+	var resp = {};
 
 	try {
 		data = JSON.parse(dataObj);
-		logger.trace('requestHandler.save: ' + data.caseNo + ": " + data.caseTxt );
+		data.caseTxt = database.tools.toLocalDate(d) + ' - ' + data.caseTxt;
+		logger.trace('requestHandler.save: (' + data.caseId + ') ' + data.caseNo + ": " + data.caseTxt );
+		if( typeof data.caseNo != 'string' ) throw( { name: 'Case Number Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
+		database.tools.getConnection().query(database.queries.DBQ009, [data.caseId], function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error});
+			if( rows.length != 1 ) throw({name: "DB Error", message: "too meany entries returned for single ID. Check database table T01_CASE"});
+			details = data.caseTxt + "\n" + rows[0].details;
+			database.tools.getConnection().query(database.queries.DBQ010, [details, data.caseId], function (error, info) {
+				if( error ) throw({name: "DB Error", message: error});
+				resp.code = "1000";
+				resp.message = "OK";
+				res.writeHead(200, {
+					'Content-Type': 'text/plain'
+				});
+				res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(resp));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end(')');
+				logger.trace('requestHandler.save: response object flushed to client' );
+			});
+		});
+	} 
+	catch(e) {
+		logger.error(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+
+function save_to_file( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var d = new Date();
+
+	try {
+		data = JSON.parse(dataObj);
+		data.caseTxt = database.tools.toLocalDate(d) + ' - ' + data.caseTxt;
+		logger.trace('requestHandler.save: (' + data.caseId + ') ' + data.caseNo + ": " + data.caseTxt );
 		if( typeof data.caseNo != 'string' ) throw( { name: 'Case Number Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
 		fileText = data.caseNo + ':' + data.caseTxt + "\n" ;
 		fs.appendFile('/tmp/m.itsm.status', fileText, function (err) {
@@ -437,7 +525,6 @@ function save( callback, dataObj, res ) {
 			res.writeHead(200, {
 				'Content-Type': 'text/plain'
 			});
-			res.end( 'data recieved and stored' );
 			res.end(callback + '(\"data received and stored\")' );
 		});
 	} 
@@ -462,7 +549,6 @@ function unlink( callback, dummy, res ) {
 			res.writeHead(200, {
 				'Content-Type': 'text/plain'
 			});
-			res.end( 'data recieved and stored' );
 			res.end(callback + '(\"data received and stored\")' );
 		});
 	} 

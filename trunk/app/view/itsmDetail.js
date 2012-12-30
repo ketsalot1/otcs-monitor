@@ -125,11 +125,18 @@ Ext.define("itsm.view.itsmDetail", {
 					itemtap: function(nestedList, list, index, element, post) {
 									console.log('nestedList.itemtap event');
 //                  			this.getDetailCard().setHtml(post.get('description') + '<br/><div class="list-item-underlined">&nbsp;<br/></div>' + post.get('status') + '<br/><div class="list-item-underlined">&nbsp;</div><br/>' + post.get('details'));
-                  			this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('details'));
+                  			this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('patches') + '<br/><br/>' + post.get('details'));
 									opentext.data.activeCase = { 'case': post.get('case'), 'id': post.get('id') }; 
-									debugger;
+									this.getParent().getItems().items[2].getItems().items[0].hide();
 									this.getParent().getItems().items[2].getItems().items[3].show();
 									this.getParent().getItems().items[2].getItems().items[2].show();
+					},
+					back: function() {
+									console.log('nestedList.back event');
+//   								this.callParent(arguments);
+									this.getParent().getItems().items[2].getItems().items[0].show();
+									this.getParent().getItems().items[2].getItems().items[3].hide();
+									this.getParent().getItems().items[2].getItems().items[2].hide();
 					}
 				}
 		  };
@@ -143,6 +150,9 @@ Ext.define("itsm.view.itsmDetail", {
         ]);
 
 		  this.getToolbar().hide();
+		  this.getBackButton().addListener( 'tap', this.onBackButtonTap );
+		  console.log( this.getBackButton().getText() );
+
     }, // >>>
 
 /* <<<
@@ -172,7 +182,6 @@ Ext.define("itsm.view.itsmDetail", {
 	},
 >>> */
 
-
 	onDetailBack: function() {
 		console.log("view.itsmDetail.Back");
 		this.getItems().items[2].getItems().items[3].hide();
@@ -183,6 +192,7 @@ Ext.define("itsm.view.itsmDetail", {
 	onDetailEdit: function() {
 		console.log("view.itsmDetail.Edit");
 		if( typeof opentext.data.activeCase == 'object' ) { 
+			this.getItems().items[2].getItems().items[0].show();
 			this.getItems().items[2].getItems().items[3].hide();
 			this.getItems().items[2].getItems().items[2].hide();
 			this.fireEvent("detailEditCommand", opentext.data.activeCase);
@@ -194,6 +204,7 @@ Ext.define("itsm.view.itsmDetail", {
 	onDetailLink: function() {
 		console.log("view.itsmDetail.Link");
 		if( typeof opentext.data.activeCase == 'object' ) { 
+			this.getItems().items[2].getItems().items[0].show();
 			this.getItems().items[2].getItems().items[3].hide();
 			this.getItems().items[2].getItems().items[2].hide();
 			this.fireEvent("detailLinkPatchCommand", opentext.data.activeCase);

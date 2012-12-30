@@ -51,27 +51,32 @@ Ext.define("itsm.controller.itsm", {
 				},
 				itsmEditForm: {
 					saveCaseCommand: "onEditSave",
-					backCaseEditCommand: "onBackSettings"
+					backCaseEditCommand: "onCaseDetailBack"
 				},
 				itsmPatchAssignForm: {
 					linkCaseCommand: "onLinkSave",
-					backCaseLinkCommand: "onBackSettings"
+					backCaseLinkCommand: "onCaseDetailBack"
 				}
 		}
 	},
 
 	onBackMainList: function() {
+// <<<
 		console.log("controller.itsm.onBackCommand");
 		opentext.data.activeCase = {};
 		this.activateMainView();
 	},
+// >>>
 
 	onEditCase: function(data) {
+// <<<
 		console.log("controller.itsm.onEditCase: requesting Edit From for case: " + data.case );
 		Ext.Viewport.animateActiveItem(this.getItsmEditForm(), this.slideLeftTransition);
 	},
+// >>>
 
 	onPatchLinkCase: function(caseNo) {
+// <<<
 		var settings = Ext.getStore("settings");
 		var s = Ext.getStore('patches');
 		var rec, data, hostName;
@@ -95,30 +100,40 @@ Ext.define("itsm.controller.itsm", {
 			Ext.Msg.alert( e.name );
 		}
 	},
+// >>>
 
 	onSearchBack: function() {
+// <<<
 		console.log("controller.itsm.onSearchBackCommand");
 		this.activateMainView();
 	},
+// >>>
 
 	onITSMDetail: function(obj, record) {
+// <<<
 		console.log("controller.itsm.onITSMDetail");
 		console.log( record );
 		this.activateITSMDetail(record);
 	},
+// >>>
 
 	activateMainView: function () {
+// <<<
 		Ext.Viewport.animateActiveItem(this.getMainListContainer(), this.slideRightTransition);
 	},
+// >>>
 
 	onSettings: function() {
+// <<<
 		Ext.Viewport.animateActiveItem(this.getConfigurationView(), this.slideLeftTransition);
 	},
+// >>>
 
 	onSearch: function() {
+// <<<
 		Ext.Viewport.animateActiveItem(this.getSearchForm(), this.slideLeftTransition);
 	},
-
+// >>>
 
 	activateITSMDetail: function (record) 
 	{ // <<<
@@ -266,12 +281,9 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			hostName = data[0];
 
-			/* new command structure */
 			s.getProxy().setUrl( hostName + '?cmd=search&data=' + caseNo );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 
-//			s.getProxy().setUrl( hostName + '?search=' + caseNo );
-//			console.log('controller setting search request >' + s.getProxy().getUrl() + '<' );
 			s.load();
 
 			v = this.getItsmDetail();
@@ -281,7 +293,6 @@ Ext.define("itsm.controller.itsm", {
 				}
 			}
 			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
-
 //			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
 		}
 		catch(e) {
@@ -295,40 +306,28 @@ Ext.define("itsm.controller.itsm", {
 		var rec,hostName;
 		var data = [];
 		var settings = Ext.getStore("settings");
+		var db = Ext.getStore('db');
 		var s = Ext.getStore('desktopITSM');
 		var v;
 
-		console.log('controller search for case No.>' + caseNo.id + '<>' + caseNo.case + '<' );
-
-//		debugger;
-
 		try {
+			console.log('controller search for case No.>' + caseNo.id + '<>' + caseNo.case + '<' );
 			rec = settings.getAt(0);
 			data = rec.get('settingsContainer');
-			hostName = data[0];
+			var hostName = data[0];
 
-			/* new command structure */
-			s.getProxy().setUrl( hostName + '?cmd=save&data={"caseId": "' + caseNo.id + '", "caseNo": "' + caseNo.case + '","caseTxt":"' + caseTxt + '"}' );
-			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			db.getProxy().setUrl( hostName + '?cmd=save&data={"caseId": "' + caseNo.id + '", "caseNo": "' + caseNo.case + '","caseTxt":"' + caseTxt + '"}' );
+			console.log('Request >' + db.getProxy().getUrl() + '<' );
+			db.load();
 
-//			s.getProxy().setUrl( hostName + '?save=' + caseNo + '&text=' + caseTxt );
-//			console.log('controller saving request >' + s.getProxy().getUrl() + '<' );
-			s.load();
+			// The data can be reloaded after updating them
+			// in database. Th sideefect is that the nestedlist and 
+			// data source gets out of syns and various efect can occur
+			// Preferably do not refresh the data store ...
+//			s.load();
 
-/*			
-			s.getProxy().setUrl( hostName + '?search=' + caseNo );
-			console.log('controller setting search request >' + s.getProxy().getUrl() + '<' );
-			s.load();
-
-			v = this.getItsmDetail();
-			for ( var i in v.getItems().keys) {
-				if( v.getItems().keys[i].search('detailPanel') !== -1 ) {
-					v.getItems().items[i].setTitle('Search Result');
-				}
-			}
-			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
-*/
-			this.activateMainView();
+			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+//			this.activateMainView();
 		}
 		catch(e) {
 			console.error( e.message );
@@ -341,7 +340,8 @@ Ext.define("itsm.controller.itsm", {
 		var rec,hostName;
 		var data = [];
 		var settings = Ext.getStore("settings");
-		var s = Ext.getStore('desktopITSM');
+		var s = Ext.getStore('db');
+		var it = Ext.getStore('desktopITSM');
 		var v;
 
 		console.log('controller link case >' + caseData.case + '<>' + caseData.id + '< with Patch Id >' + patch + '<' );
@@ -353,13 +353,17 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			hostName = data[0];
 
-			/* new command structure */
 			s.getProxy().setUrl( hostName + '?cmd=link&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","patchId":"' + patch + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
-
 			s.load();
 
-			this.activateMainView();
+			// The data can be reloaded after updating them
+			// in database. Th sideefect is that the nestedlist and 
+			// data source gets out of syns and various efect can occur
+			// Preferably do not refresh the data store ...
+//			it.load();
+
+			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
 		}
 		catch(e) {
 			console.error( e.message );
@@ -381,9 +385,18 @@ Ext.define("itsm.controller.itsm", {
 	// >>>
 
 	onBackSettings: function() {
+// <<<
 		console.log('controller: back from Configuration');
 		this.activateMainView();
 	},
+// >>>
+
+	onCaseDetailBack: function() {
+// <<<
+		console.log('controller: back from Case Details Form (update,patch)');
+		Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+	},
+// >>>
 
 	// Base Class functions.
 	launch: function () {
