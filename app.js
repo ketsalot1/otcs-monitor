@@ -11,8 +11,8 @@ Ext.application({
 		'Ext.MessageBox'
 	],
 
-	models: ['itsm', 'desktopITSM', 'settings', 'aboutInfo', 'patches' ],
-	stores: ['itsm', 'desktopITSM', 'settings', 'aboutInfo', 'patches' ],
+	models: ['itsm', 'desktopITSM', 'settings', 'aboutInfo', 'patches', 'db' ],
+	stores: ['itsm', 'desktopITSM', 'settings', 'aboutInfo', 'patches', 'db' ],
 	controllers: ['itsm'],
 	views: [
 		'MainListContainer', 
