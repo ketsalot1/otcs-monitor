@@ -11,6 +11,8 @@ handle['unlink'] = requestHandlers.unlink;
 handle['queryDB'] = requestHandlers.queryDB;
 handle['patches'] = requestHandlers.listPatches;
 handle['link'] = requestHandlers.linkPatch;
+handle['create_patch'] = requestHandlers.newPatch;
+handle['update_patch'] = requestHandlers.updatePatch;
 /* Assign service routines to keyword in the 
  * parameters in the incoming query. Assuming
  * the quesry contain parameter 'search', the 

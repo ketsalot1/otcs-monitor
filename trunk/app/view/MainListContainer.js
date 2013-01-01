@@ -39,6 +39,19 @@ Ext.define("itsm.view.MainListContainer", {
 			}
 		};
 
+		var patchMgmtButton = {
+			xtype: "button",
+			ui: "action",
+//			text: "Settings",
+//			iconCls: 'equalizer1',
+//			iconCls: 'settings_black',
+			iconCls: 'doc_drawer',
+			iconMask: true,
+			listeners: {
+				tap: { fn: this.onPatchMgmtButtonTap, scope: this }
+			}
+		};
+
 		var settingsButton = {
 			xtype: "button",
 			ui: "action",
@@ -61,6 +74,7 @@ Ext.define("itsm.view.MainListContainer", {
 				chartButton,
 				searchButton,
 				{ xtype: "spacer" },
+				patchMgmtButton,
 				settingsButton
 			]
 		};
@@ -173,7 +187,13 @@ Ext.define("itsm.view.MainListContainer", {
 	onSettingsButtonTap: function () {
 		console.log("view.mainListContainer.SettingsButtonTap");
 		this.fireEvent('settingsCommand', this );
+	},
+
+	onPatchMgmtButtonTap: function() {
+		console.log("view.mainListContainer.PatchMgmtButtonTap");
+		this.fireEvent('patchMgmtCommand', this );
 	}
+
 
 /* <<<
 

@@ -7,8 +7,8 @@ Ext.define("itsm.store.aboutInfo", {
 	config: {
 		model: "itsm.model.aboutInfo",
 		data: [
-			{ name: "OTCS Report Data", descr: "2012-11-21 v1.21" },
-			{ name: "Jira Patch Report", descr: "2012-11-23 v1.23" }
+			{ name: "OTCS Report Data", descr: "2013-01-05 v2.01" },
+			{ name: "Jira Patch Report", descr: "2013-01-05 v2.01" }
 		],
 		sorters: [{ property: 'category', direction: 'DESC'}],
 		grouper: {

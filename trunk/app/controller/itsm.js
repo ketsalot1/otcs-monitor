@@ -22,13 +22,15 @@ Ext.define("itsm.controller.itsm", {
 				searchForm: "searchform",
 				itsmOverview: "itsmoverview",
 				itsmEditForm: "itsmeditform",
-				itsmPatchAssignForm: "itsmpatchform"
+				itsmPatchAssignForm: "itsmpatchform",
+				patchMgmtView: "patchmainview"
 		},
 		control: {
 				mainListContainer: {
 					// The commands fired by the notes list container.
 					itsmDetailCommand: "onITSMDetail",
 					settingsCommand: "onSettings",
+					patchMgmtCommand: "onPatchMgmt",
 					searchCommand: "onSearch",
 					initImageCommand: "onInitImages",
 					swapChartCommand: "onChartSwap"
@@ -56,6 +58,11 @@ Ext.define("itsm.controller.itsm", {
 				itsmPatchAssignForm: {
 					linkCaseCommand: "onLinkSave",
 					backCaseLinkCommand: "onCaseDetailBack"
+				},
+				patchMgmtView: {
+					backCommand: "onBackMainList",
+					insertPatchCommand: "onNewPatch",
+					updatePatchCommand: "onUpdatePatch"
 				}
 		}
 	},
@@ -82,8 +89,6 @@ Ext.define("itsm.controller.itsm", {
 		var rec, data, hostName;
 
 		console.log("controller.itsm.onPatchLinkCase: requesting Patch Assign for case: " + caseNo.id + '<, >' + caseNo.case + '<' );
-
-		debugger;
 
 		try {
 			rec = settings.getAt(0);
@@ -126,6 +131,31 @@ Ext.define("itsm.controller.itsm", {
 	onSettings: function() {
 // <<<
 		Ext.Viewport.animateActiveItem(this.getConfigurationView(), this.slideLeftTransition);
+	},
+// >>>
+
+	onPatchMgmt: function() {
+// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('patches');
+		var rec, data, hostName;
+
+		console.log('controller.itsm.onPatchMgmt: requesting Patch Management View' );
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			s.getProxy().setUrl( hostName + '?cmd=patches&data=all' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+
+			Ext.Viewport.animateActiveItem(this.getPatchMgmtView(), this.slideLeftTransition);
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
 	},
 // >>>
 
@@ -184,7 +214,6 @@ Ext.define("itsm.controller.itsm", {
  * the tag IMG directly with the tag width=100%. 
  */
 	{ // <<<
-//		debugger;
 		var iterator;
 		var imageSources = ['resources/images/otcs-6m.png','resources/images/otcs-1y.png','resources/images/otcs-5y.png'];
 		var imageContainers = ['otcs-image-container-6m','otcs-image-container-1y','otcs-image-container-5y'];
@@ -335,7 +364,7 @@ Ext.define("itsm.controller.itsm", {
 	},
 	// >>>
 
-	onLinkSave: function(caseData, patch) 
+	onLinkSave: function(caseData, obj) 
 	{ // <<<
 		var rec,hostName;
 		var data = [];
@@ -344,16 +373,14 @@ Ext.define("itsm.controller.itsm", {
 		var it = Ext.getStore('desktopITSM');
 		var v;
 
-		console.log('controller link case >' + caseData.case + '<>' + caseData.id + '< with Patch Id >' + patch + '<' );
-
-		debugger;
+		console.log('controller link case >' + caseData.case + '<>' + caseData.id + '< with Patch Id >' + obj.patch + '< Unlink >' + obj.drop + '<' );
 
 		try {
 			rec = settings.getAt(0);
 			data = rec.get('settingsContainer');
 			hostName = data[0];
 
-			s.getProxy().setUrl( hostName + '?cmd=link&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","patchId":"' + patch + '"}' );
+			s.getProxy().setUrl( hostName + '?cmd=link&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","patchId":"' + obj.patch + '","drop":"' + obj.drop + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load();
 
@@ -395,6 +422,62 @@ Ext.define("itsm.controller.itsm", {
 // <<<
 		console.log('controller: back from Case Details Form (update,patch)');
 		Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+	},
+// >>>
+
+	onNewPatch: function(obj) {
+// <<<
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var db = Ext.getStore('db');
+		var v;
+
+		try {
+			console.log('controller creating new patch >' + obj.patchName + '<' );
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			var hostName = data[0];
+
+			db.getProxy().setUrl( hostName + '?cmd=create_patch&data={"patchName": "' + obj.patchName + '"}' );
+			console.log('Request >' + db.getProxy().getUrl() + '<' );
+			db.load();
+
+			this.activateMainView();
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+	},
+// >>>
+
+	onUpdatePatch: function(obj) {
+// <<<
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var db = Ext.getStore('db');
+		var s = Ext.getStore('desktopITSM');
+		var v;
+
+		try {
+			console.log('controller updating patch >' + obj.patchId + '<' );
+			console.log('controller updating patch >' + obj.patchETA + '<' );
+			console.log('controller updating patch >' + obj.patchStatus + '<' );
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			var hostName = data[0];
+
+			db.getProxy().setUrl( hostName + '?cmd=update_patch&data={"patchId": "' + obj.patchId + '","patchETA":"' + obj.patchETA + '","patchStatus":"' + obj.patchStatus + '"}' );
+//			db.getProxy().setUrl( hostName + '?cmd=update_patch&data={"patchId": "' + obj.patchId + '","patchETA":"2013-03-21","patchStatus":"' + obj.patchStatus + '"}' );
+			console.log('Request >' + db.getProxy().getUrl() + '<' );
+			db.load();
+
+//			this.activateMainView();
+		}
+		catch(e) {
+			console.error( e.message );
+		}
 	},
 // >>>
 
