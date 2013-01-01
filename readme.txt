@@ -134,5 +134,6 @@ Appending B - additional modules installed to Node.js
 	installation will add sub-folders in the root directory.
 
 	npm install mysql@2.0.0-alpha2
+ 	npm install mysql@2.0.0-alpha3 (alternatively)
 	npm install log4js
 

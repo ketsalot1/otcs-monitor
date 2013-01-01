@@ -23,7 +23,10 @@ Ext.application({
 		'searchForm',
 		'itsmEditForm',
 		'itsmPatchAssignForm',
-		'aboutScreen'
+		'aboutScreen',
+		'patchMainView',
+		'patchMgmtUpdateForm',	
+		'patchMgmtInsertForm'	
 	],
 
 	icon: {
@@ -80,13 +83,22 @@ Ext.application({
 		var aboutScreen = {
 				xtype: 'aboutscreen'
 		};
+		var patchMainView = {
+				xtype: 'patchmainview'
+		};
+		var patchMgmtUpdateForm = {
+				xtype: 'patchmgmtupdateform'
+		};
+		var patchMgmtInsertForm = {
+				xtype: 'patchmgmtinsertform'
+		};
 
 		Ext.getStore('settings').load();
 //		console.log( 'Main, retrieved conf: ' + Ext.getStore('settings').getAt(0).get('settingsContainer')[0] );
 
 		// Initialize the main view
 		//Ext.Viewport.add(configurationView);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm]);
 	},
 
 	onUpdated: function() {

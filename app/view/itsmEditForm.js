@@ -16,7 +16,7 @@ Ext.define("itsm.view.itsmEditForm", {
 			label: 'Update:',
 			name: 'caseText',
 			labelWidth: '25%',
-			minHeight: '5em'
+			minHeight: '7em'
 		};
 
 		var backButton = {
