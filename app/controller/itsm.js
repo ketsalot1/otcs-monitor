@@ -421,7 +421,7 @@ Ext.define("itsm.controller.itsm", {
 	onCaseDetailBack: function() {
 // <<<
 		console.log('controller: back from Case Details Form (update,patch)');
-		Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+		Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
 	},
 // >>>
 
