@@ -37,6 +37,7 @@ Ext.define("itsm.view.itsmDetail", {
             xtype: "button",
             ui: "back",
             text: "Home",
+				id: "itsmdetail_back",
 				listeners: {
 					tap: { fn: this.onDetailBack, scope: this }
 				}
@@ -48,6 +49,7 @@ Ext.define("itsm.view.itsmDetail", {
             iconCls: "doc_compose1",
             iconMask: true,
 				hidden: true,
+				id: "itsmdetail_edit",
 				listeners: {
 					tap: { fn: this.onDetailEdit, scope: this }
 				}
@@ -59,6 +61,19 @@ Ext.define("itsm.view.itsmDetail", {
             iconCls: "link2",
             iconMask: true,
 				hidden: true,
+				id: "itsmdetail_link",
+				listeners: {
+					tap: { fn: this.onDetailLink, scope: this }
+				}
+        };
+
+        var userButton = {
+            xtype: "button",
+            ui: "action",
+            iconCls: "user_add",
+            iconMask: true,
+				hidden: true,
+				id: "itsmdetail_user",
 				listeners: {
 					tap: { fn: this.onDetailLink, scope: this }
 				}
@@ -71,6 +86,7 @@ Ext.define("itsm.view.itsmDetail", {
             items: [
 					backButton,
 					{ xtype: 'spacer' },
+					userButton,
 					linkButton,
 					editButton
 		  		]
@@ -123,20 +139,36 @@ Ext.define("itsm.view.itsmDetail", {
 
 				listeners: {
 					itemtap: function(nestedList, list, index, element, post) {
+									var lm = {};
 									console.log('nestedList.itemtap event');
 //                  			this.getDetailCard().setHtml(post.get('description') + '<br/><div class="list-item-underlined">&nbsp;<br/></div>' + post.get('status') + '<br/><div class="list-item-underlined">&nbsp;</div><br/>' + post.get('details'));
-                  			this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('patches') + '<br/><br/>' + post.get('details'));
+
 									opentext.data.activeCase = { 'case': post.get('case'), 'id': post.get('id') }; 
-									this.getParent().getItems().items[2].getItems().items[0].hide();
-									this.getParent().getItems().items[2].getItems().items[3].show();
-									this.getParent().getItems().items[2].getItems().items[2].show();
+
+									lm.back = 0;
+									if( post.get('patches') != null ) {
+                  				this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('patches') + '<br/><br/>' + post.get('details'));
+										lm.link = 1;
+										lm.user = 1;
+										lm.edit = 1;
+									} else {
+                  				this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('details'));
+										lm.link = 0;
+										lm.user = 0;
+										lm.edit = 0;
+									}
+									this.getParent().setUIfromMask( lm );
 					},
 					back: function() {
+									var lm = {};
 									console.log('nestedList.back event');
 //   								this.callParent(arguments);
-									this.getParent().getItems().items[2].getItems().items[0].show();
-									this.getParent().getItems().items[2].getItems().items[3].hide();
-									this.getParent().getItems().items[2].getItems().items[2].hide();
+
+									lm.back = 1;
+									lm.link = 0;
+									lm.user = 0;
+									lm.edit = 0;
+									this.getParent().setUIfromMask( lm );
 					}
 				}
 		  };
@@ -183,18 +215,27 @@ Ext.define("itsm.view.itsmDetail", {
 >>> */
 
 	onDetailBack: function() {
+		var lm = {};
 		console.log("view.itsmDetail.Back");
-		this.getItems().items[2].getItems().items[3].hide();
-		this.getItems().items[2].getItems().items[2].hide();
+		lm.back = 1;
+		lm.link = 0;
+		lm.user = 0;
+		lm.edit = 0;
+		this.setUIfromMask( lm );
 		this.fireEvent("detailBackCommand", this);
 	},
 
 	onDetailEdit: function() {
+		var lm = {};
 		console.log("view.itsmDetail.Edit");
 		if( typeof opentext.data.activeCase == 'object' ) { 
-			this.getItems().items[2].getItems().items[0].show();
-			this.getItems().items[2].getItems().items[3].hide();
-			this.getItems().items[2].getItems().items[2].hide();
+			/*
+			lm.back = 1;
+			lm.link = 0;
+			lm.user = 0;
+			lm.edit = 0;
+			this.setUIfromMask( lm );
+			*/
 			this.fireEvent("detailEditCommand", opentext.data.activeCase);
 		} else {
 			console.error("No case selected");
@@ -202,15 +243,48 @@ Ext.define("itsm.view.itsmDetail", {
 	},
 
 	onDetailLink: function() {
+		var lm = {};
 		console.log("view.itsmDetail.Link");
 		if( typeof opentext.data.activeCase == 'object' ) { 
-			this.getItems().items[2].getItems().items[0].show();
-			this.getItems().items[2].getItems().items[3].hide();
-			this.getItems().items[2].getItems().items[2].hide();
+			/*
+			lm.back = 1;
+			lm.link = 0;
+			lm.user = 0;
+			lm.edit = 0;
+			this.setUIfromMask( lm );
+			*/
 			this.fireEvent("detailLinkPatchCommand", opentext.data.activeCase);
 		} else {
 			console.error("No case selected");
 		}
-	}
+	},
 
+	setUIfromMask: function( mask ) {
+		Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+				// if the button is the change iconCls button, continue
+			function setUIControlfromMask( ctrl, mask ) {
+				if( mask === 1 )
+					ctrl.show();
+				else
+					ctrl.hide();
+			}
+
+			if (button.getId() === 'itsmdetail_back') {
+				console.log( 'itsmdetail_back found!' );
+				setUIControlfromMask( button, mask.back );
+			}
+			if (button.getId() === 'itsmdetail_edit') {
+				console.log( 'itsmdetail_edit found!' );
+				setUIControlfromMask( button, mask.edit );
+			}
+			if (button.getId() === 'itsmdetail_link') {
+				console.log( 'itsmdetail_link found!' );
+				setUIControlfromMask( button, mask.link );
+			}
+			if (button.getId() === 'itsmdetail_user') {
+				console.log( 'itsmdetail_user found!' );
+				setUIControlfromMask( button, mask.user );
+			}
+		});
+	},
 });
