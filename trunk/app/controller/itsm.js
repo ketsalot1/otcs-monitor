@@ -23,6 +23,7 @@ Ext.define("itsm.controller.itsm", {
 				itsmOverview: "itsmoverview",
 				itsmEditForm: "itsmeditform",
 				itsmPatchAssignForm: "itsmpatchform",
+				itsmProjectAssignForm: "itsmprojectassignform",
 				patchMgmtView: "patchmainview"
 		},
 		control: {
@@ -38,7 +39,8 @@ Ext.define("itsm.controller.itsm", {
 				itsmDetail: {
 					detailBackCommand: "onBackMainList",
 					detailEditCommand: "onEditCase",
-					detailLinkPatchCommand: "onPatchLinkCase"
+					detailLinkPatchCommand: "onPatchLinkCase",
+					detailLinkProjectCommand: "onProjectLinkCase"
 				},
 				configurationView: {
 					saveSettingsCommand:	"onSaveSettings",
@@ -59,8 +61,13 @@ Ext.define("itsm.controller.itsm", {
 					linkCaseCommand: "onLinkSave",
 					backCaseLinkCommand: "onCaseDetailBack"
 				},
+				itsmProjectAssignForm: {
+					linkProjectCaseCommand: "onProjectAssignSave",
+					backCaseLinkCommand: "onCaseDetailBack"
+				},
 				patchMgmtView: {
 					backCommand: "onBackMainList",
+					insertProjectCommand: "onNewProject",
 					insertPatchCommand: "onNewPatch",
 					updatePatchCommand: "onUpdatePatch"
 				}
@@ -98,8 +105,32 @@ Ext.define("itsm.controller.itsm", {
 			s.getProxy().setUrl( hostName + '?cmd=patches&data=open' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load();
-
 			Ext.Viewport.animateActiveItem(this.getItsmPatchAssignForm(), this.slideLeftTransition);
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+// >>>
+
+	onProjectLinkCase: function(caseNo) {
+// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('patches');
+		var rec, data, hostName;
+
+		console.log("controller.itsm.onProjectLinkCase: requesting Project Assign for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			s.getProxy().setUrl( hostName + '?cmd=projects&data=nope' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+
+			Ext.Viewport.animateActiveItem(this.getItsmProjectAssignForm(), this.slideLeftTransition);
 		}
 		catch(e) {
 			Ext.Msg.alert( e.name );
@@ -398,6 +429,40 @@ Ext.define("itsm.controller.itsm", {
 	},
 	// >>>
 
+	onProjectAssignSave: function(caseData, obj) 
+	{ // <<<
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('db');
+		var it = Ext.getStore('desktopITSM');
+		var v;
+
+		console.log('controller link case >' + caseData.case + '<>' + caseData.id + '< with Id >' + obj.patch + '< link to project >' + obj.projectId + '<' );
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			s.getProxy().setUrl( hostName + '?cmd=update_project&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","projectId":"' + obj.projectId + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+
+			// The data can be reloaded after updating them
+			// in database. Th sideefect is that the nestedlist and 
+			// data source gets out of syns and various efect can occur
+			// Preferably do not refresh the data store ...
+//			it.load();
+
+			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+	},
+	// >>>
+
 	onPurgeSettings: function() 
 	{ // <<<
 		console.log('controller: purging Configuration');
@@ -440,6 +505,32 @@ Ext.define("itsm.controller.itsm", {
 			var hostName = data[0];
 
 			db.getProxy().setUrl( hostName + '?cmd=create_patch&data={"patchName": "' + obj.patchName + '"}' );
+			console.log('Request >' + db.getProxy().getUrl() + '<' );
+			db.load();
+
+			this.activateMainView();
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+	},
+// >>>
+
+	onNewProject: function(obj) {
+// <<<
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var db = Ext.getStore('db');
+		var v;
+
+		try {
+			console.log('controller creating new project >' + obj.projectName + '<' );
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			var hostName = data[0];
+
+			db.getProxy().setUrl( hostName + '?cmd=create_project&data={"name": "' + obj.name + '","description": "' + obj.description + '"}' );
 			console.log('Request >' + db.getProxy().getUrl() + '<' );
 			db.load();
 

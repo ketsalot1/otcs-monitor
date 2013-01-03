@@ -6,18 +6,18 @@ inoremap <F12> :TlistToggle
 inoremap <Down> g<Down>a
 inoremap <Up> g<Up>a
 map! <S-Insert> <MiddleMouse>
-imap ã :call JCommentWriter()
-imap î :call SearchInvalidComment(0)a
 imap ð :call SearchInvalidComment(1)a
+imap î :call SearchInvalidComment(0)a
+imap ã :call JCommentWriter()
 nmap gx <Plug>NetrwBrowseX
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
 noremap <F12> :TlistToggle
 noremap <Down> g<Down>
 noremap <Up> g<Up>
 map <S-Insert> <MiddleMouse>
-map ã :call JCommentWriter()
-map î :call SearchInvalidComment(0)
 map ð :call SearchInvalidComment(1)
+map î :call SearchInvalidComment(0)
+map ã :call JCommentWriter()
 iabbr }- }h%?\w:nohl:call JCommentWriter()
 let &cpo=s:cpo_save
 unlet s:cpo_save
@@ -69,12 +69,17 @@ badd +1 app/model/desktopITSM.js
 badd +1 app/view/ConfigurationView.js
 badd +1 app/model/settings.js
 badd +1 app/store/settings.js
-badd +36 app/view/itsmPatchAssignForm.js
+badd +1 app/view/itsmPatchAssignForm.js
 badd +1 app/store/patches.js
-badd +0 app/model/patches.js
-badd +0 app/view/patchMainView.js
-badd +1 app/view/patchMgmtUpdateForm.js
-badd +0 app/view/patchMgmtInsertForm.js
+badd +1 app/model/patches.js
+badd +1 app/view/patchMainView.js
+badd +105 app/view/patchMgmtUpdateForm.js
+badd +1 app/view/patchMgmtInsertForm.js
+badd +7 styles/config.rb
+badd +0 app/view/projectMgmtInsertForm.js
+badd +0 app/view/itsmEditForm.js
+badd +39 sync.sh
+badd +10 app/view/itsmProjectAssignForm.js
 silent! argdel *
 edit app.js
 set splitbelow splitright
@@ -185,12 +190,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 21) / 42)
+let s:l = 101 - ((27 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+101
+normal! 033l
 wincmd w
 argglobal
 edit app/controller/itsm.js
@@ -291,15 +296,16 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-216
+433
 normal zo
-let s:l = 217 - ((85 * winheight(0) + 21) / 42)
+let s:l = 448 - ((168 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-217
-normal! 02l
+448
+normal! 0122l
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 96 + 95) / 190)
 exe 'vert 2resize ' . ((&columns * 93 + 95) / 190)
 tabedit app/view/itsmDetail.js
@@ -419,12 +425,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 191 - ((0 * winheight(0) + 21) / 42)
+let s:l = 231 - ((199 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-191
-normal! 0
+231
+normal! 027l
 wincmd w
 argglobal
 edit app/store/desktopITSM.js
@@ -525,11 +531,11 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 3 - ((2 * winheight(0) + 10) / 21)
+let s:l = 4 - ((0 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3
+4
 normal! 0
 wincmd w
 argglobal
@@ -631,13 +637,14 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 10) / 20)
+let s:l = 11 - ((10 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 018l
+11
+normal! 02l
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 96 + 95) / 190)
 exe '2resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 93 + 95) / 190)
@@ -979,6 +986,7 @@ normal! zt
 45
 normal! 016l
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe '2resize ' . ((&lines * 18 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
@@ -1320,6 +1328,7 @@ normal! zt
 5
 normal! 0
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe '2resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
@@ -1442,12 +1451,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 109 - ((102 * winheight(0) + 21) / 42)
+let s:l = 118 - ((117 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-109
-normal! 026l
+118
+normal! 029l
 wincmd w
 argglobal
 edit app/store/patches.js
@@ -1548,12 +1557,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 16 - ((15 * winheight(0) + 10) / 21)
+let s:l = 11 - ((10 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-16
-normal! 01l
+11
+normal! 011l
 wincmd w
 argglobal
 edit app/model/patches.js
@@ -1661,11 +1670,123 @@ normal! zt
 8
 normal! 02l
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe '2resize ' . ((&lines * 21 + 22) / 44)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
 exe '3resize ' . ((&lines * 20 + 22) / 44)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
+tabedit app/view/itsmProjectAssignForm.js
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winheight=1 winwidth=1
+argglobal
+setlocal keymap=
+setlocal noarabic
+setlocal noautoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal cindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+setlocal commentstring=/*%s*/
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal noexpandtab
+if &filetype != 'javascript'
+setlocal filetype=javascript
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+set foldmarker=<<<,>>>
+setlocal foldmarker=<<<,>>>
+set foldmethod=marker
+setlocal foldmethod=marker
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tqcro
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=0
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+set linebreak
+setlocal linebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal nomodeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+setlocal nonumber
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=3
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=~/custom.en.ascii.add
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=
+setlocal swapfile
+setlocal synmaxcol=3000
+if &syntax != 'javascript'
+setlocal syntax=javascript
+endif
+setlocal tabstop=3
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal nowinfixheight
+setlocal nowinfixwidth
+set nowrap
+setlocal nowrap
+setlocal wrapmargin=0
+let s:l = 107 - ((98 * winheight(0) + 21) / 43)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+107
+normal! 058l
+2wincmd w
 tabedit app/view/patchMainView.js
 set splitbelow splitright
 set nosplitbelow
@@ -1772,13 +1893,14 @@ setlocal nowrap
 setlocal wrapmargin=0
 11
 normal zo
-let s:l = 54 - ((42 * winheight(0) + 21) / 43)
+let s:l = 15 - ((0 * winheight(0) + 21) / 43)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-54
-normal! 013l
-tabedit app/view/patchMgmtUpdateForm.js
+15
+normal! 0
+2wincmd w
+tabedit app/view/itsmEditForm.js
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -1890,15 +2012,15 @@ setlocal nowrap
 setlocal wrapmargin=0
 11
 normal zo
-let s:l = 46 - ((11 * winheight(0) + 21) / 42)
+let s:l = 16 - ((15 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-46
-normal! 02l
+16
+normal! 019l
 wincmd w
 argglobal
-edit app/view/patchMgmtInsertForm.js
+edit app/view/projectMgmtInsertForm.js
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
@@ -1997,13 +2119,14 @@ setlocal wrap
 setlocal wrapmargin=0
 11
 normal zo
-let s:l = 14 - ((13 * winheight(0) + 21) / 42)
+let s:l = 1 - ((0 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-14
-normal! 014l
+1
+normal! 022l
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
 tabnext 1

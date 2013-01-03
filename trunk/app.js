@@ -23,10 +23,12 @@ Ext.application({
 		'searchForm',
 		'itsmEditForm',
 		'itsmPatchAssignForm',
+		'itsmProjectAssignForm',
 		'aboutScreen',
 		'patchMainView',
 		'patchMgmtUpdateForm',	
-		'patchMgmtInsertForm'	
+		'patchMgmtInsertForm',
+		'projectMgmtInsertForm'	
 	],
 
 	icon: {
@@ -80,6 +82,9 @@ Ext.application({
 		var itsmPatchForm = {
 				xtype: 'itsmpatchform'
 		};
+		var itsmProjectAssignForm = {
+				xtype: 'itsmprojectassignform'
+		};
 		var aboutScreen = {
 				xtype: 'aboutscreen'
 		};
@@ -92,13 +97,16 @@ Ext.application({
 		var patchMgmtInsertForm = {
 				xtype: 'patchmgmtinsertform'
 		};
+		var projectMgmtInsertForm = {
+				xtype: 'projectmgmtinsertform'
+		};
 
 		Ext.getStore('settings').load();
 //		console.log( 'Main, retrieved conf: ' + Ext.getStore('settings').getAt(0).get('settingsContainer')[0] );
 
 		// Initialize the main view
 		//Ext.Viewport.add(configurationView);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm]);
 	},
 
 	onUpdated: function() {

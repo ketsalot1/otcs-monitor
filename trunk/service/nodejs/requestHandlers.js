@@ -20,7 +20,7 @@ database.queries = (function() {
 // <<<
 	return {
 		"DBQ001": 'select long_text_04 "category", short_text_04 "code" from t04_project;',
-		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_01 and t04.short_text_04 = ? order by t01.case_01 asc;',
+		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t04.short_text_04 = ? order by t01.case_01 asc;',
 		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open";',
 		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
@@ -33,7 +33,11 @@ database.queries = (function() {
 		"DBQ012": 'insert into t02_patch (name_02, release_02, status_02) values (?,CURDATE(),"open");',
 		"DBQ013": 'update t02_patch set release_02 = ?, status_02 = ? where id_02 = ?;',
 		"DBQ014": 'delete from t03_link where id_01 = ?;',
-		"DBQ015": 'nope'
+		"DBQ015": 'select (max(project_04)+1) "id" from t04_project;',
+		"DBQ016": 'insert into t04_project( project_04,short_text_04,long_text_04) values (?,?,?);', 
+		"DBQ017": 'select project_04 "value", short_text_04 "text" from t04_project;',
+		"DBQ018": 'update t01_case set project_01 = ? where id_01 = ?;',
+		"DBQ999": 'nope'
 	};
 }());
 // >>>
@@ -349,6 +353,32 @@ function describe( callback, dataName, res ) {
 // >>>
 
 
+function listProjects( callback, params, res ) {
+// <<<
+	logger.trace('requestHandler.listProjects: enter ' );
+	try {
+		database.tools.getConnection().query(database.queries.DBQ017, function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error});
+			res.writeHead(200, {
+				'Content-Type': 'x-application/json'
+			});
+			logger.trace('requestHandler.listProjects: processing list of patches >' + rows.length + '<' );
+				// Format reply
+			res.write( callback + '(' );
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(rows));
+			res.write('}},"responseDetails":null,"responseStatus":200}');
+			res.end(')');
+		});
+	}
+	catch(e) {
+		logger.error("Exception: " + e.name + ": " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+} // >>>
+
+
 function listPatches( callback, params, res ) {
 // <<<
 	var dbq = null;
@@ -494,6 +524,41 @@ function _linkPatch( callback, data, res ) {
 			res.write('}},"responseDetails":null,"responseStatus":200}');
 			res.end(')');
 			logger.trace('requestHandler._linkPatch: response object flushed to client' );
+		});
+	}
+	catch(e) {
+		logger.error("Exception: " + e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+} 
+// >>>
+
+
+function createProject( callback, data, res ) {
+// <<<
+	var resp = {};
+	var dataObj = JSON.parse(data);
+	logger.trace('requestHandler.createProject: name >' + dataObj.name + '< description >' + dataObj.description + '<'  );
+	try {
+		database.tools.getConnection().query(database.queries.DBQ015, function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error});
+			dataObj.id = rows[0].id;
+			database.tools.getConnection().query(database.queries.DBQ016, [dataObj.id, dataObj.name, dataObj.description], function (error, info) {
+				if( error ) throw({name: "DB Error", message: error});
+				logger.trace('requestHandler.createProject: inser done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+				resp.code = info.affectedRows;
+				resp.message = info.message;
+				res.writeHead(200, {
+					'Content-Type': 'text/plain'
+				});
+				res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(resp));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end(')');
+				logger.trace('requestHandler.createProject: response object flushed to client' );
+			});
 		});
 	}
 	catch(e) {
@@ -717,6 +782,42 @@ function updatePatch( callback, dataObj, res ) {
 // >>>
 
 
+function updateProject( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.updateCase: (' + data.caseId + ') - ' + data.caseNo + ' with project >' + data.projectId + '<' );
+		if( typeof data.caseId != 'string' ) throw( { name: 'Case Code Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
+		if( typeof data.projectId != 'string' ) throw( { name: 'Project Code Invalid', message: 'The project number is invalid or too complex. Use digits only' } );
+		database.tools.getConnection().query(database.queries.DBQ018, [data.projectId, data.caseId], function (error, info) {
+			if( error ) throw({name: "DB Error", message: error});
+			logger.trace('requestHandler.updatePatch: update done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+			resp.code = info.affectedRows;
+			resp.message = info.message;
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			res.write( callback + '(' );
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(resp));
+			res.write('}},"responseDetails":null,"responseStatus":200}');
+			res.end(')');
+			logger.trace('requestHandler.updatePatch: response object flushed to client' );
+		});
+	} 
+	catch(e) {
+		logger.error(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
 exports.search = search;
 exports.describe = describe;
 exports.send = send;
@@ -725,6 +826,9 @@ exports.unlink = unlink;
 exports.queryDB = queryDB;
 exports.testDB = testDB;
 exports.listPatches = listPatches;
+exports.listProjects = listProjects;
 exports.linkPatch = linkPatch;
 exports.newPatch = newPatch;
 exports.updatePatch = updatePatch;
+exports.createProject = createProject;
+exports.updateProject = updateProject;

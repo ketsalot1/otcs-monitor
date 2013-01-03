@@ -33,7 +33,7 @@ Ext.define("itsm.view.patchMainView", {
 
 		var topToolbar = {
 			xtype: "toolbar",
-			title: 'Patches',
+			title: 'Manage',
 			docked: "top",
 			items: [
 				backButton,
@@ -63,6 +63,9 @@ Ext.define("itsm.view.patchMainView", {
 				},
 				{
 					xtype: 'patchmgmtinsertform'
+				},
+				{
+					xtype: 'projectmgmtinsertform'
 				}
 			]
 		};
@@ -99,6 +102,13 @@ Ext.define("itsm.view.patchMainView", {
 		if( this.getItems().items[1].activeIndex == 1 ) {
 			obj.patchName = this.getItems().items[1].getItems().items[2].getFields().patch.getValue()
 			this.fireEvent("insertPatchCommand", obj);
+		}
+
+		if( this.getItems().items[1].activeIndex == 2 ) {
+			debugger;
+			obj.name = this.getItems().items[1].getItems().items[3].getFields().name.getValue()
+			obj.description = this.getItems().items[1].getItems().items[3].getFields().description.getValue()
+			this.fireEvent("insertProjectCommand", obj);
 		}
 	}
 });
