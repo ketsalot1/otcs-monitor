@@ -37,6 +37,8 @@ database.queries = (function() {
 		"DBQ016": 'insert into t04_project( project_04,short_text_04,long_text_04) values (?,?,?);', 
 		"DBQ017": 'select project_04 "value", short_text_04 "text" from t04_project;',
 		"DBQ018": 'update t01_case set project_01 = ? where id_01 = ?;',
+		"DBQ019": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01) values (?,?, "Just Arrived",  "\n", CURDATE(), 99 );',
+		"DBQ020": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01) values (?,?,?,?,?,? );',
 		"DBQ999": 'nope'
 	};
 }());
@@ -708,6 +710,82 @@ function unlink( callback, dummy, res ) {
 //>>>
 
 
+function insertCase( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.newCase: >' + data.caseNo + '< >' + data.caseSubject + '<' );
+		if( typeof data.caseNo != 'number' ) throw( { name: 'Case Number Invalid', message: 'The case number is empty or not a decimal number. Use digits only' } );
+		database.tools.getConnection().query(database.queries.DBQ019, [data.caseNo, data.caseSubject], function (error, info) {
+			if( error ) throw({name: "DB Error", message: error});
+			logger.trace('requestHandler.newCase: inserted with code: ' + info.insertId );
+			logger.trace('requestHandler.newCase: insert addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+			resp.code = info.insertId;
+			resp.message = info.message;
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(resp));
+			res.end('}},"responseDetails":null,"responseStatus":200}');
+			logger.trace('requestHandler.newPatch: response object flushed to client' );
+		});
+	} 
+	catch(e) {
+		logger.error(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+
+function insertCaseFull( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		data.caseStart = database.tools.toDBDate(database.tools.parseDate(data.caseStart));
+ 		logger.trace('requestHandler.newCase full insert ----------------');
+		logger.trace('    caseNo:' + data.caseNo );
+		logger.trace('    caseSubject:' + data.caseSubject );
+		logger.trace('    caseStatus:' + data.caseStatus );
+		logger.trace('    caseDetails:' + data.caseDetails );
+		logger.trace('    caseStart:' + data.caseStart );
+		logger.trace('    caseOwner:' + data.caseOwner );
+		database.tools.getConnection().query(database.queries.DBQ020, [data.caseNo, data.caseSubject, data.caseStatus, data.caseDetails, data.caseStart, data.caseOwner] , function (error, info) {
+			if( error ) throw({name: "DB Error", message: error});
+			logger.trace('requestHandler.newCase: inserted with code: ' + info.insertId );
+			logger.trace('requestHandler.newCase: insert addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+			resp.code = info.insertId;
+			resp.message = info.message;
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(resp));
+			res.end('}},"responseDetails":null,"responseStatus":200}');
+			logger.trace('requestHandler.newPatch: response object flushed to client' );
+		});
+	} 
+	catch(e) {
+		logger.error(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+
 function newPatch( callback, dataObj, res ) {
 // <<<
 	var fileText;
@@ -832,3 +910,5 @@ exports.newPatch = newPatch;
 exports.updatePatch = updatePatch;
 exports.createProject = createProject;
 exports.updateProject = updateProject;
+exports.insertCase = insertCase;
+exports.insertCaseFull = insertCaseFull;
