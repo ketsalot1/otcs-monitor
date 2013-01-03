@@ -36,9 +36,11 @@ app/view/itsmOverview.js \
 app/view/aboutScreen.js \
 app/view/itsmEditForm.js \
 app/view/itsmPatchAssignForm.js \
+app/view/itsmProjectAssignForm.js \
 app/view/patchMainView.js \
 app/view/patchMgmtUpdateForm.js \
 app/view/patchMgmtInsertForm.js \
+app/view/projectMgmtInsertForm.js \
 styles/config.rb \
 styles/app.scss \
 service/all.data \

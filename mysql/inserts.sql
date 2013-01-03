@@ -1,3 +1,8 @@
+insert into t04_project (project_04,short_text_04, long_text_04) values (1, "Exchange", "E-Mail (Exchange)" );
+insert into t04_project (project_04,short_text_04, long_text_04) values (2, "Notes", "E-Mail (Notes)" );
+insert into t04_project (project_04,short_text_04, long_text_04) values (3, "Husain", "Enterprise Scan" );
+insert into t04_project (project_04,short_text_04, long_text_04) values (4, "Ganesh", "Viewers & DesktopLink" );
+insert into t04_project (project_04,short_text_04, long_text_04) values (5, "Pavana", "WebViewer" );
 
 insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01) values (1211357, "OTCS Ticket 1211357 : ????—??—???????????????—???—??????",  "Pending-Internal",  ", \n\n\n\n", "2012.11.24", 1 );
 insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01) values (1275848, "OTCS Ticket 1275848 : CreateOrder: GetProps failed",  "Pending-Internal",  ", \n\n\n\n", "2012.11.12", 1);
@@ -68,14 +73,6 @@ insert into t01_case (case_01,subject_01,status_01,description_01,start_01,proje
 insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01) values (1608242, "OTCS Ticket 1608652 : Bridge 10.2.0+008: Insufficient Memory... (Ref.Nr. Ticket 1466876) ",  "1",  ", \n\n", "2012.09.24", 2);
 insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01) values (1609458, "OTCS Ticket 1609458 - Commerzbank - printing 'blue colour' .pdfs with Winviewer - NOK  with WIV-0970-021",  "Progress-To Do",  ", \n\n\n\n", "2012.09.24", 4);
 insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01) values (1610384, "OTCS Ticket 1610384 - WinViewer 9.7  and DL / ExchL - 'default printer' swapping seems not to work",  "Initiation",  ", \n\n\n\n", "2012.09.24", 4);
-
-
-insert into t04_project (project_01,short_text_04, long_text_04) values (1, "Exchange", "E-Mail (Exchange)" );
-insert into t04_project (project_01,short_text_04, long_text_04) values (2, "Notes", "E-Mail (Notes)" );
-insert into t04_project (project_01,short_text_04, long_text_04) values (3, "Husain", "Enterprise Scan" );
-insert into t04_project (project_01,short_text_04, long_text_04) values (4, "Ganesh", "Viewers & DesktopLink" );
-insert into t04_project (project_01,short_text_04, long_text_04) values (5, "Pavana", "WebViewer" );
-
 
 insert into t02_patch (name_02,release_02,status_02) values ("WIV-0970-022", "2013-02-28", "open");
 insert into t02_patch (name_02,release_02,status_02) values ("WIV-1000-006", "2013-03-15", "open" );

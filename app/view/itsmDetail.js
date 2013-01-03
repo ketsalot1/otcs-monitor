@@ -75,7 +75,7 @@ Ext.define("itsm.view.itsmDetail", {
 				hidden: true,
 				id: "itsmdetail_user",
 				listeners: {
-					tap: { fn: this.onDetailLink, scope: this }
+					tap: { fn: this.onDetailProject, scope: this }
 				}
         };
 
@@ -254,6 +254,23 @@ Ext.define("itsm.view.itsmDetail", {
 			this.setUIfromMask( lm );
 			*/
 			this.fireEvent("detailLinkPatchCommand", opentext.data.activeCase);
+		} else {
+			console.error("No case selected");
+		}
+	},
+
+	onDetailProject: function() {
+		var lm = {};
+		console.log("view.itsmDetail.setProject");
+		if( typeof opentext.data.activeCase == 'object' ) { 
+			/*
+			lm.back = 1;
+			lm.link = 0;
+			lm.user = 0;
+			lm.edit = 0;
+			this.setUIfromMask( lm );
+			*/
+			this.fireEvent("detailLinkProjectCommand", opentext.data.activeCase);
 		} else {
 			console.error("No case selected");
 		}
