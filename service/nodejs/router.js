@@ -7,7 +7,6 @@ function route(handle, params, res) {
 		var pars = params['data'];
 
 		if( typeof cmd == 'undefined' ) throw({"name":"Command not available the query"});
-
 		if (typeof handle[cmd] !== 'function') throw({"name":"Unknow command received"});
 		handle[cmd](callback,pars,res);
 	}
