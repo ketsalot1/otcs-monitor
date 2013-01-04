@@ -14,11 +14,12 @@ handle['projects'] = requestHandlers.listProjects;
 handle['link'] = requestHandlers.linkPatch;
 handle['create_patch'] = requestHandlers.newPatch;
 handle['update_patch'] = requestHandlers.updatePatch;
-handle['update_patch'] = requestHandlers.updatePatch;
 handle['update_project'] = requestHandlers.updateProject;
 handle['create_project'] = requestHandlers.createProject;
 handle['insert_case'] = requestHandlers.insertCase;
 handle['insert_case_full'] = requestHandlers.insertCaseFull;
+handle['archive_case'] = requestHandlers.archiveCase;
+handle['archive_patch'] = requestHandlers.archivePatch;
 /* Assign service routines to keyword in the 
  * parameters in the incoming query. Assuming
  * the quesry contain parameter 'search', the 

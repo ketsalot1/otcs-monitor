@@ -20,16 +20,16 @@ database.queries = (function() {
 // <<<
 	return {
 		"DBQ001": 'select long_text_04 "category", short_text_04 "code" from t04_project;',
-		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t04.short_text_04 = ? order by t01.case_01 asc;',
+		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
-		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
-		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
+		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
+		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
 		"DBQ006": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ007": 'insert into t03_link (id_01, id_02) values ( ?,? );',
 		"DBQ008": 'select t03.id_01 "id", t02.name_02 "patch" from t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02;',
 		"DBQ009": 'select description_01 "details" from t01_case where id_01 = ?;',
 		"DBQ010": 'update t01_case set description_01 = ? where id_01 = ?;',
-		"DBQ011": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch order by name_02 asc;',
+		"DBQ011": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 in ("open","developed") order by name_02 asc;',
 		"DBQ012": 'insert into t02_patch (name_02, release_02, status_02) values (?,CURDATE(),"open");',
 		"DBQ013": 'update t02_patch set release_02 = ?, status_02 = ? where id_02 = ?;',
 		"DBQ014": 'delete from t03_link where id_01 = ?;',
@@ -37,8 +37,10 @@ database.queries = (function() {
 		"DBQ016": 'insert into t04_project( project_04,short_text_04,long_text_04) values (?,?,?);', 
 		"DBQ017": 'select project_04 "value", short_text_04 "text" from t04_project;',
 		"DBQ018": 'update t01_case set project_01 = ? where id_01 = ?;',
-		"DBQ019": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01) values (?,?, "Just Arrived",  "\n", CURDATE(), 99 );',
-		"DBQ020": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01) values (?,?,?,?,?,? );',
+		"DBQ019": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?, "Just Arrived",  "\n", CURDATE(), 99, 1 );',
+		"DBQ020": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?,?,?,?,?,? );',
+		"DBQ021": 'update t01_case set active_01 = 0 where id_01 = ?;',
+		"DBQ022": 'update t02_patch set status_02 = "archived" where id_02 = ?;',
 		"DBQ999": 'nope'
 	};
 }());
@@ -657,6 +659,79 @@ function save( callback, dataObj, res ) {
 // >>>
 
 
+function archivePatch( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var d = new Date();
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.archivePatch: (' + data.patchId + ') ' );
+		database.tools.getConnection().query(database.queries.DBQ022, [data.patchId], function (error, info) {
+			if( error ) throw({name: "DB Error", message: error});
+			logger.trace('requestHandler.archivePatch: updated with code: ' + info.insertId );
+			logger.trace('requestHandler.archivePatch: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+			resp.code = info.insertId;
+			resp.message = info.message;
+			resp.code = "1000";
+			resp.message = "OK";
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(resp));
+			res.end('}},"responseDetails":null,"responseStatus":200}');
+			logger.trace('requestHandler.save: response object flushed to client' );
+		});
+	} 
+	catch(e) {
+		logger.error(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+
+function archiveCase( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var d = new Date();
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.archiveCase: (' + data.caseId + ') ' );
+		database.tools.getConnection().query(database.queries.DBQ021, [data.caseId], function (error, info) {
+			if( error ) throw({name: "DB Error", message: error});
+			logger.trace('requestHandler.archiveCase: updated with code: ' + info.insertId );
+			logger.trace('requestHandler.archiveCase: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+			resp.code = info.insertId;
+			resp.message = info.message;
+			resp.code = "1000";
+			resp.message = "OK";
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(resp));
+			res.end('}},"responseDetails":null,"responseStatus":200}');
+			logger.trace('requestHandler.save: response object flushed to client' );
+		});
+	} 
+	catch(e) {
+		logger.error(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
 function save_to_file( callback, dataObj, res ) {
 // <<<
 	var fileText;
@@ -762,7 +837,8 @@ function insertCaseFull( callback, dataObj, res ) {
 		logger.trace('    caseDetails:' + data.caseDetails );
 		logger.trace('    caseStart:' + data.caseStart );
 		logger.trace('    caseOwner:' + data.caseOwner );
-		database.tools.getConnection().query(database.queries.DBQ020, [data.caseNo, data.caseSubject, data.caseStatus, data.caseDetails, data.caseStart, data.caseOwner] , function (error, info) {
+		logger.trace('    caseActive:' + data.caseActive );
+		database.tools.getConnection().query(database.queries.DBQ020, [data.caseNo, data.caseSubject, data.caseStatus, data.caseDetails, data.caseStart, data.caseOwner, data.caseActive] , function (error, info) {
 			if( error ) throw({name: "DB Error", message: error});
 			logger.trace('requestHandler.newCase: inserted with code: ' + info.insertId );
 			logger.trace('requestHandler.newCase: insert addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
@@ -912,3 +988,5 @@ exports.createProject = createProject;
 exports.updateProject = updateProject;
 exports.insertCase = insertCase;
 exports.insertCaseFull = insertCaseFull;
+exports.archiveCase = archiveCase;
+exports.archivePatch = archivePatch;

@@ -7,6 +7,21 @@ CREATE SCHEMA IF NOT EXISTS `test` DEFAULT CHARACTER SET latin2 COLLATE latin2_c
 USE `test` ;
 
 -- -----------------------------------------------------
+-- Table `test`.`t04_project`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `test`.`t04_project` ;
+
+CREATE  TABLE IF NOT EXISTS `test`.`t04_project` (
+  `project_04` INT UNSIGNED NOT NULL ,
+  `short_text_04` VARCHAR(32) NULL ,
+  `long_text_04` VARCHAR(128) NULL ,
+  INDEX `project_04_idx` (`project_04` ASC) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin2
+COLLATE = latin2_czech_cs;
+
+
+-- -----------------------------------------------------
 -- Table `test`.`t01_case`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `test`.`t01_case` ;
@@ -22,9 +37,14 @@ CREATE  TABLE IF NOT EXISTS `test`.`t01_case` (
   `start_01` DATE NOT NULL ,
   `stop_01` DATE NULL DEFAULT NULL ,
   `project_01` INT UNSIGNED NOT NULL ,
-  `active_01` tinyint(4) NOT NULL DEFAULT '1',
+  `active_01` TINYINT NOT NULL DEFAULT 1 ,
   PRIMARY KEY (`id_01`) ,
-  INDEX `UNIQUE` (`project_01` ASC) )
+  INDEX `fk_t01_case_1_idx` (`project_01` ASC) ,
+  CONSTRAINT `fk_t01_case_1`
+    FOREIGN KEY (`project_01` )
+    REFERENCES `test`.`t04_project` (`project_04` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin2
 COLLATE = latin2_czech_cs;
@@ -64,26 +84,6 @@ CREATE  TABLE IF NOT EXISTS `test`.`t03_link` (
   CONSTRAINT `fk_t03_link_2`
     FOREIGN KEY (`id_02` )
     REFERENCES `test`.`t02_patch` (`id_02` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = latin2
-COLLATE = latin2_czech_cs;
-
-
--- -----------------------------------------------------
--- Table `test`.`t04_project`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `test`.`t04_project` ;
-
-CREATE  TABLE IF NOT EXISTS `test`.`t04_project` (
-  `project_01` INT UNSIGNED NULL DEFAULT NULL ,
-  `short_text_04` VARCHAR(32) NULL ,
-  `long_text_04` VARCHAR(128) NULL ,
-  INDEX `fk_t04_project_1_idx` (`project_01` ASC) ,
-  CONSTRAINT `fk_t04_project_1`
-    FOREIGN KEY (`project_01` )
-    REFERENCES `test`.`t01_case` (`project_01` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
