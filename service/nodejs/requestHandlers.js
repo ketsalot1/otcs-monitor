@@ -14,6 +14,7 @@ logger.setLevel('TRACE');
 //logger.error('Cheese is too ripe!');
 //logger.fatal('Cheese was breeding ground for listeria.');
 
+var g_pending = 0;
 var data = [];
 var database = {};
 database.queries = (function() {
@@ -39,8 +40,9 @@ database.queries = (function() {
 		"DBQ018": 'update t01_case set project_01 = ? where id_01 = ?;',
 		"DBQ019": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?, "Just Arrived",  "\n", CURDATE(), 99, 1 );',
 		"DBQ020": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?,?,?,?,?,? );',
-		"DBQ021": 'update t01_case set active_01 = 0 where id_01 = ?;',
+		"DBQ021": 'update t01_case set active_01 = 0 where case_01 = ?;',
 		"DBQ022": 'update t02_patch set status_02 = "archived" where id_02 = ?;',
+		"DBQ023": 'select id_02 as "id" from t02_patch where id_02 in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 0 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and id_02 not in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and status_02 not like "archived";',
 		"DBQ999": 'nope'
 	};
 }());
@@ -668,23 +670,46 @@ function archivePatch( callback, dataObj, res ) {
 	var resp = {};
 
 	try {
-		data = JSON.parse(dataObj);
-		logger.trace('requestHandler.archivePatch: (' + data.patchId + ') ' );
-		database.tools.getConnection().query(database.queries.DBQ022, [data.patchId], function (error, info) {
+		logger.trace('requestHandler.archivePatch' );
+		g_pending = 0;
+		database.tools.getConnection().query(database.queries.DBQ023, function (error, rows, fields) {
 			if( error ) throw({name: "DB Error", message: error});
-			logger.trace('requestHandler.archivePatch: updated with code: ' + info.insertId );
-			logger.trace('requestHandler.archivePatch: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
-			resp.code = info.insertId;
-			resp.message = info.message;
-			resp.code = "1000";
-			resp.message = "OK";
-			res.writeHead(200, {
-				'Content-Type': 'text/plain'
-			});
-			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-			res.write(JSON.stringify(resp));
-			res.end('}},"responseDetails":null,"responseStatus":200}');
-			logger.trace('requestHandler.save: response object flushed to client' );
+			for ( var iterator in rows ) {
+				g_pending++;
+				logger.trace('requestHandler.archivePatch: first query: pending counter value: ' + g_pending );
+				var id = rows[iterator].id;
+				logger.trace( 'requestHandler.archivePatch: archiving patch id >' + id + '< ' );
+				database.tools.getConnection().query(database.queries.DBQ022, [id], function (error, info) {
+					if( error ) throw({name: "DB Error", message: error});
+					logger.trace('requestHandler.archivePatch: updated with code: ' + info.insertId );
+					logger.trace('requestHandler.archivePatch: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+					logger.trace('requestHandler.archivePatch: second query: pending counter value: ' + g_pending );
+					g_pending--;
+					if( g_pending == 0 ) {
+						resp.code = info.insertId;
+						resp.message = info.message;
+						res.writeHead(200, {
+							'Content-Type': 'text/plain'
+						});
+						res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+						res.write(JSON.stringify(resp));
+						res.end('}},"responseDetails":null,"responseStatus":200}');
+						logger.trace('requestHandler.archivePatch: response object flushed to client' );
+					}
+				});
+			}
+			if( rows.length == 0 ) {
+				logger.trace('requestHandler.archivePatch: no patch archived.' );
+				resp.code = "1001";
+				resp.message = "no patch archived";
+				res.writeHead(200, {
+					'Content-Type': 'text/plain'
+				});
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(resp));
+				res.end('}},"responseDetails":null,"responseStatus":200}');
+				logger.trace('requestHandler.archivePatch: response object flushed to client' );
+			}
 		});
 	} 
 	catch(e) {
@@ -706,8 +731,8 @@ function archiveCase( callback, dataObj, res ) {
 
 	try {
 		data = JSON.parse(dataObj);
-		logger.trace('requestHandler.archiveCase: (' + data.caseId + ') ' );
-		database.tools.getConnection().query(database.queries.DBQ021, [data.caseId], function (error, info) {
+		logger.trace('requestHandler.archiveCase: (' + data.caseNo + ') ' );
+		database.tools.getConnection().query(database.queries.DBQ021, [data.caseNo], function (error, info) {
 			if( error ) throw({name: "DB Error", message: error});
 			logger.trace('requestHandler.archiveCase: updated with code: ' + info.insertId );
 			logger.trace('requestHandler.archiveCase: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
