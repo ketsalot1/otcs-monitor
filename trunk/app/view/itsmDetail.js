@@ -246,13 +246,6 @@ Ext.define("itsm.view.itsmDetail", {
 		var lm = {};
 		console.log("view.itsmDetail.Edit");
 		if( typeof opentext.data.activeCase == 'object' ) { 
-			/*
-			lm.back = 1;
-			lm.link = 0;
-			lm.user = 0;
-			lm.edit = 0;
-			this.setUIfromMask( lm );
-			*/
 			this.fireEvent("detailEditCommand", opentext.data.activeCase);
 		} else {
 			console.error("No case selected");
@@ -263,13 +256,6 @@ Ext.define("itsm.view.itsmDetail", {
 		var lm = {};
 		console.log("view.itsmDetail.Link");
 		if( typeof opentext.data.activeCase == 'object' ) { 
-			/*
-			lm.back = 1;
-			lm.link = 0;
-			lm.user = 0;
-			lm.edit = 0;
-			this.setUIfromMask( lm );
-			*/
 			this.fireEvent("detailLinkPatchCommand", opentext.data.activeCase);
 		} else {
 			console.error("No case selected");
@@ -280,13 +266,6 @@ Ext.define("itsm.view.itsmDetail", {
 		var lm = {};
 		console.log("view.itsmDetail.setProject");
 		if( typeof opentext.data.activeCase == 'object' ) { 
-			/*
-			lm.back = 1;
-			lm.link = 0;
-			lm.user = 0;
-			lm.edit = 0;
-			this.setUIfromMask( lm );
-			*/
 			this.fireEvent("detailLinkProjectCommand", opentext.data.activeCase);
 		} else {
 			console.error("No case selected");
@@ -296,16 +275,19 @@ Ext.define("itsm.view.itsmDetail", {
 	onDetailArchive: function() {
 		var lm = {};
 		console.log("view.itsmDetail.setArchived");
+
+		function onReply(btn) {
+			if( btn == "yes" ) {
+				this.fireEvent("detailSetArchivedCommand", opentext.data.activeCase);
+			} else {
+				console.log("view.itsmDetail.setArchived - update canceled");
+			}
+		}
+
 		if( typeof opentext.data.activeCase == 'object' ) { 
-			/*
-			lm.back = 1;
-			lm.link = 0;
-			lm.user = 0;
-			lm.edit = 0;
-			this.setUIfromMask( lm );
-			*/
-// TODO
-//			this.fireEvent("detailSetArchivedCommand", opentext.data.activeCase);
+			Ext.Msg.confirm("Confirmation", "Are you sure you want to do that?", onReply, this );
+			
+
 		} else {
 			console.error("No case selected");
 		}

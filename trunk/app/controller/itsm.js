@@ -40,7 +40,8 @@ Ext.define("itsm.controller.itsm", {
 					detailBackCommand: "onBackMainList",
 					detailEditCommand: "onEditCase",
 					detailLinkPatchCommand: "onPatchLinkCase",
-					detailLinkProjectCommand: "onProjectLinkCase"
+					detailLinkProjectCommand: "onProjectLinkCase",
+					detailSetArchivedCommand: "onArchiveCase"
 				},
 				configurationView: {
 					saveSettingsCommand:	"onSaveSettings",
@@ -131,6 +132,33 @@ Ext.define("itsm.controller.itsm", {
 			s.load();
 
 			Ext.Viewport.animateActiveItem(this.getItsmProjectAssignForm(), this.slideLeftTransition);
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+// >>>
+
+
+	onArchiveCase : function(caseNo) {
+// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('patches');
+		var rec, data, hostName;
+
+		console.log("controller.itsm.onArchiveCase: requesting Case Archival for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			s.getProxy().setUrl( hostName + '?cmd=archive_case&data={"caseNo": "' + caseNo.case  + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+
+//			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
+			this.activateMainView();
 		}
 		catch(e) {
 			Ext.Msg.alert( e.name );
