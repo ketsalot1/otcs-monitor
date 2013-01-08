@@ -79,6 +79,18 @@ Ext.define("itsm.view.itsmDetail", {
 				}
         };
 
+        var archiveButton = {
+            xtype: "button",
+            ui: "action",
+            iconCls: "trash2",
+            iconMask: true,
+				hidden: true,
+				id: "itsmdetail_archive",
+				listeners: {
+					tap: { fn: this.onDetailArchive, scope: this }
+				}
+        };
+
         var bottomToolbar = {
             xtype: "toolbar",
             docked: "bottom",
@@ -86,6 +98,7 @@ Ext.define("itsm.view.itsmDetail", {
             items: [
 					backButton,
 					{ xtype: 'spacer' },
+					archiveButton,
 					userButton,
 					linkButton,
 					editButton
@@ -151,11 +164,13 @@ Ext.define("itsm.view.itsmDetail", {
 										lm.link = 1;
 										lm.user = 1;
 										lm.edit = 1;
+										lm.arch = 1;
 									} else {
                   				this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('details'));
 										lm.link = 0;
 										lm.user = 0;
 										lm.edit = 0;
+										lm.arch = 0;
 									}
 									this.getParent().setUIfromMask( lm );
 					},
@@ -168,6 +183,7 @@ Ext.define("itsm.view.itsmDetail", {
 									lm.link = 0;
 									lm.user = 0;
 									lm.edit = 0;
+									lm.arch = 0;
 									this.getParent().setUIfromMask( lm );
 					}
 				}
@@ -221,6 +237,7 @@ Ext.define("itsm.view.itsmDetail", {
 		lm.link = 0;
 		lm.user = 0;
 		lm.edit = 0;
+		lm.arch = 0;
 		this.setUIfromMask( lm );
 		this.fireEvent("detailBackCommand", this);
 	},
@@ -276,6 +293,24 @@ Ext.define("itsm.view.itsmDetail", {
 		}
 	},
 
+	onDetailArchive: function() {
+		var lm = {};
+		console.log("view.itsmDetail.setArchived");
+		if( typeof opentext.data.activeCase == 'object' ) { 
+			/*
+			lm.back = 1;
+			lm.link = 0;
+			lm.user = 0;
+			lm.edit = 0;
+			this.setUIfromMask( lm );
+			*/
+// TODO
+//			this.fireEvent("detailSetArchivedCommand", opentext.data.activeCase);
+		} else {
+			console.error("No case selected");
+		}
+	},
+
 	setUIfromMask: function( mask ) {
 		Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
 				// if the button is the change iconCls button, continue
@@ -301,6 +336,10 @@ Ext.define("itsm.view.itsmDetail", {
 			if (button.getId() === 'itsmdetail_user') {
 				console.log( 'itsmdetail_user found!' );
 				setUIControlfromMask( button, mask.user );
+			}
+			if (button.getId() === 'itsmdetail_archive') {
+				console.log( 'itsmdetail_archive found!' );
+				setUIControlfromMask( button, mask.arch );
 			}
 		});
 	},

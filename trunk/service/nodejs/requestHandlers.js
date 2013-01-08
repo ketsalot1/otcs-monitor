@@ -30,6 +30,7 @@ database.queries = (function() {
 		"DBQ008": 'select t03.id_01 "id", t02.name_02 "patch" from t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02;',
 		"DBQ009": 'select description_01 "details" from t01_case where id_01 = ?;',
 		"DBQ010": 'update t01_case set description_01 = ? where id_01 = ?;',
+		"DBQ024": 'update t01_case set status_01 = ? where case_01 = ?;',
 		"DBQ011": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 in ("open","developed") order by name_02 asc;',
 		"DBQ012": 'insert into t02_patch (name_02, release_02, status_02) values (?,CURDATE(),"open");',
 		"DBQ013": 'update t02_patch set release_02 = ?, status_02 = ? where id_02 = ?;',
@@ -743,9 +744,17 @@ function archiveCase( callback, dataObj, res ) {
 			res.writeHead(200, {
 				'Content-Type': 'text/plain'
 			});
+			if( callback ) {
+				res.write( callback + '(' );
+			}
 			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
 			res.write(JSON.stringify(resp));
-			res.end('}},"responseDetails":null,"responseStatus":200}');
+			res.write('}},"responseDetails":null,"responseStatus":200}');
+			if( callback ) {
+				res.end(')');
+			} else {
+				res.end();
+			}
 			logger.trace('requestHandler.save: response object flushed to client' );
 		});
 	} 
@@ -997,6 +1006,48 @@ function updateProject( callback, dataObj, res ) {
 }
 // >>>
 
+
+function updateCaseStatus( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.updateCaseStatus: ' + data.caseNo + ' with status >' + data.caseStatus + '<' );
+		database.tools.getConnection().query(database.queries.DBQ024, [data.caseStatus, data.caseNo], function (error, info) {
+			if( error ) throw({name: "DB Error", message: error});
+			logger.trace('requestHandler.updateCaseStatus: update done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+			resp.code = info.affectedRows;
+			resp.message = info.message;
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			if( callback ) {
+				res.write( callback + '(' );
+			}
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(resp));
+			res.write('}},"responseDetails":null,"responseStatus":200}');
+			if( callback ) {
+				res.end(')');
+			} else {
+				res.end();
+			}
+			logger.trace('requestHandler.updateCaseStatus: response object flushed to client' );
+		});
+	} 
+	catch(e) {
+		logger.error(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+//
+
 exports.search = search;
 exports.describe = describe;
 exports.send = send;
@@ -1009,6 +1060,7 @@ exports.listProjects = listProjects;
 exports.linkPatch = linkPatch;
 exports.newPatch = newPatch;
 exports.updatePatch = updatePatch;
+exports.updateCaseStatus = updateCaseStatus;
 exports.createProject = createProject;
 exports.updateProject = updateProject;
 exports.insertCase = insertCase;
