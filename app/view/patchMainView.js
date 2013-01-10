@@ -88,31 +88,49 @@ Ext.define("itsm.view.patchMainView", {
 	onSaveButtonTap: function() {
 		var obj = {};
 		console.log("patchView.save event fired. Active page index = " + this.getItems().items[1].activeIndex);
-		// The firm page is the update form ...
-		debugger;
-		/* Find a specific form and its fields is done by:
-		 * Ext.ComponentQuery.query('patchmgmtupdateform')[0].getFields()
-		 */
-		if( this.getItems().items[1].activeIndex == 0 ) {
-			obj.patchId = this.getItems().items[1].getItems().items[1].getFields().patch.getValue()
-			obj.patchETA = this.getItems().items[1].getItems().items[1].getFields().eta.getFormattedValue();
-			if( this.getItems().items[1].getItems().items[1].getFields().released.getValue() == 1 )
-				obj.patchStatus = "open";
-			else
-				obj.patchStatus = "developed";
-			this.fireEvent("updatePatchCommand", obj);
-		}
-		// The second page is the new patch form
-		if( this.getItems().items[1].activeIndex == 1 ) {
-			obj.patchName = this.getItems().items[1].getItems().items[2].getFields().patch.getValue()
-			this.fireEvent("insertPatchCommand", obj);
-		}
+		try {
+			if( this.getItems().items[1].activeIndex == 0 ) {
+				var form = Ext.ComponentQuery.query('patchmgmtupdateform')[0];
+				if( typeof form == "undefined" ) 
+					throw({name:"Form Problem", message:"Cannot find requested form"});
+				var src = this.getItems().items[1].getItems().items[1];
+				if( form.getId() != src.getId() ) 
+					throw({name:"Form Problem", message:"Cannot find requested form"});
+				obj.patchId = src.getFields().patch.getValue();
+				obj.patchETA = src.getFields().eta.getFormattedValue();
+				if( src.getFields().released.getValue() == 1 )
+					obj.patchStatus = "open";
+				else
+					obj.patchStatus = "developed";
+				this.fireEvent("updatePatchCommand", obj);
+			}
+			// The second page is the new patch form
+			if( this.getItems().items[1].activeIndex == 1 ) {
+				var form = Ext.ComponentQuery.query('patchmgmtinsertform')[0];
+				if( typeof form == "undefined" ) 
+					throw({name:"Form Problem", message:"Cannot find requested form"});
+				var src = this.getItems().items[1].getItems().items[2];
+				if( form.getId() != src.getId() ) 
+					throw({name:"Form Problem", message:"Cannot find requested form"});
+				obj.patchName = src.getFields().patch.getValue();
+				this.fireEvent("insertPatchCommand", obj);
+			}
 
-		if( this.getItems().items[1].activeIndex == 2 ) {
-			debugger;
-			obj.name = this.getItems().items[1].getItems().items[3].getFields().name.getValue()
-			obj.description = this.getItems().items[1].getItems().items[3].getFields().description.getValue()
-			this.fireEvent("insertProjectCommand", obj);
+			if( this.getItems().items[1].activeIndex == 2 ) {
+				var form = Ext.ComponentQuery.query('projectmgmtinsertform')[0];
+				if( typeof form == "undefined" ) 
+					throw({name:"Form Problem", message:"Cannot find requested form"});
+				var src = this.getItems().items[1].getItems().items[3];
+				if( form.getId() != src.getId() ) 
+					throw({name:"Form Problem", message:"Cannot find requested form"});
+				obj.name = src.getFields().name.getValue();
+				obj.description = src.getFields().description.getValue();
+				this.fireEvent("insertProjectCommand", obj);
+			}
+		}
+		catch(e) {
+			Ext.Msg.alert("Form", "Cannot access form data" );
+			console.error(e.name + ": " + e.message);
 		}
 	}
 });

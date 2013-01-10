@@ -47,27 +47,6 @@ Ext.define("itsm.view.patchMgmtUpdateForm", {
 			labelWidth: '32%',
 		};
 
-		var saveButton = {
-			xtype: 'button',
-//			iconCls: 'doc_send',
-			iconCls: 'check2',
-			iconMask: true,
-			ui: 'action',
-			listeners: {
-				tap: { fn: this.onSaveButtonTap, scope: this }
-			}
-		};
-
-		var buttonPanel = {
-			xtype: 'toolbar',
-			docked: 'bottom',
-			layout: { pack: 'center' },
-			items: [
-//				{ xtype: 'spacer'},
-				saveButton
-			]
-		};
-
 		var formFrame = {
 			xtype: 'fieldset',
 			title: 'Patch Update',
@@ -103,20 +82,5 @@ Ext.define("itsm.view.patchMgmtUpdateForm", {
     },
 	 // >>>
 
-	onSaveButtonTap: function() {
-		var cn = "";
-		try {
-			cn = this.getFields().patch.getValue();
-			if( cn.length == 0 ) {
-			  throw( { message: 'The length of the number is zero' } );	
-			}
-			console.log("view.PatchForm.saveButtonTap: >" + cn + "<" );
-//			this.fireEvent('linkCaseCommand', opentext.data.activeCase, cn );
-		}
-		catch(e) {
-			console.error( e.message );
-			Ext.Msg.alert( e.message );
-		}
-	}
 });
 

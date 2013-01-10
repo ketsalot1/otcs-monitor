@@ -35,6 +35,7 @@ app/view/searchResultDetail.js \
 app/view/itsmOverview.js \
 app/view/aboutScreen.js \
 app/view/itsmEditForm.js \
+app/view/itsmLinkForms.js \
 app/view/itsmPatchAssignForm.js \
 app/view/itsmProjectAssignForm.js \
 app/view/patchMainView.js \

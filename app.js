@@ -22,6 +22,7 @@ Ext.application({
 		'ConfigurationView',
 		'searchForm',
 		'itsmEditForm',
+		'itsmLinkForms',
 		'itsmPatchAssignForm',
 		'itsmProjectAssignForm',
 		'aboutScreen',
@@ -79,6 +80,9 @@ Ext.application({
 		var itsmEditForm = {
 				xtype: 'itsmeditform'
 		};
+		var itsmLinkForms = {
+				xtype: 'itsmlinkformcont'
+		};
 		var itsmPatchForm = {
 				xtype: 'itsmpatchform'
 		};
@@ -106,7 +110,7 @@ Ext.application({
 
 		// Initialize the main view
 		//Ext.Viewport.add(configurationView);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms]);
 	},
 
 	onUpdated: function() {
