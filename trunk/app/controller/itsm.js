@@ -22,6 +22,7 @@ Ext.define("itsm.controller.itsm", {
 				searchForm: "searchform",
 				itsmOverview: "itsmoverview",
 				itsmEditForm: "itsmeditform",
+				itsmLinkForms: "itsmlinkformcont",
 				itsmPatchAssignForm: "itsmpatchform",
 				itsmProjectAssignForm: "itsmprojectassignform",
 				patchMgmtView: "patchmainview"
@@ -57,6 +58,9 @@ Ext.define("itsm.controller.itsm", {
 				itsmEditForm: {
 					saveCaseCommand: "onEditSave",
 					backCaseEditCommand: "onCaseDetailBack"
+				},
+				itsmLinkForms: {
+					backCaseLinkCommand: "onCaseDetailBack"
 				},
 				itsmPatchAssignForm: {
 					linkCaseCommand: "onLinkSave",
@@ -106,7 +110,8 @@ Ext.define("itsm.controller.itsm", {
 			s.getProxy().setUrl( hostName + '?cmd=patches&data=open' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load();
-			Ext.Viewport.animateActiveItem(this.getItsmPatchAssignForm(), this.slideLeftTransition);
+//			Ext.Viewport.animateActiveItem(this.getItsmPatchAssignForm(), this.slideLeftTransition);
+			Ext.Viewport.animateActiveItem(this.getItsmLinkForms(), this.slideLeftTransition);
 		}
 		catch(e) {
 			Ext.Msg.alert( e.name );
