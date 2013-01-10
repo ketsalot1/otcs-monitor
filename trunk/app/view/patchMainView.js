@@ -89,6 +89,10 @@ Ext.define("itsm.view.patchMainView", {
 		var obj = {};
 		console.log("patchView.save event fired. Active page index = " + this.getItems().items[1].activeIndex);
 		// The firm page is the update form ...
+		debugger;
+		/* Find a specific form and its fields is done by:
+		 * Ext.ComponentQuery.query('patchmgmtupdateform')[0].getFields()
+		 */
 		if( this.getItems().items[1].activeIndex == 0 ) {
 			obj.patchId = this.getItems().items[1].getItems().items[1].getFields().patch.getValue()
 			obj.patchETA = this.getItems().items[1].getItems().items[1].getFields().eta.getFormattedValue();

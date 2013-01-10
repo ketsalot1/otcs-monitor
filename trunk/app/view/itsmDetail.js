@@ -285,9 +285,7 @@ Ext.define("itsm.view.itsmDetail", {
 		}
 
 		if( typeof opentext.data.activeCase == 'object' ) { 
-			Ext.Msg.confirm("Confirmation", "Are you sure you want to do that?", onReply, this );
-			
-
+			Ext.Msg.confirm("Confirmation", "Archive the case?", onReply, this );
 		} else {
 			console.error("No case selected");
 		}
