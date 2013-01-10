@@ -828,6 +828,7 @@ function insertCase( callback, dataObj, res ) {
 
 	try {
 		data = JSON.parse(dataObj);
+		data.caseNo = data.caseNo * 1;
 		logger.trace('requestHandler.newCase: >' + data.caseNo + '< >' + data.caseSubject + '<' );
 		if( typeof data.caseNo != 'number' ) throw( { name: 'Case Number Invalid', message: 'The case number is empty or not a decimal number. Use digits only' } );
 		database.tools.getConnection().query(database.queries.DBQ019, [data.caseNo, data.caseSubject], function (error, info) {
