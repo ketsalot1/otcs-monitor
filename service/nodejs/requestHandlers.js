@@ -21,16 +21,15 @@ database.queries = (function() {
 // <<<
 	return {
 		"DBQ001": 'select long_text_04 "category", short_text_04 "code" from t04_project;',
-		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
+		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
-		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
+		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
 		"DBQ006": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ007": 'insert into t03_link (id_01, id_02) values ( ?,? );',
 		"DBQ008": 'select t03.id_01 "id", t02.name_02 "patch" from t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02;',
 		"DBQ009": 'select description_01 "details" from t01_case where id_01 = ?;',
 		"DBQ010": 'update t01_case set description_01 = ? where id_01 = ?;',
-		"DBQ024": 'update t01_case set status_01 = ? where case_01 = ?;',
 		"DBQ011": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 in ("open","developed") order by name_02 asc;',
 		"DBQ012": 'insert into t02_patch (name_02, release_02, status_02) values (?,CURDATE(),"open");',
 		"DBQ013": 'update t02_patch set release_02 = ?, status_02 = ? where id_02 = ?;',
@@ -44,6 +43,8 @@ database.queries = (function() {
 		"DBQ021": 'update t01_case set active_01 = 0 where case_01 = ?;',
 		"DBQ022": 'update t02_patch set status_02 = "archived" where id_02 = ?;',
 		"DBQ023": 'select id_02 as "id" from t02_patch where id_02 in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 0 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and id_02 not in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and status_02 not like "archived";',
+		"DBQ024": 'update t01_case set status_01 = ? where case_01 = ?;',
+		"DBQ025": 'update t01_case set jira_01 = ? where case_01 = ?;',
 		"DBQ999": 'nope'
 	};
 }());
@@ -1008,6 +1009,47 @@ function updateProject( callback, dataObj, res ) {
 // >>>
 
 
+function updateCaseJira( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.updateCaseJira - Case: ' + data.caseNo + ' with Jira >' + data.jiraId + '<' );
+		database.tools.getConnection().query(database.queries.DBQ025, [data.jiraId, data.caseNo], function (error, info) {
+			if( error ) throw({name: "DB Error", message: error});
+			logger.trace('requestHandler.updateCaseStatus: update done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+			resp.code = info.affectedRows;
+			resp.message = info.message;
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			if( callback ) {
+				res.write( callback + '(' );
+			}
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(resp));
+			res.write('}},"responseDetails":null,"responseStatus":200}');
+			if( callback ) {
+				res.end(')');
+			} else {
+				res.end();
+			}
+			logger.trace('requestHandler.updateCaseJira: response object flushed to client' );
+		});
+	} 
+	catch(e) {
+		logger.error(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+
 function updateCaseStatus( callback, dataObj, res ) {
 // <<<
 	var fileText;
@@ -1068,3 +1110,4 @@ exports.insertCase = insertCase;
 exports.insertCaseFull = insertCaseFull;
 exports.archiveCase = archiveCase;
 exports.archivePatch = archivePatch;
+exports.updateCaseJira = updateCaseJira;

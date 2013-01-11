@@ -24,6 +24,7 @@ Ext.define("itsm.controller.itsm", {
 				itsmEditForm: "itsmeditform",
 				itsmLinkForms: "itsmlinkformcont",
 				itsmPatchAssignForm: "itsmpatchform",
+				itsmJiraAssignForm: "itsmjiraform",
 				itsmProjectAssignForm: "itsmprojectassignform",
 				patchMgmtView: "patchmainview"
 		},
@@ -60,6 +61,8 @@ Ext.define("itsm.controller.itsm", {
 					backCaseEditCommand: "onCaseDetailBack"
 				},
 				itsmLinkForms: {
+					linkCaseCommand: "onLinkSave",
+					linkJiraCommand: "onJiraSave",
 					backCaseLinkCommand: "onCaseDetailBack"
 				},
 				itsmPatchAssignForm: {
@@ -143,7 +146,6 @@ Ext.define("itsm.controller.itsm", {
 		}
 	},
 // >>>
-
 
 	onArchiveCase : function(caseNo) {
 // <<<
@@ -445,6 +447,40 @@ Ext.define("itsm.controller.itsm", {
 			hostName = data[0];
 
 			s.getProxy().setUrl( hostName + '?cmd=link&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","patchId":"' + obj.patch + '","drop":"' + obj.drop + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+
+			// The data can be reloaded after updating them
+			// in database. Th sideefect is that the nestedlist and 
+			// data source gets out of syns and various efect can occur
+			// Preferably do not refresh the data store ...
+//			it.load();
+
+			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+	},
+	// >>>
+
+	onJiraSave: function(caseData, obj) 
+	{ // <<<
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('db');
+		var it = Ext.getStore('desktopITSM');
+		var v;
+
+		console.log('controller jira to case >' + caseData.case + '<>' + caseData.id + '< with Jira Id >' + obj.jira + '<' );
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			s.getProxy().setUrl( hostName + '?cmd=jira&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","jiraId":"' + obj.jira + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load();
 

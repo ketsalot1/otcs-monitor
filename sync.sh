@@ -38,6 +38,7 @@ app/view/itsmEditForm.js \
 app/view/itsmLinkForms.js \
 app/view/itsmPatchAssignForm.js \
 app/view/itsmProjectAssignForm.js \
+app/view/itsmJiraAssignForm.js \
 app/view/patchMainView.js \
 app/view/patchMgmtUpdateForm.js \
 app/view/patchMgmtInsertForm.js \

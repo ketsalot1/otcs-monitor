@@ -24,6 +24,7 @@ Ext.application({
 		'itsmEditForm',
 		'itsmLinkForms',
 		'itsmPatchAssignForm',
+		'itsmJiraAssignForm',
 		'itsmProjectAssignForm',
 		'aboutScreen',
 		'patchMainView',
@@ -89,6 +90,9 @@ Ext.application({
 		var itsmProjectAssignForm = {
 				xtype: 'itsmprojectassignform'
 		};
+		var itsmJiraAssignForm = {
+				xtype: 'itsmjiraform'
+		};
 		var aboutScreen = {
 				xtype: 'aboutscreen'
 		};
@@ -110,7 +114,7 @@ Ext.application({
 
 		// Initialize the main view
 		//Ext.Viewport.add(configurationView);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms,itsmJiraAssignForm]);
 	},
 
 	onUpdated: function() {

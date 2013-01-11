@@ -7,6 +7,7 @@ Ext.define('itsm.model.desktopITSM', {
 		   { name: 'status', type: 'string' },
 		   { name: 'details', type: 'string' },
 		   { name: 'patches', type: 'string' },
+		   { name: 'jira', type: 'string' },
 		   { name: 'id', type: 'int' },
 		]
    }
