@@ -37,7 +37,7 @@ Ext.define("itsm.view.itsmPatchAssignForm", {
 		var formFrame = {
 			xtype: 'fieldset',
 			title: 'Assign to patch',
-			instructions: 'The case will be linked with the patch you selected from the picker control. If you want to link the case with the selected patch only, use the switch "drop other links".',
+			instructions: 'The case will be linked with the patch you selected in the picker control. If you want to link the case with the selected patch only, use the switch "drop other links".',
 			items: [
 				casePatch,
 				removeLinks 

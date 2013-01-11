@@ -160,7 +160,11 @@ Ext.define("itsm.view.itsmDetail", {
 
 									lm.back = 0;
 									if( post.get('patches') != null ) {
-                  				this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('patches') + '<br/><br/>' + post.get('details'));
+										if( post.get('jira') != null ) {
+                  					this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('patches') + '<br/><br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/>' + post.get('details'));
+										} else {
+                  					this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('patches') + '<br/><br/>Jira:[none]</a><br/><br/>' + post.get('details'));
+										}
 										lm.link = 1;
 										lm.user = 1;
 										lm.edit = 1;
