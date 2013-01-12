@@ -30,11 +30,11 @@ Ext.define("itsm.view.itsmProjectAssignForm", {
 
 		var backButton = {
 			xtype: 'button',
-//			text: 'Back',
-//			ui: 'back',
-			ui: 'action',
-			iconCls: 'delete1',
-			iconMask: true,
+			text: 'Back',
+			ui: 'back',
+//			ui: 'action',
+//			iconCls: 'delete1',
+//			iconMask: true,
 			listeners: {
 				tap: { fn: this.onBackButtonTap, scope: this }
 			}
@@ -42,10 +42,10 @@ Ext.define("itsm.view.itsmProjectAssignForm", {
 
 		var saveButton = {
 			xtype: 'button',
-//			iconCls: 'doc_send',
-			iconCls: 'check2',
-			iconMask: true,
+			text: 'OK',
 			ui: 'action',
+//			iconCls: 'check2',
+//			iconMask: true,
 			listeners: {
 				tap: { fn: this.onSaveButtonTap, scope: this }
 			}
