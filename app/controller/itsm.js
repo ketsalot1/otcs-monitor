@@ -361,7 +361,7 @@ Ext.define("itsm.controller.itsm", {
 	},
 	// >>>
 
-	onSearchCase: function(caseNo) 
+	onSearchCase: function(params) 
 	{ // <<<
 		var rec,hostName;
 		var data = [];
@@ -369,14 +369,14 @@ Ext.define("itsm.controller.itsm", {
 		var s = Ext.getStore('desktopITSM');
 		var v;
 
-		console.log('controller search for case No.>' + caseNo + '<' );
+		console.log('controller search for case No.>' + params.caseNo + '<' );
 
 		try {
 			rec = settings.getAt(0);
 			data = rec.get('settingsContainer');
 			hostName = data[0];
 
-			s.getProxy().setUrl( hostName + '?cmd=search&data=' + caseNo );
+			s.getProxy().setUrl( hostName + '?cmd=search&data={"pattern":"' + params.caseNo + '","searchAll": "' + params.searchAll + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 
 			s.load();

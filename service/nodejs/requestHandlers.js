@@ -24,7 +24,7 @@ database.queries = (function() {
 		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
-		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
+		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
 		"DBQ006": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ007": 'insert into t03_link (id_01, id_02) values ( ?,? );',
 		"DBQ008": 'select t03.id_01 "id", t02.name_02 "patch" from t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02;',
@@ -45,6 +45,7 @@ database.queries = (function() {
 		"DBQ023": 'select id_02 as "id" from t02_patch where id_02 in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 0 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and id_02 not in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and status_02 not like "archived";',
 		"DBQ024": 'update t01_case set status_01 = ? where case_01 = ?;',
 		"DBQ025": 'update t01_case set jira_01 = ? where case_01 = ?;',
+		"DBQ026": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
 		"DBQ999": 'nope'
 	};
 }());
@@ -239,14 +240,22 @@ function queryDB( callback, q, res ) {
 // >>>
 
 
-function search( callback, pattern, res ) {
+function search( callback, data, res ) {
 // <<<
 	var cases = [];
-	logger.trace('requestHandler.search for patern: >' + pattern + '<');
-	pattern = "%" + pattern + "%";
+	var dataObj = JSON.parse(data);
+	var q;
+	var connection;
+
+	logger.trace('requestHandler.search for patern: >' + dataObj.pattern + '<');
+	var pattern = "%" + dataObj.pattern + "%";
 	try {
-		var connection = database.tools.getConnection();
-		connection.query(database.queries.DBQ005, [pattern], function (error, rows, fields) {
+		connection = database.tools.getConnection();
+		if( dataObj.searchAll == 1 ) 
+			q = database.queries.DBQ005; 
+		else 
+			q = database.queries.DBQ026; 
+		connection.query(q, [pattern], function (error, rows, fields) {
 			if( error ) throw({name: "DB Error", message: error});
 			res.writeHead(200, {
 				'Content-Type': 'x-application/json'
@@ -632,7 +641,7 @@ function _send( callback, dataName, res ) {
 			// process details. Convert the line breaks into HTML markup.
 			logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
 			cases = rows;
-			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+			connection.query(database.queries.DBQ026, function (error, rows, fields) {
 				for ( var iterator in cases ) {
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
