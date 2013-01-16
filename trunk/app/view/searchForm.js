@@ -18,6 +18,13 @@ Ext.define("itsm.view.searchForm", {
 			labelWidth: '29%'
 		};
 
+		var searchAll = {
+			xtype: 'togglefield',
+			name: 'searchAll',
+			label: 'Search all?',
+			labelWidth: '62%',
+		};
+
 		var searchButton = {
 			xtype: 'button',
 			text: 'Search',
@@ -41,9 +48,10 @@ Ext.define("itsm.view.searchForm", {
 		var formFrame = {
 			xtype: 'fieldset',
 			title: 'OTCS Case Search',
-			instructions: 'Search for specific OTCS ticket. Enter the 5 digit number and press search button',
+			instructions: 'Search for specific OTCS ticket. Enter the 5 digit number and press search button. Use "search all" toggle field if you want include in search archived cases.',
 			items: [
-				searchCase
+				searchCase,
+				searchAll
 			]
 		};	
 
@@ -72,13 +80,14 @@ Ext.define("itsm.view.searchForm", {
 	 // >>>
 
 	onSearchButtonTap: function() {
-		var cn = "";
+		var cn = {};
 		try {
-			cn = this.getFields().caseNo.getValue();
-			if( cn.length == 0 ) {
+			cn.caseNo = this.getFields().caseNo.getValue();
+			cn.searchAll = this.getFields().searchAll.getValue();
+			if( cn.caseNo.length == 0 ) {
 			  throw( { message: 'The length of the number is zero' } );	
 			}
-			console.log("view.ConfigurationView.searchButtonTap: >" + cn + "<" );
+			console.log("view.searchForm.searchButtonTap: >" + cn.caseNo + "<" );
 			this.fireEvent('searchCaseCommand', cn );
 		}
 		catch(e) {
