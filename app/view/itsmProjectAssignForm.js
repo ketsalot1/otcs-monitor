@@ -98,7 +98,6 @@ Ext.define("itsm.view.itsmProjectAssignForm", {
 	onSaveButtonTap: function() {
 		var cn = {};
 		try {
-			debugger;
 			cn.projectId = this.getFields().project.getValue();
 			if( cn.projectId.length == 0 ) {
 			  throw( { name: "Form Exception", message: 'The project number is invalid' } );	

@@ -38,7 +38,7 @@ set smartcase
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
 set tabstop=3
 set termencoding=utf-8
-set window=61
+set window=54
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
@@ -50,18 +50,13 @@ set shortmess=aoO
 badd +1 app.js
 badd +1 app/controller/itsm.js
 badd +1 app/view/MainListContainer.js
-badd +13 app/view/itsmList.js
 badd +1 app/view/itsmDetail.js
 badd +51 app/store/itsm.js
 badd +1 app/view/ConfigurationView.js
 badd +1 app/model/settings.js
 badd +1 app/store/settings.js
-badd +7 app/model/itsm.js
 badd +1 app/store/desktopITSM.js
 badd +1 app/model/desktopITSM.js
-badd +26 app/view/itsmOverview.js
-badd +9599 resources/css/app.css
-badd +0 app/view/itsmEditForm.js
 silent! argdel *
 edit app.js
 set splitbelow splitright
@@ -73,8 +68,8 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 94 + 98) / 197)
-exe 'vert 2resize ' . ((&columns * 100 + 98) / 197)
+exe 'vert 1resize ' . ((&columns * 115 + 117) / 235)
+exe 'vert 2resize ' . ((&columns * 119 + 117) / 235)
 argglobal
 setlocal keymap=
 setlocal noarabic
@@ -178,12 +173,12 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 69 - ((22 * winheight(0) + 30) / 60)
+let s:l = 71 - ((21 * winheight(0) + 26) / 53)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-69
-normal! 024l
+71
+normal! 03l
 wincmd w
 argglobal
 edit app/controller/itsm.js
@@ -292,15 +287,15 @@ setlocal wrap
 setlocal wrapmargin=0
 126
 normal zo
-let s:l = 127 - ((99 * winheight(0) + 30) / 60)
+let s:l = 127 - ((0 * winheight(0) + 26) / 53)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 127
-normal! 067l
+normal! 041l
 wincmd w
-exe 'vert 1resize ' . ((&columns * 94 + 98) / 197)
-exe 'vert 2resize ' . ((&columns * 100 + 98) / 197)
+exe 'vert 1resize ' . ((&columns * 115 + 117) / 235)
+exe 'vert 2resize ' . ((&columns * 119 + 117) / 235)
 tabedit app/view/MainListContainer.js
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -311,8 +306,8 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 83 + 98) / 197)
-exe 'vert 2resize ' . ((&columns * 111 + 98) / 197)
+exe 'vert 1resize ' . ((&columns * 113 + 117) / 235)
+exe 'vert 2resize ' . ((&columns * 121 + 117) / 235)
 argglobal
 setlocal keymap=
 setlocal noarabic
@@ -417,7 +412,7 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 94 - ((79 * winheight(0) + 30) / 60)
+let s:l = 94 - ((79 * winheight(0) + 26) / 53)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -529,15 +524,15 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 69 - ((0 * winheight(0) + 30) / 60)
+let s:l = 69 - ((68 * winheight(0) + 26) / 53)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 69
 normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 83 + 98) / 197)
-exe 'vert 2resize ' . ((&columns * 111 + 98) / 197)
+exe 'vert 1resize ' . ((&columns * 113 + 117) / 235)
+exe 'vert 2resize ' . ((&columns * 121 + 117) / 235)
 tabedit app/view/itsmDetail.js
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -552,11 +547,11 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 111 + 98) / 197)
-exe '2resize ' . ((&lines * 25 + 31) / 62)
-exe 'vert 2resize ' . ((&columns * 83 + 98) / 197)
-exe '3resize ' . ((&lines * 34 + 31) / 62)
-exe 'vert 3resize ' . ((&columns * 83 + 98) / 197)
+exe 'vert 1resize ' . ((&columns * 144 + 117) / 235)
+exe '2resize ' . ((&lines * 22 + 27) / 55)
+exe 'vert 2resize ' . ((&columns * 90 + 117) / 235)
+exe '3resize ' . ((&lines * 30 + 27) / 55)
+exe 'vert 3resize ' . ((&columns * 90 + 117) / 235)
 argglobal
 setlocal keymap=
 setlocal noarabic
@@ -661,12 +656,12 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 239 - ((207 * winheight(0) + 30) / 60)
+let s:l = 251 - ((219 * winheight(0) + 26) / 53)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-239
-normal! 019l
+251
+normal! 037l
 wincmd w
 argglobal
 edit app/store/desktopITSM.js
@@ -773,11 +768,11 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 39 - ((30 * winheight(0) + 12) / 25)
+let s:l = 40 - ((39 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-39
+40
 normal! 01l
 wincmd w
 argglobal
@@ -885,18 +880,18 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 17) / 34)
+let s:l = 11 - ((10 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+11
+normal! 031l
 wincmd w
-exe 'vert 1resize ' . ((&columns * 111 + 98) / 197)
-exe '2resize ' . ((&lines * 25 + 31) / 62)
-exe 'vert 2resize ' . ((&columns * 83 + 98) / 197)
-exe '3resize ' . ((&lines * 34 + 31) / 62)
-exe 'vert 3resize ' . ((&columns * 83 + 98) / 197)
+exe 'vert 1resize ' . ((&columns * 144 + 117) / 235)
+exe '2resize ' . ((&lines * 22 + 27) / 55)
+exe 'vert 2resize ' . ((&columns * 90 + 117) / 235)
+exe '3resize ' . ((&lines * 30 + 27) / 55)
+exe 'vert 3resize ' . ((&columns * 90 + 117) / 235)
 tabedit app/view/ConfigurationView.js
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -911,11 +906,11 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 105 + 98) / 197)
-exe '2resize ' . ((&lines * 20 + 31) / 62)
-exe 'vert 2resize ' . ((&columns * 89 + 98) / 197)
-exe '3resize ' . ((&lines * 39 + 31) / 62)
-exe 'vert 3resize ' . ((&columns * 89 + 98) / 197)
+exe 'vert 1resize ' . ((&columns * 128 + 117) / 235)
+exe '2resize ' . ((&lines * 24 + 27) / 55)
+exe 'vert 2resize ' . ((&columns * 106 + 117) / 235)
+exe '3resize ' . ((&lines * 28 + 27) / 55)
+exe 'vert 3resize ' . ((&columns * 106 + 117) / 235)
 argglobal
 setlocal keymap=
 setlocal noarabic
@@ -1022,12 +1017,12 @@ setlocal wrap
 setlocal wrapmargin=0
 11
 normal zo
-let s:l = 60 - ((59 * winheight(0) + 30) / 60)
+let s:l = 35 - ((33 * winheight(0) + 26) / 53)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-60
-normal! 0
+35
+normal! 02l
 wincmd w
 argglobal
 edit app/model/settings.js
@@ -1134,12 +1129,12 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 12 - ((0 * winheight(0) + 10) / 20)
+let s:l = 17 - ((16 * winheight(0) + 12) / 24)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-12
-normal! 034l
+17
+normal! 02l
 wincmd w
 argglobal
 edit app/store/settings.js
@@ -1246,135 +1241,19 @@ setlocal nowinfixheight
 setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 11 - ((0 * winheight(0) + 19) / 39)
+let s:l = 11 - ((10 * winheight(0) + 14) / 28)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 11
 normal! 02l
 wincmd w
-exe 'vert 1resize ' . ((&columns * 105 + 98) / 197)
-exe '2resize ' . ((&lines * 20 + 31) / 62)
-exe 'vert 2resize ' . ((&columns * 89 + 98) / 197)
-exe '3resize ' . ((&lines * 39 + 31) / 62)
-exe 'vert 3resize ' . ((&columns * 89 + 98) / 197)
-tabedit app/view/itsmEditForm.js
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winheight=1 winwidth=1
-argglobal
-setlocal keymap=
-setlocal noarabic
-setlocal noautoindent
-setlocal balloonexpr=
-setlocal nobinary
-setlocal bufhidden=
-setlocal buflisted
-setlocal buftype=
-setlocal cindent
-setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
-setlocal cinoptions=
-setlocal cinwords=if,else,while,do,for,switch
-setlocal colorcolumn=
-setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
-setlocal commentstring=/*%s*/
-setlocal complete=.,w,b,u,t,i
-setlocal concealcursor=
-setlocal conceallevel=0
-setlocal completefunc=
-setlocal nocopyindent
-setlocal cryptmethod=
-setlocal nocursorbind
-setlocal nocursorcolumn
-setlocal nocursorline
-setlocal define=
-setlocal dictionary=
-setlocal nodiff
-setlocal equalprg=
-setlocal errorformat=
-setlocal noexpandtab
-if &filetype != 'javascript'
-setlocal filetype=javascript
-endif
-setlocal foldcolumn=0
-setlocal foldenable
-setlocal foldexpr=0
-setlocal foldignore=#
-setlocal foldlevel=0
-set foldmarker=<<<,>>>
-setlocal foldmarker=<<<,>>>
-set foldmethod=marker
-setlocal foldmethod=marker
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldtext=foldtext()
-setlocal formatexpr=
-setlocal formatoptions=tqcro
-setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
-setlocal grepprg=
-setlocal iminsert=0
-setlocal imsearch=0
-setlocal include=
-setlocal includeexpr=
-setlocal indentexpr=
-setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
-setlocal noinfercase
-setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=
-set linebreak
-setlocal linebreak
-setlocal nolisp
-setlocal nolist
-setlocal makeprg=
-setlocal matchpairs=(:),{:},[:]
-setlocal nomodeline
-setlocal modifiable
-setlocal nrformats=octal,hex
-setlocal nonumber
-setlocal numberwidth=4
-setlocal omnifunc=
-setlocal path=
-setlocal nopreserveindent
-setlocal nopreviewwindow
-setlocal quoteescape=\\
-setlocal noreadonly
-setlocal norelativenumber
-setlocal norightleft
-setlocal rightleftcmd=search
-setlocal noscrollbind
-setlocal shiftwidth=3
-setlocal noshortname
-setlocal nosmartindent
-setlocal softtabstop=0
-setlocal nospell
-setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
-setlocal spellfile=
-setlocal spelllang=en
-setlocal statusline=
-setlocal suffixesadd=
-setlocal swapfile
-setlocal synmaxcol=3000
-if &syntax != 'javascript'
-setlocal syntax=javascript
-endif
-setlocal tabstop=3
-setlocal tags=
-setlocal textwidth=0
-setlocal thesaurus=
-setlocal noundofile
-setlocal nowinfixheight
-setlocal nowinfixwidth
-setlocal wrap
-setlocal wrapmargin=0
-let s:l = 114 - ((113 * winheight(0) + 30) / 61)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-114
-normal! 018l
-tabnext 5
+exe 'vert 1resize ' . ((&columns * 128 + 117) / 235)
+exe '2resize ' . ((&lines * 24 + 27) / 55)
+exe 'vert 2resize ' . ((&columns * 106 + 117) / 235)
+exe '3resize ' . ((&lines * 28 + 27) / 55)
+exe 'vert 3resize ' . ((&columns * 106 + 117) / 235)
+tabnext 4
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif

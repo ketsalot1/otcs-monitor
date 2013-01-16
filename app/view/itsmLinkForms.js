@@ -97,7 +97,6 @@ Ext.define("itsm.view.itsmLinkForms", {
 
 	onSaveButtonTap: function() {
 		var obj = {};
-		debugger;
 		console.log("itsmLinkForms.save event fired. Active page index = " + this.getItems().items[1].activeIndex);
 		try {
 			if( this.getItems().items[0].activeIndex == 0 ) {
