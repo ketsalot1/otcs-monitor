@@ -40,7 +40,7 @@ database.queries = (function() {
 		"DBQ018": 'update t01_case set project_01 = ? where id_01 = ?;',
 		"DBQ019": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?, "Just Arrived",  "\n", CURDATE(), 99, 1 );',
 		"DBQ020": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?,?,?,?,?,? );',
-		"DBQ021": 'update t01_case set active_01 = 0 where case_01 = ?;',
+		"DBQ021": 'update t01_case set active_01 = 0, stop_01 = CURDATE() where case_01 = ?;',
 		"DBQ022": 'update t02_patch set status_02 = "archived" where id_02 = ?;',
 		"DBQ023": 'select id_02 as "id" from t02_patch where id_02 in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 0 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and id_02 not in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and status_02 not like "archived";',
 		"DBQ024": 'update t01_case set status_01 = ? where case_01 = ?;',
