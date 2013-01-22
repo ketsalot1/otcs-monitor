@@ -22,6 +22,7 @@ handle['archive_case'] = requestHandlers.archiveCase;
 handle['archive_patch'] = requestHandlers.archivePatch;
 handle['set_case_status'] = requestHandlers.updateCaseStatus;
 handle['jira'] = requestHandlers.updateCaseJira;
+handle['get_all_cases'] = requestHandlers.getAllCases;
 /* Assign service routines to keyword in the 
  * parameters in the incoming query. Assuming
  * the quesry contain parameter 'search', the 
