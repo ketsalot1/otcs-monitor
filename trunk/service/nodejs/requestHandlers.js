@@ -46,6 +46,7 @@ database.queries = (function() {
 		"DBQ024": 'update t01_case set status_01 = ? where case_01 = ?;',
 		"DBQ025": 'update t01_case set jira_01 = ? where case_01 = ?;',
 		"DBQ026": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
+		"DBQ027": 'select t01.id_01 "id", t01.case_01 "case", t04.short_text_04 "owner" from t01_case t01, t04_project t04 where t01.active_01 = 1 and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
 		"DBQ999": 'nope'
 	};
 }());
@@ -539,6 +540,7 @@ function linkPatch( callback, data, res ) {
 			database.tools.getConnection().query(database.queries.DBQ014, [dataObj.caseId], function (error, info) {
 				if( error ) throw({name: "DB Error", message: error});
 				logger.trace('requestHandler.LinkPatch: delete done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+				database.tools.closeConnection();
 				_linkPatch( callback, data, res );
 			});
 		} else {
@@ -641,7 +643,7 @@ function _send( callback, dataName, res ) {
 			// process details. Convert the line breaks into HTML markup.
 			logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
 			cases = rows;
-			connection.query(database.queries.DBQ026, function (error, rows, fields) {
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
 				for ( var iterator in cases ) {
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
@@ -885,24 +887,40 @@ function insertCase( callback, dataObj, res ) {
 
 	try {
 		data = JSON.parse(dataObj);
-		data.caseNo = data.caseNo * 1;
 		logger.trace('requestHandler.newCase: >' + data.caseNo + '< >' + data.caseSubject + '<' );
-		if( typeof data.caseNo != 'number' ) throw( { name: 'Case Number Invalid', message: 'The case number is empty or not a decimal number. Use digits only' } );
 		var connection = database.tools.getConnection();
-		connection.query(database.queries.DBQ019, [data.caseNo, data.caseSubject], function (error, info) {
+		connection.query(database.queries.DBQ005, [data.caseNo], function (error, rows, fields) {
 			if( error ) throw({name: "DB Error", message: error});
-			logger.trace('requestHandler.newCase: inserted with code: ' + info.insertId );
-			logger.trace('requestHandler.newCase: insert addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
-			resp.code = info.insertId;
-			resp.message = info.message;
-			res.writeHead(200, {
-				'Content-Type': 'text/plain'
-			});
-			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-			res.write(JSON.stringify(resp));
-			res.end('}},"responseDetails":null,"responseStatus":200}');
-			logger.trace('requestHandler.newPatch: response object flushed to client' );
-			database.tools.closeConnection();
+			if( rows.length > 0 ) {
+				resp.code = 0;
+				resp.message = "This case is already inserted";
+				res.writeHead(200, {
+					'Content-Type': 'text/plain'
+				});
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(resp));
+				res.end('}},"responseDetails":null,"responseStatus":200}');
+				logger.trace('requestHandler.newPatch: response object flushed to client' );
+				database.tools.closeConnection();
+			} else {
+				data.caseNo = data.caseNo * 1;
+				if( typeof data.caseNo != 'number' ) throw( { name: 'Case Number Invalid', message: 'The case number is empty or not a decimal number. Use digits only' } );
+				connection.query(database.queries.DBQ019, [data.caseNo, data.caseSubject], function (error, info) {
+					if( error ) throw({name: "DB Error", message: error});
+					logger.trace('requestHandler.newCase: inserted with code: ' + info.insertId );
+					logger.trace('requestHandler.newCase: insert addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+					resp.code = info.insertId;
+					resp.message = info.message;
+					res.writeHead(200, {
+						'Content-Type': 'text/plain'
+					});
+					res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+					res.write(JSON.stringify(resp));
+					res.end('}},"responseDetails":null,"responseStatus":200}');
+					logger.trace('requestHandler.newPatch: response object flushed to client' );
+					database.tools.closeConnection();
+				});
+			}
 		});
 	} 
 	catch(e) {
@@ -933,20 +951,37 @@ function insertCaseFull( callback, dataObj, res ) {
 		logger.trace('    caseOwner:' + data.caseOwner );
 		logger.trace('    caseActive:' + data.caseActive );
 		var connection = database.tools.getConnection();
-		connection.query(database.queries.DBQ020, [data.caseNo, data.caseSubject, data.caseStatus, data.caseDetails, data.caseStart, data.caseOwner, data.caseActive] , function (error, info) {
+
+		connection.query(database.queries.DBQ005, [data.caseNo], function (error, rows, fields) {
 			if( error ) throw({name: "DB Error", message: error});
-			logger.trace('requestHandler.newCase: inserted with code: ' + info.insertId );
-			logger.trace('requestHandler.newCase: insert addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
-			resp.code = info.insertId;
-			resp.message = info.message;
-			res.writeHead(200, {
-				'Content-Type': 'text/plain'
-			});
-			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-			res.write(JSON.stringify(resp));
-			res.end('}},"responseDetails":null,"responseStatus":200}');
-			logger.trace('requestHandler.newPatch: response object flushed to client' );
-			database.tools.closeConnection();
+			if( rows.length > 0 ) {
+				resp.code = 0;
+				resp.message = "This case is already inserted";
+				res.writeHead(200, {
+					'Content-Type': 'text/plain'
+				});
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(resp));
+				res.end('}},"responseDetails":null,"responseStatus":200}');
+				logger.trace('requestHandler.newPatch: response object flushed to client' );
+				database.tools.closeConnection();
+			} else {
+				connection.query(database.queries.DBQ020, [data.caseNo, data.caseSubject, data.caseStatus, data.caseDetails, data.caseStart, data.caseOwner, data.caseActive] , function (error, info) {
+					if( error ) throw({name: "DB Error", message: error});
+					logger.trace('requestHandler.newCase: inserted with code: ' + info.insertId );
+					logger.trace('requestHandler.newCase: insert addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+					resp.code = info.insertId;
+					resp.message = info.message;
+					res.writeHead(200, {
+						'Content-Type': 'text/plain'
+					});
+					res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+					res.write(JSON.stringify(resp));
+					res.end('}},"responseDetails":null,"responseStatus":200}');
+					logger.trace('requestHandler.newPatch: response object flushed to client' );
+					database.tools.closeConnection();
+				});
+			}
 		});
 	} 
 	catch(e) {
@@ -1118,6 +1153,42 @@ function updateCaseJira( callback, dataObj, res ) {
 // >>>
 
 
+function getAllCases( callback, dataObj, res ) {
+// <<<
+	try {
+		logger.trace('requestHandler.getAllCases' );
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ027, function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error});
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			logger.trace('requestHandler:getAllCases found >' + rows.length + '< cases' );
+			if( typeof(callback) != "undefined" ) {
+				res.write( callback + '(' );
+			}
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(rows));
+			res.write('}},"responseDetails":null,"responseStatus":200}');
+			if( typeof(callback) != "undefined" ) {
+				res.end(')');
+			} else {
+				res.end();
+			}
+			logger.trace('requestHandler.getAllPages: response object flushed to client' );
+			database.tools.closeConnection();
+		});
+	} 
+	catch(e) {
+		logger.error(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+		database.tools.closeConnection();
+	}
+}
+// >>>
+
+
 function updateCaseStatus( callback, dataObj, res ) {
 // <<<
 	var fileText;
@@ -1181,3 +1252,4 @@ exports.insertCaseFull = insertCaseFull;
 exports.archiveCase = archiveCase;
 exports.archivePatch = archivePatch;
 exports.updateCaseJira = updateCaseJira;
+exports.getAllCases = getAllCases;
