@@ -316,6 +316,32 @@ Ext.define("itsm.controller.itsm", {
 		var what = obj;
 		var mainView = this.getMainListContainer();
 
+		// refresh overview Data
+		var rec;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore("itsmOverview");
+
+		console.log('controller.itsm.onChartSwap:' );
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+
+		try {
+			var temp = s.getAt(0).get('case_total');
+			var cont = window.document.getElementById( 'itsm-statistics-container' );
+			cont.innerHTML = "<h1>Initialized alread: " + temp + "</h1>";
+		}
+		catch(e) {
+			console.error(e.message);
+		}
+
 		if( opentext.data.carouselVisibility !== "show" ) {
 			mainView.getLayout().setItemFlex(mainView.getItems().items[1], "2.7");
 			mainView.getLayout().setItemFlex(mainView.getItems().items[2], "2.3");

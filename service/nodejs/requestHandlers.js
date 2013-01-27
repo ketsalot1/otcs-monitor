@@ -22,7 +22,8 @@ database.queries = (function() {
 	return {
 		"DBQ001": 'select long_text_04 "category", short_text_04 "code" from t04_project;',
 		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
-		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
+//		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
+		"DBQ003": 'select name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
 		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
 		"DBQ006": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 like "open" order by name_02 asc;',
@@ -47,6 +48,7 @@ database.queries = (function() {
 		"DBQ025": 'update t01_case set jira_01 = ? where case_01 = ?;',
 		"DBQ026": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
 		"DBQ027": 'select t01.id_01 "id", t01.case_01 "case", t04.short_text_04 "owner" from t01_case t01, t04_project t04 where t01.active_01 = 1 and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
+		"DBQ028": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.status_01 like "%lose%" and t01.active_01 = 1 order by t01.case_01 asc;',
 		"DBQ999": 'nope'
 	};
 }());
@@ -381,6 +383,12 @@ function describe( callback, dataName, res ) {
 			rows[idx].title = "Patches for current products";
 			rows[idx].code = "Patches";
 
+			idx++;
+			rows[idx] = {};
+			rows[idx].category = "Recently Closed";
+			rows[idx].title = "Cases still monitored but closed recently";
+			rows[idx].code = "Transient";
+
 			// Format reply
 			res.write( callback + '(' );
 			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
@@ -462,6 +470,23 @@ function listPatches( callback, params, res ) {
 } // >>>
 
 
+function send( callback, dataName, res ) {
+// <<<
+	var dbq;
+	logger.trace('requestHandler.send: requested project: ' + dataName );
+
+	if( dataName == "Patches" ) {
+		sendPatches( callback, res );
+		return;
+	}
+	if( dataName == "Transient" ) {
+		sendUnarchived( callback, res );
+		return;
+	}
+	sendCases( callback, dataName, res );
+} // >>>
+
+
 function sendPatches( callback, res ) {
 // <<<
 	var results = [];
@@ -485,7 +510,7 @@ function sendPatches( callback, res ) {
 					results[iterator].status = "open";
 					results[iterator].details = "<ol>";
 					for ( var cntr in rows ) {
-						if( results[iterator].description != rows[cntr].patch ) continue;
+						if( results[iterator].patch != rows[cntr].patch ) continue;
 						results[iterator].details += "<li>";
 						results[iterator].details += rows[cntr].description;
 						logger.trace('requestHandler.preparePatches: adding case >' + rows[cntr].description + '< to patch >' + results[iterator].description + '<' );
@@ -514,18 +539,138 @@ function sendPatches( callback, res ) {
 } // >>>
 
 
-function send( callback, dataName, res ) {
+function sendCases( callback, dataName, res ) {
 // <<<
-	var dbq;
-	logger.trace('requestHandler.send: requested project: ' + dataName );
-
-	if( dataName == "Patches" ) {
-		sendPatches( callback, res );
-		return;
-	} else {
-		_send( callback, dataName, res );
+	var cases = [];
+	logger.trace('requestHandler.sendCases: requested project: ' + dataName );
+	try {
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ002, [dataName], function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error});
+			res.writeHead(200, {
+				'Content-Type': 'x-application/json'
+			});
+			// Add terminators (leaf property) in the generated list and
+			// process details. Convert the line breaks into HTML markup.
+			logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
+			cases = rows;
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+				for ( var iterator in cases ) {
+					cases[iterator].leaf="true";
+					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
+					cases[iterator].patches = "P: ";
+					for ( var iter in rows ) {
+						if( cases[iterator].id != rows[iter].id ) continue; 
+						logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+						cases[iterator].patches += rows[iter].patch;
+						cases[iterator].patches += ", ";
+					}
+				}
+				res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(cases));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end(')');
+				logger.trace('requestHandler.send: response object flushed to client' );
+				database.tools.closeConnection();
+			});
+		});
+	}
+	catch(e) {
+		logger.error("Exception: " + e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
 	}
 } // >>>
+
+
+function sendUnarchived( callback, res ) {
+// <<<
+	var cases = [];
+	logger.trace('requestHandler.sendUnarchived: requested project: ' );
+	try {
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ028, function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error});
+			res.writeHead(200, {
+				'Content-Type': 'x-application/json'
+			});
+			// Add terminators (leaf property) in the generated list and
+			// process details. Convert the line breaks into HTML markup.
+			logger.trace( 'requestHandler: sendUnarchived processing list of cases long >' + rows.length + '<' );
+			cases = rows;
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+				for ( var iterator in cases ) {
+					cases[iterator].leaf="true";
+					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
+					cases[iterator].patches = "P: ";
+					for ( var iter in rows ) {
+						if( cases[iterator].id != rows[iter].id ) continue; 
+						logger.trace( 'requestHandler: sendUnarchived found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+						cases[iterator].patches += rows[iter].patch;
+						cases[iterator].patches += ", ";
+					}
+				}
+				res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(cases));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end(')');
+				logger.trace('requestHandler.sendUnarchived: response object flushed to client' );
+				database.tools.closeConnection();
+			});
+		});
+	}
+	catch(e) {
+		logger.error("Exception: " + e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+} // >>>
+
+
+function save( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var d = new Date();
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		data.caseTxt = database.tools.toLocalDate(d) + ' - ' + data.caseTxt;
+		logger.trace('requestHandler.save: (' + data.caseId + ') ' + data.caseNo + ": " + data.caseTxt );
+		if( typeof data.caseNo != 'string' ) throw( { name: 'Case Number Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ009, [data.caseId], function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error});
+			if( rows.length != 1 ) throw({name: "DB Error", message: "too meany entries returned for single ID. Check database table T01_CASE"});
+			details = data.caseTxt + "\n" + rows[0].details;
+			connection.query(database.queries.DBQ010, [details, data.caseId], function (error, info) {
+				if( error ) throw({name: "DB Error", message: error});
+				resp.code = "1000";
+				resp.message = "OK";
+				res.writeHead(200, {
+					'Content-Type': 'text/plain'
+				});
+				res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(resp));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end(')');
+				logger.trace('requestHandler.save: response object flushed to client' );
+				database.tools.closeConnection();
+			});
+		});
+	} 
+	catch(e) {
+		logger.error(e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
 
 
 function linkPatch( callback, data, res ) {
@@ -625,95 +770,6 @@ function createProject( callback, data, res ) {
 		res.end(e.name + ': ' + e.message);
 	}
 } 
-// >>>
-
-
-function _send( callback, dataName, res ) {
-// <<<
-	var cases = [];
-	logger.trace('requestHandler._send: requested project: ' + dataName );
-	try {
-		var connection = database.tools.getConnection();
-		connection.query(database.queries.DBQ002, [dataName], function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
-			res.writeHead(200, {
-				'Content-Type': 'x-application/json'
-			});
-			// Add terminators (leaf property) in the generated list and
-			// process details. Convert the line breaks into HTML markup.
-			logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
-			cases = rows;
-			connection.query(database.queries.DBQ008, function (error, rows, fields) {
-				for ( var iterator in cases ) {
-					cases[iterator].leaf="true";
-					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-					cases[iterator].patches = "P: ";
-					for ( var iter in rows ) {
-						if( cases[iterator].id != rows[iter].id ) continue; 
-						logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
-						cases[iterator].patches += rows[iter].patch;
-						cases[iterator].patches += ", ";
-					}
-				}
-				res.write( callback + '(' );
-				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-				res.write(JSON.stringify(cases));
-				res.write('}},"responseDetails":null,"responseStatus":200}');
-				res.end(')');
-				logger.trace('requestHandler.send: response object flushed to client' );
-				database.tools.closeConnection();
-			});
-		});
-	}
-	catch(e) {
-		logger.error("Exception: " + e.name + " - " + e.message );
-		res.writeHead(404);
-		res.end(e.name + ': ' + e.message);
-	}
-} // >>>
-
-
-function save( callback, dataObj, res ) {
-// <<<
-	var fileText;
-	var data;
-	var details;
-	var d = new Date();
-	var resp = {};
-
-	try {
-		data = JSON.parse(dataObj);
-		data.caseTxt = database.tools.toLocalDate(d) + ' - ' + data.caseTxt;
-		logger.trace('requestHandler.save: (' + data.caseId + ') ' + data.caseNo + ": " + data.caseTxt );
-		if( typeof data.caseNo != 'string' ) throw( { name: 'Case Number Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
-		var connection = database.tools.getConnection();
-		connection.query(database.queries.DBQ009, [data.caseId], function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
-			if( rows.length != 1 ) throw({name: "DB Error", message: "too meany entries returned for single ID. Check database table T01_CASE"});
-			details = data.caseTxt + "\n" + rows[0].details;
-			connection.query(database.queries.DBQ010, [details, data.caseId], function (error, info) {
-				if( error ) throw({name: "DB Error", message: error});
-				resp.code = "1000";
-				resp.message = "OK";
-				res.writeHead(200, {
-					'Content-Type': 'text/plain'
-				});
-				res.write( callback + '(' );
-				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-				res.write(JSON.stringify(resp));
-				res.write('}},"responseDetails":null,"responseStatus":200}');
-				res.end(')');
-				logger.trace('requestHandler.save: response object flushed to client' );
-				database.tools.closeConnection();
-			});
-		});
-	} 
-	catch(e) {
-		logger.error(e.name + " - " + e.message );
-		res.writeHead(404);
-		res.end(e.name + ': ' + e.message);
-	}
-}
 // >>>
 
 
@@ -1232,6 +1288,61 @@ function updateCaseStatus( callback, dataObj, res ) {
 // >>>
 //
 
+
+function itsmOverview( callback, empty, res ) {
+// <<<
+	var dbq;
+	var reply = [];
+	logger.trace('requestHandler.itsmOverview ' );
+	try {
+		logger.trace('requestHandler.itsmOverview: constructing descriptor file' );
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ001, function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error});
+			res.writeHead(200, {
+				'Content-Type': 'x-application/json'
+			});
+			// Add time stamp to the response
+			var tmp = new Date();
+			for ( var iterator in rows ) {
+				rows[iterator].title="OTCS Cases (" + database.tools.toLocalDate(tmp) + ")";
+			}
+			logger.trace( 'requestHandler.describe: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
+			// Add new entry for patches
+			var idx = rows.length;
+			reply[0] = {};
+			reply[0].case_total = 64;
+			reply[0].case_pending = 58;
+			reply[0].case_closed = 4;
+			reply[0].case_delta_w2w = 4;
+			reply[0].case_delta_m2m = -3;
+			reply[0].patches_total = 12;
+
+			// Format reply
+			if( typeof(callback) != "undefined" ) {
+				res.write( callback + '(' );
+			}
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(reply));
+			res.write('}},"responseDetails":null,"responseStatus":200}');
+			if( typeof(callback) != "undefined" ) {
+				res.end(')');
+			} else {
+				res.end();
+			}
+			database.tools.closeConnection();
+		});
+	}
+	catch(e) {
+		logger.error("Exception: " + e.name + ": " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+
+
 exports.search = search;
 exports.describe = describe;
 exports.send = send;
@@ -1253,3 +1364,5 @@ exports.archiveCase = archiveCase;
 exports.archivePatch = archivePatch;
 exports.updateCaseJira = updateCaseJira;
 exports.getAllCases = getAllCases;
+exports.sendUnarchived=sendUnarchived;
+exports.itsmOverview=itsmOverview;

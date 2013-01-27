@@ -129,6 +129,10 @@ Ext.define("itsm.view.MainListContainer", {
 >>> */
 		};
 
+		/* Right after the main view is initialized, get the data for the 
+		 * the application. Use sequenced call, as the server side cannot 
+		 * handle paralell requests yet!
+		 */
 		opentext.data.carousel = itsmOverview;
 
 		var settings = Ext.getStore('settings');
@@ -143,10 +147,16 @@ Ext.define("itsm.view.MainListContainer", {
 			/* new command structure */
 			s.getProxy().setUrl( hostName + '?cmd=describe&data=Descriptor' );
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
-
-//			s.getProxy().setUrl( hostName + '?otcs=Descriptor' );
-//			console.log( 'controller: setting Descriptors URL=' + s.getProxy().getUrl() );
-			s.load();
+			s.load( function( record, operation, success ) {
+				console.log("descriptor loaded, requesting statistics ... " );
+				// First after on DB calls returns, trigger "initialize the Statistics" ...
+				var o = Ext.getStore('itsmOverview');
+				o.getProxy().setUrl( hostName + '?cmd=get_overview&data={"n":"n"}' );
+				console.log( 'controller: URL=' + s.getProxy().getUrl() );
+				o.load(function( record, operation, success ) {
+					console.log("Statistic loaded");
+				}, this );
+			}, this );
 		} 
 		catch(e) {
 			console.error('Configuration purged or not saved yet')
