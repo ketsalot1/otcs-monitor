@@ -20,7 +20,7 @@ var database = {};
 database.queries = (function() {
 // <<<
 	return {
-		"DBQ001": 'select long_text_04 "category", short_text_04 "code" from t04_project;',
+		"DBQ001": 'select project_04 "id", long_text_04 "title", short_text_04 "code" from t04_project;',
 		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 //		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ003": 'select name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
@@ -373,19 +373,24 @@ function describe( callback, dataName, res ) {
 			// Add time stamp to the response
 			var tmp = new Date();
 			for ( var iterator in rows ) {
-				rows[iterator].title="OTCS Cases (" + database.tools.toLocalDate(tmp) + ")";
+				if( rows[iterator].id == 99 )
+					rows[iterator].category = "Dashboard";
+				else 
+					rows[iterator].category="OTCS Cases (" + database.tools.toLocalDate(tmp) + ")";
 			}
 			logger.trace( 'requestHandler.describe: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
 			// Add new entry for patches
 			var idx = rows.length;
 			rows[idx] = {};
-			rows[idx].category = "Patches";
+			rows[idx].id = 98;
+			rows[idx].category = "Dashboard";
 			rows[idx].title = "Patches for current products";
 			rows[idx].code = "Patches";
 
 			idx++;
 			rows[idx] = {};
-			rows[idx].category = "Recently Closed";
+			rows[idx].id = 97;
+			rows[idx].category = "Dashboard";
 			rows[idx].title = "Cases still monitored but closed recently";
 			rows[idx].code = "Transient";
 
