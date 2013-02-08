@@ -4,7 +4,7 @@ Ext.define("itsm.view.itsmOverview", {
 	config: {
 		items: [
 			{
-				html: "<div id='itsm-statistics-container'><h1>Not Initialized</h1></div>",
+html: "<div id='itsm-statistics-container' style='margin: 0px 8px; padding-top: 10px'><h1>Not Initialized</h1></div>",
 
 //				xtype: 'aboutscreen',
 /*

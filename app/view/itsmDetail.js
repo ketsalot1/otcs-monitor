@@ -91,6 +91,19 @@ Ext.define("itsm.view.itsmDetail", {
 				}
         };
 
+			var favoritesButton = { 
+            xtype: "button",
+            ui: "action",
+            iconCls: "favorites",
+            iconMask: true,
+				badgeText: "",
+				hidden: true,
+				id: "itsmdetail_fav",
+				listeners: {
+					tap: { fn: this.onDetailFavorites, scope: this }
+				}
+        };
+
         var bottomToolbar = {
             xtype: "toolbar",
             docked: "bottom",
@@ -98,6 +111,7 @@ Ext.define("itsm.view.itsmDetail", {
             items: [
 					backButton,
 					{ xtype: 'spacer' },
+					favoritesButton,
 					archiveButton,
 					userButton,
 					linkButton,
@@ -295,6 +309,15 @@ Ext.define("itsm.view.itsmDetail", {
 		}
 	},
 
+	onDetailFavorites: function() {
+		console.log("view.itsmDetail.setFavorites");
+		if( typeof opentext.data.activeCase == 'object' ) { 
+			this.fireEvent("detailSetFavoritesCommand", opentext.data.activeCase);
+		} else {
+			console.error("No case selected");
+		}
+	},
+
 	setUIfromMask: function( mask ) {
 		Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
 				// if the button is the change iconCls button, continue
@@ -324,6 +347,11 @@ Ext.define("itsm.view.itsmDetail", {
 			if (button.getId() === 'itsmdetail_archive') {
 				console.log( 'itsmdetail_archive found!' );
 				setUIControlfromMask( button, mask.arch );
+			}
+			if (button.getId() === 'itsmdetail_fav') {
+				console.log( 'itsmdetail_fav found!' );
+				setUIControlfromMask( button, mask.arch );
+				button.setBadgeText("");
 			}
 		});
 	},

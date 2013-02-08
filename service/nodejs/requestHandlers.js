@@ -49,6 +49,11 @@ database.queries = (function() {
 		"DBQ026": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
 		"DBQ027": 'select t01.id_01 "id", t01.case_01 "case", t04.short_text_04 "owner" from t01_case t01, t04_project t04 where t01.active_01 = 1 and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
 		"DBQ028": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.status_01 like "%lose%" and t01.active_01 = 1 order by t01.case_01 asc;',
+		"DBQ029": 'insert into t05_fav values( ? );',
+		"DBQ030": 'delete from t05_fav where id_01 = ?;',
+		"DBQ031": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04, t05_fav t05 where t01.project_01 = t04.project_04 and t01.id_01 = t05.id_01 order by t01.case_01 asc;',
+
+
 		"DBQ999": 'nope'
 	};
 }());
@@ -185,7 +190,7 @@ function testDB( callback, q, res ) {
 		try {
 			var connection = database.tools.getConnection();
 			connection.query(q, function (error, rows, fields) {
-				if( error ) throw({name: "DB Error", message: error});
+				if( error ) throw({name: "DB Error", message: error.toString()});
 				res.writeHead(200, {
 					'Content-Type': 'x-application/json'
 				});
@@ -217,7 +222,7 @@ function queryDB( callback, q, res ) {
 		try {
 			var connection = database.tools.getConnection();
 			connection.query(q, function (error, rows, fields) {
-				if( error ) throw({name: "DB Error", message: error});
+				if( error ) throw({name: "DB Error", message: error.toString()});
 				res.writeHead(200, {
 					'Content-Type': 'x-application/json'
 				});
@@ -259,7 +264,7 @@ function search( callback, data, res ) {
 		else 
 			q = database.queries.DBQ026; 
 		connection.query(q, [pattern], function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			res.writeHead(200, {
 				'Content-Type': 'x-application/json'
 			});
@@ -306,7 +311,7 @@ function search_in_file( callback, pattern, res ) {
 		var counter = 0;
 		logger.trace('requestHandlers.search: read file /tmp/all');
 		try {
-			if( error ) throw error;
+			if( error ) throw error.toString();
 			me._data.cases = JSON.parse(data);
 			me._data.reply = JSON.parse(data);
 			me._data.reply.support_data.feed.entries = [];
@@ -345,7 +350,7 @@ function send_file( callback, dataName, res ) {
 			'Content-Type': 'text/plain'
 		});
 		try {
-			if( error ) throw error;
+			if( error ) throw error.toString();
 			res.end(callback + '(' + data + ')');
 		}
 		catch(e) {
@@ -366,7 +371,7 @@ function describe( callback, dataName, res ) {
 		logger.trace('requestHandler.describe: constructing descriptor file' );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ001, function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			res.writeHead(200, {
 				'Content-Type': 'x-application/json'
 			});
@@ -394,6 +399,13 @@ function describe( callback, dataName, res ) {
 			rows[idx].title = "Cases still monitored but closed recently";
 			rows[idx].code = "Transient";
 
+			idx++;
+			rows[idx] = {};
+			rows[idx].id = 96;
+			rows[idx].category = "Dashboard";
+			rows[idx].title = "Favorites: Follow up on those cases";
+			rows[idx].code = "Favorites";
+
 			// Format reply
 			res.write( callback + '(' );
 			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
@@ -418,7 +430,7 @@ function listProjects( callback, params, res ) {
 	try {
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ017, function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			res.writeHead(200, {
 				'Content-Type': 'x-application/json'
 			});
@@ -453,7 +465,7 @@ function listPatches( callback, params, res ) {
 			throw({ name:"DB Error", message: "No query specifified." });
 		var connection = database.tools.getConnection();
 		connection.query(dbq, function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			res.writeHead(200, {
 				'Content-Type': 'x-application/json'
 			});
@@ -488,6 +500,10 @@ function send( callback, dataName, res ) {
 		sendUnarchived( callback, res );
 		return;
 	}
+	if( dataName == "Favorites" ) {
+		sendFavorites( callback, res );
+		return;
+	}
 	sendCases( callback, dataName, res );
 } // >>>
 
@@ -499,7 +515,7 @@ function sendPatches( callback, res ) {
 	try {
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ003, function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			res.writeHead(200, {
 				'Content-Type': 'x-application/json'
 			});
@@ -508,7 +524,7 @@ function sendPatches( callback, res ) {
 			logger.trace('requestHandler.preparePatches: list of patches stored in results. Length = ' + results.length + '<' );
 			connection.query(database.queries.DBQ004, function (error, rows, fields) {
 				var idc = 0;
-				if( error ) throw( {name: "DB Error", "message": error });
+				if( error ) throw( {name: "DB Error", "message": error.toString() });
 				for ( var iterator in results ) {
 					logger.trace('requestHandler.preparePatches: assigning details to patch >' + results[iterator].description + '<' );
 					results[iterator].id = idc++;
@@ -551,7 +567,7 @@ function sendCases( callback, dataName, res ) {
 	try {
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ002, [dataName], function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			res.writeHead(200, {
 				'Content-Type': 'x-application/json'
 			});
@@ -589,6 +605,51 @@ function sendCases( callback, dataName, res ) {
 } // >>>
 
 
+function sendFavorites( callback, res ) {
+// <<<
+	var cases = [];
+	logger.trace('requestHandler.sendFavorites: requested ' );
+	try {
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ031, function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error.toString()});
+			res.writeHead(200, {
+				'Content-Type': 'x-application/json'
+			});
+			// Add terminators (leaf property) in the generated list and
+			// process details. Convert the line breaks into HTML markup.
+			logger.trace( 'requestHandler: sendFavorites processing list of cases long >' + rows.length + '<' );
+			cases = rows;
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+				for ( var iterator in cases ) {
+					cases[iterator].leaf="true";
+					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
+					cases[iterator].patches = "P: ";
+					for ( var iter in rows ) {
+						if( cases[iterator].id != rows[iter].id ) continue; 
+						logger.trace( 'requestHandler: sendFavorites found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+						cases[iterator].patches += rows[iter].patch;
+						cases[iterator].patches += ", ";
+					}
+				}
+				res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(cases));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end(')');
+				logger.trace('requestHandler.send: response object flushed to client' );
+				database.tools.closeConnection();
+			});
+		});
+	}
+	catch(e) {
+		logger.error("Exception: " + e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+} // >>>
+
+
 function sendUnarchived( callback, res ) {
 // <<<
 	var cases = [];
@@ -596,7 +657,7 @@ function sendUnarchived( callback, res ) {
 	try {
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ028, function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			res.writeHead(200, {
 				'Content-Type': 'x-application/json'
 			});
@@ -649,11 +710,11 @@ function save( callback, dataObj, res ) {
 		if( typeof data.caseNo != 'string' ) throw( { name: 'Case Number Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ009, [data.caseId], function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			if( rows.length != 1 ) throw({name: "DB Error", message: "too meany entries returned for single ID. Check database table T01_CASE"});
 			details = data.caseTxt + "\n" + rows[0].details;
 			connection.query(database.queries.DBQ010, [details, data.caseId], function (error, info) {
-				if( error ) throw({name: "DB Error", message: error});
+				if( error ) throw({name: "DB Error", message: error.toString()});
 				resp.code = "1000";
 				resp.message = "OK";
 				res.writeHead(200, {
@@ -688,7 +749,7 @@ function linkPatch( callback, data, res ) {
 //		if( typeof dataObj.patchId != 'int' ) throw( { name: 'Patch ID Invalid', message: 'The patch id invalid or too complex. Use digits only' } );
 		if( dataObj.drop == 1 ) {
 			database.tools.getConnection().query(database.queries.DBQ014, [dataObj.caseId], function (error, info) {
-				if( error ) throw({name: "DB Error", message: error});
+				if( error ) throw({name: "DB Error", message: error.toString()});
 				logger.trace('requestHandler.LinkPatch: delete done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 				database.tools.closeConnection();
 				_linkPatch( callback, data, res );
@@ -706,6 +767,61 @@ function linkPatch( callback, data, res ) {
 // >>>
 
 
+function favorites( callback, data, res ) {
+// <<<
+	var resp = {};
+	var dataObj = JSON.parse(data);
+	logger.trace('requestHandler.favorites: case >' + dataObj.caseId + '< with patch id >' + dataObj.caseNo + '<'  );
+	try {
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ029, [dataObj.caseId], function (error, info) {
+			if( error ) {
+				if( error.toString().indexOf('ER_DUP_ENTRY' ) > -1 ) {
+					logger.trace('requestHandler.favorites: set. Record removed from favorites');
+					connection.query(database.queries.DBQ030, [dataObj.caseId], function( error, info ) {
+						if( error ) throw({name: "DB Error", message:"Cannot remove from t05_fav"});
+						logger.trace('requestHandler.favorites: set. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+						resp.code = info.affectedRows;
+						resp.message = info.message;
+						res.writeHead(200, {
+							'Content-Type': 'text/plain'
+						});
+						res.write( callback + '(' );
+						res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+						res.write(JSON.stringify(resp));
+						res.write('}},"responseDetails":null,"responseStatus":200}');
+						res.end(')');
+						database.tools.closeConnection();
+					});
+				} else {
+					throw({name: "DB Error", message: "Cannot insert new ID into t05_fav table"});
+				}
+			} else {
+				logger.trace('requestHandler.favorites: set. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+				resp.code = info.affectedRows;
+				resp.message = info.message;
+				res.writeHead(200, {
+					'Content-Type': 'text/plain'
+				});
+				res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(resp));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end(')');
+				database.tools.closeConnection();
+			}
+		});
+	}
+	catch(e) {
+		logger.error("Exception: " + e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+		database.tools.closeConnection();
+	}
+} 
+// >>>
+
+
 function _linkPatch( callback, data, res ) {
 // <<<
 	var resp = {};
@@ -716,7 +832,7 @@ function _linkPatch( callback, data, res ) {
 //		if( typeof dataObj.patchId != 'int' ) throw( { name: 'Patch ID Invalid', message: 'The patch id invalid or too complex. Use digits only' } );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ007, [dataObj.caseId, dataObj.patchId], function (error, info) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			logger.trace('requestHandler.LinkPatch: update done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 			resp.code = info.affectedRows;
 			resp.message = info.message;
@@ -749,10 +865,10 @@ function createProject( callback, data, res ) {
 	try {
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ015, function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			dataObj.id = rows[0].id;
 			connection.query(database.queries.DBQ016, [dataObj.id, dataObj.name, dataObj.description], function (error, info) {
-				if( error ) throw({name: "DB Error", message: error});
+				if( error ) throw({name: "DB Error", message: error.toString()});
 				logger.trace('requestHandler.createProject: inser done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 				resp.code = info.affectedRows;
 				resp.message = info.message;
@@ -791,14 +907,14 @@ function archivePatch( callback, dataObj, res ) {
 		g_pending = 0;
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ023, function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			for ( var iterator in rows ) {
 				g_pending++;
 				logger.trace('requestHandler.archivePatch: first query: pending counter value: ' + g_pending );
 				var id = rows[iterator].id;
 				logger.trace( 'requestHandler.archivePatch: archiving patch id >' + id + '< ' );
 				connection.query(database.queries.DBQ022, [id], function (error, info) {
-					if( error ) throw({name: "DB Error", message: error});
+					if( error ) throw({name: "DB Error", message: error.toString()});
 					logger.trace('requestHandler.archivePatch: updated with code: ' + info.insertId );
 					logger.trace('requestHandler.archivePatch: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 					logger.trace('requestHandler.archivePatch: second query: pending counter value: ' + g_pending );
@@ -853,7 +969,7 @@ function archiveCase( callback, dataObj, res ) {
 		logger.trace('requestHandler.archiveCase: (' + data.caseNo + ') ' );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ021, [data.caseNo], function (error, info) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			logger.trace('requestHandler.archiveCase: updated with code: ' + info.insertId );
 			logger.trace('requestHandler.archiveCase: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 			resp.code = info.insertId;
@@ -951,7 +1067,7 @@ function insertCase( callback, dataObj, res ) {
 		logger.trace('requestHandler.newCase: >' + data.caseNo + '< >' + data.caseSubject + '<' );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ005, [data.caseNo], function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			if( rows.length > 0 ) {
 				resp.code = 0;
 				resp.message = "This case is already inserted";
@@ -967,7 +1083,7 @@ function insertCase( callback, dataObj, res ) {
 				data.caseNo = data.caseNo * 1;
 				if( typeof data.caseNo != 'number' ) throw( { name: 'Case Number Invalid', message: 'The case number is empty or not a decimal number. Use digits only' } );
 				connection.query(database.queries.DBQ019, [data.caseNo, data.caseSubject], function (error, info) {
-					if( error ) throw({name: "DB Error", message: error});
+					if( error ) throw({name: "DB Error", message: error.toString()});
 					logger.trace('requestHandler.newCase: inserted with code: ' + info.insertId );
 					logger.trace('requestHandler.newCase: insert addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 					resp.code = info.insertId;
@@ -1014,7 +1130,7 @@ function insertCaseFull( callback, dataObj, res ) {
 		var connection = database.tools.getConnection();
 
 		connection.query(database.queries.DBQ005, [data.caseNo], function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			if( rows.length > 0 ) {
 				resp.code = 0;
 				resp.message = "This case is already inserted";
@@ -1028,7 +1144,7 @@ function insertCaseFull( callback, dataObj, res ) {
 				database.tools.closeConnection();
 			} else {
 				connection.query(database.queries.DBQ020, [data.caseNo, data.caseSubject, data.caseStatus, data.caseDetails, data.caseStart, data.caseOwner, data.caseActive] , function (error, info) {
-					if( error ) throw({name: "DB Error", message: error});
+					if( error ) throw({name: "DB Error", message: error.toString()});
 					logger.trace('requestHandler.newCase: inserted with code: ' + info.insertId );
 					logger.trace('requestHandler.newCase: insert addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 					resp.code = info.insertId;
@@ -1067,7 +1183,7 @@ function newPatch( callback, dataObj, res ) {
 		if( typeof data.patchName != 'string' ) throw( { name: 'Patch Name Invalid', message: 'The patch name is empty or not a string. Use string only' } );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ012, [data.patchName], function (error, info) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			logger.trace('requestHandler.newPatch: inserted with code: ' + info.insertId );
 			logger.trace('requestHandler.newPatch: insert addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 			resp.code = info.insertId;
@@ -1107,7 +1223,7 @@ function updatePatch( callback, dataObj, res ) {
 		data.patchETA = database.tools.toDBDate(database.tools.parseDate(data.patchETA));
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ013, [data.patchETA, data.patchStatus, data.patchId], function (error, info) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			logger.trace('requestHandler.updatePatch: update done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 			resp.code = info.affectedRows;
 			resp.message = info.message;
@@ -1146,7 +1262,7 @@ function updateProject( callback, dataObj, res ) {
 		if( typeof data.projectId != 'string' ) throw( { name: 'Project Code Invalid', message: 'The project number is invalid or too complex. Use digits only' } );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ018, [data.projectId, data.caseId], function (error, info) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			logger.trace('requestHandler.updatePatch: update done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 			resp.code = info.affectedRows;
 			resp.message = info.message;
@@ -1183,7 +1299,7 @@ function updateCaseJira( callback, dataObj, res ) {
 		logger.trace('requestHandler.updateCaseJira - Case: ' + data.caseNo + ' with Jira >' + data.jiraId + '<' );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ025, [data.jiraId, data.caseNo], function (error, info) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			logger.trace('requestHandler.updateCaseStatus: update done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 			resp.code = info.affectedRows;
 			resp.message = info.message;
@@ -1220,7 +1336,7 @@ function getAllCases( callback, dataObj, res ) {
 		logger.trace('requestHandler.getAllCases' );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ027, function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			res.writeHead(200, {
 				'Content-Type': 'text/plain'
 			});
@@ -1262,7 +1378,7 @@ function updateCaseStatus( callback, dataObj, res ) {
 		logger.trace('requestHandler.updateCaseStatus: ' + data.caseNo + ' with status >' + data.caseStatus + '<' );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ024, [data.caseStatus, data.caseNo], function (error, info) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			logger.trace('requestHandler.updateCaseStatus: update done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 			resp.code = info.affectedRows;
 			resp.message = info.message;
@@ -1303,7 +1419,7 @@ function itsmOverview( callback, empty, res ) {
 		logger.trace('requestHandler.itsmOverview: constructing descriptor file' );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ001, function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error});
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			res.writeHead(200, {
 				'Content-Type': 'x-application/json'
 			});
@@ -1371,3 +1487,4 @@ exports.updateCaseJira = updateCaseJira;
 exports.getAllCases = getAllCases;
 exports.sendUnarchived=sendUnarchived;
 exports.itsmOverview=itsmOverview;
+exports.favorites=favorites;
