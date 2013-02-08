@@ -43,7 +43,8 @@ Ext.define("itsm.controller.itsm", {
 					detailEditCommand: "onEditCase",
 					detailLinkPatchCommand: "onPatchLinkCase",
 					detailLinkProjectCommand: "onProjectLinkCase",
-					detailSetArchivedCommand: "onArchiveCase"
+					detailSetArchivedCommand: "onArchiveCase",
+					detailSetFavoritesCommand: "onSetFavorites"
 				},
 				configurationView: {
 					saveSettingsCommand:	"onSaveSettings",
@@ -166,6 +167,40 @@ Ext.define("itsm.controller.itsm", {
 
 //			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
 			this.activateMainView();
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+// >>>
+
+	onSetFavorites : function(caseNo) {
+// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('patches');
+		var rec, data, hostName;
+
+		console.log("controller.itsm.onSetFavorites: requesting Case Attention for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			s.getProxy().setUrl( hostName + '?cmd=favorites&data={"caseId": "' + caseNo.id+ '", "caseNo": "' + caseNo.case  + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+
+//			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
+//			this.activateMainView();
+			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+
+			Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+				if (button.getId() === 'itsmdetail_fav') {
+					console.log( 'itsmdetail_fav found!' );
+					button.setBadgeText("1");
+				}
+			});
 		}
 		catch(e) {
 			Ext.Msg.alert( e.name );
@@ -336,7 +371,10 @@ Ext.define("itsm.controller.itsm", {
 		try {
 			var temp = s.getAt(0).get('case_total');
 			var cont = window.document.getElementById( 'itsm-statistics-container' );
-			cont.innerHTML = "<h1>Initialized alread: " + temp + "</h1>";
+			cont.innerHTML = "<p>Total cases monitored: " + temp + "<br/>";
+			temp = s.getAt(0).get('case_pending');
+			cont.innerHTML += "Cases Active:  " + temp + "<br/>";
+			cont.innerHTML += "</p>";
 		}
 		catch(e) {
 			console.error(e.message);
