@@ -175,20 +175,14 @@ Ext.define("itsm.view.itsmDetail", {
 									lm.back = 0;
 									if( post.get('patches') != null ) {
 										if( post.get('jira') != null ) {
-                  					this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('patches') + '<br/><br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/>' + post.get('details'));
+                  					this.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
 										} else {
-                  					this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('patches') + '<br/><br/>Jira:[none]</a><br/><br/>' + post.get('details'));
+                  					this.getDetailCard().setHtml("<div style=\"font-size: 1.1em; font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[none]<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
 										}
-										lm.link = 1;
-										lm.user = 1;
-										lm.edit = 1;
-										lm.arch = 1;
+										lm.ctrls = 1;
 									} else {
-                  				this.getDetailCard().setHtml(post.get('case') + '<br/><br/>' + post.get('status') + '<br/><br/>' + post.get('details'));
-										lm.link = 0;
-										lm.user = 0;
-										lm.edit = 0;
-										lm.arch = 0;
+                  				this.getDetailCard().setHtml("<div style=\"font-size: 1.1em; font-weight: bold;\">Schedule: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+										lm.ctrls = 0;
 									}
 									this.getParent().setUIfromMask( lm );
 					},
@@ -198,10 +192,7 @@ Ext.define("itsm.view.itsmDetail", {
 //   								this.callParent(arguments);
 
 									lm.back = 1;
-									lm.link = 0;
-									lm.user = 0;
-									lm.edit = 0;
-									lm.arch = 0;
+									lm.ctrls = 0;
 									this.getParent().setUIfromMask( lm );
 					}
 				}
@@ -252,10 +243,7 @@ Ext.define("itsm.view.itsmDetail", {
 		var lm = {};
 		console.log("view.itsmDetail.Back");
 		lm.back = 1;
-		lm.link = 0;
-		lm.user = 0;
-		lm.edit = 0;
-		lm.arch = 0;
+		lm.ctrls = 0;
 		this.setUIfromMask( lm );
 		this.fireEvent("detailBackCommand", this);
 	},
@@ -334,23 +322,23 @@ Ext.define("itsm.view.itsmDetail", {
 			}
 			if (button.getId() === 'itsmdetail_edit') {
 				console.log( 'itsmdetail_edit found!' );
-				setUIControlfromMask( button, mask.edit );
+				setUIControlfromMask( button, mask.ctrls );
 			}
 			if (button.getId() === 'itsmdetail_link') {
 				console.log( 'itsmdetail_link found!' );
-				setUIControlfromMask( button, mask.link );
+				setUIControlfromMask( button, mask.ctrls );
 			}
 			if (button.getId() === 'itsmdetail_user') {
 				console.log( 'itsmdetail_user found!' );
-				setUIControlfromMask( button, mask.user );
+				setUIControlfromMask( button, mask.ctrls );
 			}
 			if (button.getId() === 'itsmdetail_archive') {
 				console.log( 'itsmdetail_archive found!' );
-				setUIControlfromMask( button, mask.arch );
+				setUIControlfromMask( button, mask.ctrls );
 			}
 			if (button.getId() === 'itsmdetail_fav') {
 				console.log( 'itsmdetail_fav found!' );
-				setUIControlfromMask( button, mask.arch );
+				setUIControlfromMask( button, mask.ctrls );
 				button.setBadgeText("");
 			}
 		});

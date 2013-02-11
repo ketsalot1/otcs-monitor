@@ -369,12 +369,28 @@ Ext.define("itsm.controller.itsm", {
 		}
 
 		try {
+			var o, c, misc;
 			var temp = s.getAt(0).get('case_total');
+			var htmlCode;
 			var cont = window.document.getElementById( 'itsm-statistics-container' );
-			cont.innerHTML = "<p>Total cases monitored: " + temp + "<br/>";
-			temp = s.getAt(0).get('case_pending');
-			cont.innerHTML += "Cases Active:  " + temp + "<br/>";
-			cont.innerHTML += "</p>";
+			htmlCode = "<p><div style=\"font-width: bold; font-size: 1.2em\">Support Case Statistics</div>Total cases monitored: " + temp + "<br/>";
+			o = s.getAt(0).get('case_opened_week_count');
+			c = s.getAt(0).get('case_closed_week_count');
+			temp = o - c;
+			misc = s.getAt(0).get('case_closed_week_avg');
+			htmlCode += ("Cases week-to-week: " + temp + " (" + o + "/" + c + ")<br/>");
+			htmlCode += ("<div style=\"font-width= normal; font-size: 0.8em\">&nbsp;&nbsp;average closing age: " + misc + " days</div>");
+			o = s.getAt(0).get('case_opened_month_count');
+			c = s.getAt(0).get('case_closed_month_count');
+			temp = o - c;
+			misc = s.getAt(0).get('case_closed_month_avg');
+			htmlCode += ("Cases month-to-month: " + temp + " (" + o + "/" + c + ")<br/>");
+			htmlCode += ("<div style=\"font-width= normal; font-size: 0.8em\">&nbsp;&nbsp;average closing age: " + misc + " days</div>");
+			temp = s.getAt(0).get('patches_total');
+			htmlCode += ("Patches in production: " + temp + "<br/>");
+
+			htmlCode += "</p>";
+			cont.innerHTML = htmlCode;
 		}
 		catch(e) {
 			console.error(e.message);
