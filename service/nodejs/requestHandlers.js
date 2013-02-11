@@ -24,7 +24,8 @@ database.queries = (function() {
 		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 //		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ003": 'select name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
-		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
+//		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
+		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
 		"DBQ006": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ007": 'insert into t03_link (id_01, id_02) values ( ?,? );',
@@ -53,6 +54,16 @@ database.queries = (function() {
 		"DBQ030": 'delete from t05_fav where id_01 = ?;',
 		"DBQ031": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04, t05_fav t05 where t01.project_01 = t04.project_04 and t01.id_01 = t05.id_01 order by t01.case_01 asc;',
 
+		"opened_last_week": 'select count(*) from t01_case where start_01 > date_sub(curdate(),interval 7 day) order by start_01 asc;',
+		"closed_last_week": 'select count(*) from t01_case where stop_01 > date_sub(curdate(),interval 7 day) order by start_01 asc;',
+		"new_last_week": 'select count(*) from t01_case where start_01 > subtime(now(),"7 1:1:1.000002") order by start_01 asc;',
+		"closed_last_week": 'select count(*) as "count", avg(datediff(stop_01,start_01)) as "average" from t01_case where stop_01 > date_sub(curdate(),interval 7 day) order by start_01 asc;',
+		"closed_last_months": 'select count(*) as "count", avg(datediff(stop_01,start_01)) as "average" from t01_case where stop_01 > date_sub(curdate(),interval 31 day) order by start_01 asc;',
+
+		"DBQ032": 'select count(*) as "count" from t01_case where active_01 = 1;',
+		"DBQ033": 'select count(*) as "count" from t01_case where start_01 > date_sub(curdate(),interval ? day);',
+		"DBQ034": 'select count(*) as "count", ceiling(avg(datediff(stop_01,start_01))) as "average" from t01_case where stop_01 > date_sub(curdate(),interval ? day);',
+		"DBQ035": 'select count(*) as "count" from t02_patch where status_02 = "open";',
 
 		"DBQ999": 'nope'
 	};
@@ -275,7 +286,7 @@ function search( callback, data, res ) {
 				for ( var iterator in cases ) {
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-					cases[iterator].patches = "P: ";
+					cases[iterator].patches = "Patch: ";
 					for ( var iter in rows ) {
 						if( cases[iterator].id != rows[iter].id ) continue; 
 						logger.trace( 'requestHandler: search found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
@@ -579,7 +590,7 @@ function sendCases( callback, dataName, res ) {
 				for ( var iterator in cases ) {
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-					cases[iterator].patches = "P: ";
+					cases[iterator].patches = "Patch: ";
 					for ( var iter in rows ) {
 						if( cases[iterator].id != rows[iter].id ) continue; 
 						logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
@@ -624,7 +635,7 @@ function sendFavorites( callback, res ) {
 				for ( var iterator in cases ) {
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-					cases[iterator].patches = "P: ";
+					cases[iterator].patches = "Patch: ";
 					for ( var iter in rows ) {
 						if( cases[iterator].id != rows[iter].id ) continue; 
 						logger.trace( 'requestHandler: sendFavorites found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
@@ -669,7 +680,7 @@ function sendUnarchived( callback, res ) {
 				for ( var iterator in cases ) {
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-					cases[iterator].patches = "P: ";
+					cases[iterator].patches = "Patch: ";
 					for ( var iter in rows ) {
 						if( cases[iterator].id != rows[iter].id ) continue; 
 						logger.trace( 'requestHandler: sendUnarchived found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
@@ -1414,44 +1425,51 @@ function itsmOverview( callback, empty, res ) {
 // <<<
 	var dbq;
 	var reply = [];
+	reply[0] = {};
 	logger.trace('requestHandler.itsmOverview ' );
 	try {
 		logger.trace('requestHandler.itsmOverview: constructing descriptor file' );
 		var connection = database.tools.getConnection();
-		connection.query(database.queries.DBQ001, function (error, rows, fields) {
+		connection.query(database.queries.DBQ032, function (error, rows, fields) {
 			if( error ) throw({name: "DB Error", message: error.toString()});
-			res.writeHead(200, {
-				'Content-Type': 'x-application/json'
+			reply[0].case_total = rows[0].count;
+			connection.query(database.queries.DBQ033, 7, function( error, rows, fields ) {
+				if( error ) throw({name: "DB Error", message: error.toString()});
+				reply[0].case_opened_week_count = rows[0].count;
+				connection.query(database.queries.DBQ034, 7, function( error, rows, fields ) {
+					if( error ) throw({name: "DB Error", message: error.toString()});
+					reply[0].case_closed_week_count = rows[0].count;
+					reply[0].case_closed_week_avg = rows[0].average;
+					connection.query(database.queries.DBQ033, 31, function( error, rows, fields ) {
+						if( error ) throw({name: "DB Error", message: error.toString()});
+						reply[0].case_opened_month_count = rows[0].count;
+						connection.query(database.queries.DBQ034, 31, function( error, rows, fields ) {
+							if( error ) throw({name: "DB Error", message: error.toString()});
+							reply[0].case_closed_month_count = rows[0].count;
+							reply[0].case_closed_month_avg = rows[0].average;
+							connection.query(database.queries.DBQ035, function( error, rows, fields ) {
+								if( error ) throw({name: "DB Error", message: error.toString()});
+								reply[0].patches_total = rows[0].count;
+								res.writeHead(200, {
+									'Content-Type': 'x-application/json'
+								});
+								if( typeof(callback) != "undefined" ) {
+									res.write( callback + '(' );
+								}
+								res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+								res.write(JSON.stringify(reply));
+								res.write('}},"responseDetails":null,"responseStatus":200}');
+								if( typeof(callback) != "undefined" ) {
+									res.end(')');
+								} else {
+									res.end();
+								}
+								database.tools.closeConnection();
+							});
+						});
+					});
+				});
 			});
-			// Add time stamp to the response
-			var tmp = new Date();
-			for ( var iterator in rows ) {
-				rows[iterator].title="OTCS Cases (" + database.tools.toLocalDate(tmp) + ")";
-			}
-			logger.trace( 'requestHandler.describe: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
-			// Add new entry for patches
-			var idx = rows.length;
-			reply[0] = {};
-			reply[0].case_total = 64;
-			reply[0].case_pending = 58;
-			reply[0].case_closed = 4;
-			reply[0].case_delta_w2w = 4;
-			reply[0].case_delta_m2m = -3;
-			reply[0].patches_total = 12;
-
-			// Format reply
-			if( typeof(callback) != "undefined" ) {
-				res.write( callback + '(' );
-			}
-			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-			res.write(JSON.stringify(reply));
-			res.write('}},"responseDetails":null,"responseStatus":200}');
-			if( typeof(callback) != "undefined" ) {
-				res.end(')');
-			} else {
-				res.end();
-			}
-			database.tools.closeConnection();
 		});
 	}
 	catch(e) {

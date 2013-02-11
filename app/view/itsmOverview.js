@@ -23,7 +23,7 @@ html: "<div id='itsm-statistics-container' style='margin: 0px 8px; padding-top: 
 //				store: 'itsm.store.itsmOverview',
 //				itemTpl: '<div><p>Total monitored cases: {case_total}</p><p>Actively monitored: {case_pending}</p><p>Recently closed: {case_closed}</p><p>Week to week: {case_delta_w2w}</p><p>Month to Month: {case_delta_m2m}</p><p>Patches in construction: {patches_total}</p></div>',
 */
-				style: 'background-color: #5AB5F5; border: 4px; border-radius: 12px; border-shadow: 7px 7px 7px blue;'
+				style: 'color: white; background-color: #125c91; border: 4px; border-radius: 12px; border-shadow: 7px 7px 7px blue;'
 			},
 			{
 //				html: "<div id='otcs-image-container-6m'></div>"
