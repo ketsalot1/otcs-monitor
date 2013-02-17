@@ -4,25 +4,7 @@ Ext.define("itsm.view.itsmOverview", {
 	config: {
 		items: [
 			{
-html: "<div id='itsm-statistics-container' style='margin: 0px 8px; padding-top: 10px'><h1>Not Initialized</h1></div>",
-
-//				xtype: 'aboutscreen',
-/*
-				xtype: 'dataview',
-
-				store: {
-					fields: ['case_total', 'case_pending', 'case_closed', 'case_delta_w2w', 'case_delta_m2m', 'patches_total'],
-					data: [
-						{ case_total: 64, case_pending: 4, case_closed: 12, case_delta_w2w: -4, case_delta_m2m: 3, patches_total: 12 }
-        			]
-    			},
-//				store: 'itsm.store.itsmOverview',
-
-				itemTpl: 'Cases {case_total} totaly, {case_pending} not processed',
-
-//				store: 'itsm.store.itsmOverview',
-//				itemTpl: '<div><p>Total monitored cases: {case_total}</p><p>Actively monitored: {case_pending}</p><p>Recently closed: {case_closed}</p><p>Week to week: {case_delta_w2w}</p><p>Month to Month: {case_delta_m2m}</p><p>Patches in construction: {patches_total}</p></div>',
-*/
+				html: "<div id='itsm-statistics-container' style='margin: 0px 8px; padding-top: 10px'><h1>Not Initialized</h1></div>",
 				style: 'color: white; background-color: #125c91; border: 4px; border-radius: 12px; border-shadow: 7px 7px 7px blue;'
 			},
 			{

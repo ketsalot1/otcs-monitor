@@ -26,6 +26,7 @@ Ext.define("itsm.view.patchMainView", {
 			xtype: "button",
 			ui: "action",
 			text: "Save",
+			id: "patch_mgmt_save",
 			listeners: {
 				tap: { fn: this.onSaveButtonTap, scope: this }
 			}
@@ -78,10 +79,22 @@ Ext.define("itsm.view.patchMainView", {
 
 	onCarouselItemChange: function() {
 		console.log("patchView.carousel.itemChange event fired. Active page index = " + this.getItems().items[1].activeIndex);
+		Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+			if (button.getId() === 'patch_mgmt_save') {
+				console.log( 'patch management panel: save button found!' );
+				button.setBadgeText("");
+			}
+		});
 	},
 
 	onBackButtonTap: function() {
 		console.log("patchView.carousel.back event fired");
+		Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+			if (button.getId() === 'patch_mgmt_save') {
+				console.log( 'patch management panel: save button found!' );
+				button.setBadgeText("");
+			}
+		});
 		this.fireEvent("backCommand", this);
 	},
 

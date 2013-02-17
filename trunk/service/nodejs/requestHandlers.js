@@ -61,8 +61,8 @@ database.queries = (function() {
 		"closed_last_months": 'select count(*) as "count", avg(datediff(stop_01,start_01)) as "average" from t01_case where stop_01 > date_sub(curdate(),interval 31 day) order by start_01 asc;',
 
 		"DBQ032": 'select count(*) as "count" from t01_case where active_01 = 1;',
-		"DBQ033": 'select count(*) as "count" from t01_case where start_01 > date_sub(curdate(),interval ? day);',
-		"DBQ034": 'select count(*) as "count", ceiling(avg(datediff(stop_01,start_01))) as "average" from t01_case where stop_01 > date_sub(curdate(),interval ? day);',
+		"DBQ033": 'select count(*) as "count" from t01_case where start_01 >= date_sub(curdate(),interval ? day);',
+		"DBQ034": 'select count(*) as "count", ceiling(avg(datediff(stop_01,start_01))) as "average" from t01_case where stop_01 >= date_sub(curdate(),interval ? day);',
 		"DBQ035": 'select count(*) as "count" from t02_patch where status_02 = "open";',
 
 		"DBQ999": 'nope'
