@@ -6,18 +6,18 @@ inoremap <F12> :TlistToggle
 inoremap <Down> g<Down>a
 inoremap <Up> g<Up>a
 map! <S-Insert> <MiddleMouse>
-imap ã :call JCommentWriter()
-imap î :call SearchInvalidComment(0)a
 imap ð :call SearchInvalidComment(1)a
+imap î :call SearchInvalidComment(0)a
+imap ã :call JCommentWriter()
 nmap gx <Plug>NetrwBrowseX
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
 noremap <F12> :TlistToggle
 noremap <Down> g<Down>
 noremap <Up> g<Up>
 map <S-Insert> <MiddleMouse>
-map ã :call JCommentWriter()
-map î :call SearchInvalidComment(0)
 map ð :call SearchInvalidComment(1)
+map î :call SearchInvalidComment(0)
+map ã :call JCommentWriter()
 iabbr }- }h%?\w:nohl:call JCommentWriter()
 let &cpo=s:cpo_save
 unlet s:cpo_save
@@ -49,7 +49,7 @@ set spellfile=~/custom.en.ascii.add
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
 set tabstop=3
 set termencoding=utf-8
-set window=43
+set window=45
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
@@ -188,12 +188,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 51 - ((0 * winheight(0) + 21) / 42)
+let s:l = 60 - ((9 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-51
-normal! 047l
+60
+normal! 010l
 wincmd w
 argglobal
 edit app/controller/itsm.js
@@ -294,14 +294,14 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-315
+350
 normal zo
-let s:l = 334 - ((19 * winheight(0) + 21) / 42)
+let s:l = 386 - ((27 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-334
-normal! 01l
+386
+normal! 03l
 wincmd w
 exe 'vert 1resize ' . ((&columns * 96 + 95) / 190)
 exe 'vert 2resize ' . ((&columns * 93 + 95) / 190)
@@ -320,9 +320,9 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
-exe '2resize ' . ((&lines * 18 + 22) / 44)
+exe '2resize ' . ((&lines * 18 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 23 + 22) / 44)
+exe '3resize ' . ((&lines * 25 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
 argglobal
 setlocal keymap=
@@ -422,12 +422,16 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 173 - ((158 * winheight(0) + 21) / 42)
+15
+normal zo
+15
+normal zo
+let s:l = 151 - ((21 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-173
-normal! 059l
+151
+normal! 047l
 wincmd w
 argglobal
 edit app/model/itsm.js
@@ -634,7 +638,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 54 - ((53 * winheight(0) + 11) / 23)
+let s:l = 54 - ((53 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -642,9 +646,9 @@ normal! zt
 normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
-exe '2resize ' . ((&lines * 18 + 22) / 44)
+exe '2resize ' . ((&lines * 18 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 23 + 22) / 44)
+exe '3resize ' . ((&lines * 25 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
 tabedit app/view/itsmDetail.js
 set splitbelow splitright
@@ -661,9 +665,9 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
-exe '2resize ' . ((&lines * 21 + 22) / 44)
+exe '2resize ' . ((&lines * 21 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 20 + 22) / 44)
+exe '3resize ' . ((&lines * 22 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
 argglobal
 setlocal keymap=
@@ -767,12 +771,12 @@ setlocal wrapmargin=0
 normal zo
 32
 normal zo
-let s:l = 155 - ((71 * winheight(0) + 21) / 42)
+let s:l = 185 - ((13 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-155
-normal! 0
+185
+normal! 011l
 wincmd w
 argglobal
 edit app/store/desktopITSM.js
@@ -979,7 +983,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal wrap
 setlocal wrapmargin=0
-let s:l = 3 - ((2 * winheight(0) + 10) / 20)
+let s:l = 3 - ((0 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -987,9 +991,9 @@ normal! zt
 normal! 09l
 wincmd w
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
-exe '2resize ' . ((&lines * 21 + 22) / 44)
+exe '2resize ' . ((&lines * 21 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 20 + 22) / 44)
+exe '3resize ' . ((&lines * 22 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
 tabedit app/view/itsmOverview.js
 set splitbelow splitright
@@ -1009,13 +1013,13 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 25 + 22) / 44)
+exe '1resize ' . ((&lines * 25 + 23) / 46)
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
-exe '2resize ' . ((&lines * 16 + 22) / 44)
+exe '2resize ' . ((&lines * 18 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 95 + 95) / 190)
-exe '3resize ' . ((&lines * 21 + 22) / 44)
+exe '3resize ' . ((&lines * 21 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
-exe '4resize ' . ((&lines * 20 + 22) / 44)
+exe '4resize ' . ((&lines * 22 + 23) / 46)
 exe 'vert 4resize ' . ((&columns * 94 + 95) / 190)
 argglobal
 setlocal keymap=
@@ -1112,15 +1116,14 @@ setlocal textwidth=0
 setlocal thesaurus=
 setlocal nowinfixheight
 setlocal nowinfixwidth
-set nowrap
-setlocal nowrap
+setlocal wrap
 setlocal wrapmargin=0
-let s:l = 25 - ((24 * winheight(0) + 12) / 25)
+let s:l = 8 - ((7 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-25
-normal! 01l
+8
+normal! 03l
 wincmd w
 argglobal
 edit app/view/aboutScreen.js
@@ -1221,12 +1224,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 7 - ((6 * winheight(0) + 8) / 16)
+let s:l = 4 - ((3 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-7
-normal! 027l
+4
+normal! 010l
 wincmd w
 argglobal
 edit app/store/itsmOverview.js
@@ -1327,12 +1330,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 16 - ((15 * winheight(0) + 10) / 21)
+let s:l = 9 - ((8 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-16
-normal! 09l
+9
+normal! 06l
 wincmd w
 argglobal
 edit app/model/itsmOverview.js
@@ -1433,20 +1436,20 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 12 - ((11 * winheight(0) + 10) / 20)
+let s:l = 11 - ((10 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-12
-normal! 03l
+11
+normal! 047l
 wincmd w
-exe '1resize ' . ((&lines * 25 + 22) / 44)
+exe '1resize ' . ((&lines * 25 + 23) / 46)
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
-exe '2resize ' . ((&lines * 16 + 22) / 44)
+exe '2resize ' . ((&lines * 18 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 95 + 95) / 190)
-exe '3resize ' . ((&lines * 21 + 22) / 44)
+exe '3resize ' . ((&lines * 21 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
-exe '4resize ' . ((&lines * 20 + 22) / 44)
+exe '4resize ' . ((&lines * 22 + 23) / 46)
 exe 'vert 4resize ' . ((&columns * 94 + 95) / 190)
 tabedit [s]
 set splitbelow splitright
@@ -1572,10 +1575,11 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
+exe '1resize ' . ((&lines * 42 + 23) / 46)
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
-exe '2resize ' . ((&lines * 21 + 22) / 44)
+exe '2resize ' . ((&lines * 21 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 20 + 22) / 44)
+exe '3resize ' . ((&lines * 20 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
 argglobal
 setlocal keymap=
@@ -1894,10 +1898,11 @@ normal! zt
 1
 normal! 0
 wincmd w
+exe '1resize ' . ((&lines * 42 + 23) / 46)
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
-exe '2resize ' . ((&lines * 21 + 22) / 44)
+exe '2resize ' . ((&lines * 21 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 20 + 22) / 44)
+exe '3resize ' . ((&lines * 20 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
 tabedit app/view/itsmLinkForms.js
 set splitbelow splitright
@@ -2025,10 +2030,11 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
+exe '1resize ' . ((&lines * 42 + 23) / 46)
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
-exe '2resize ' . ((&lines * 21 + 22) / 44)
+exe '2resize ' . ((&lines * 21 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 20 + 22) / 44)
+exe '3resize ' . ((&lines * 20 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
 argglobal
 setlocal keymap=
@@ -2347,10 +2353,11 @@ normal! zt
 1
 normal! 0
 wincmd w
+exe '1resize ' . ((&lines * 42 + 23) / 46)
 exe 'vert 1resize ' . ((&columns * 95 + 95) / 190)
-exe '2resize ' . ((&lines * 21 + 22) / 44)
+exe '2resize ' . ((&lines * 21 + 23) / 46)
 exe 'vert 2resize ' . ((&columns * 94 + 95) / 190)
-exe '3resize ' . ((&lines * 20 + 22) / 44)
+exe '3resize ' . ((&lines * 20 + 23) / 46)
 exe 'vert 3resize ' . ((&columns * 94 + 95) / 190)
 tabedit app/view/itsmJiraAssignForm.js
 set splitbelow splitright

@@ -711,7 +711,18 @@ Ext.define("itsm.controller.itsm", {
 			db.getProxy().setUrl( hostName + '?cmd=update_patch&data={"patchId": "' + obj.patchId + '","patchETA":"' + obj.patchETA + '","patchStatus":"' + obj.patchStatus + '"}' );
 //			db.getProxy().setUrl( hostName + '?cmd=update_patch&data={"patchId": "' + obj.patchId + '","patchETA":"2013-03-21","patchStatus":"' + obj.patchStatus + '"}' );
 			console.log('Request >' + db.getProxy().getUrl() + '<' );
-			db.load();
+			db.load( function( record, operation, success ) {
+				Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+					if (button.getId() === 'patch_mgmt_save') {
+						console.log( 'patch management panel: save button found!' );
+						if( success == true ) {
+							button.setBadgeText("Saved!");
+						} else {
+							button.setBadgeText("Failed!");
+						}
+					}
+				});
+			});
 
 //			this.activateMainView();
 		}

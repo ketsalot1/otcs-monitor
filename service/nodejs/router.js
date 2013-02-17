@@ -14,7 +14,7 @@ function route(handle, params, res) {
 		console.log("Exception caught" );
 		console.log(e.name);
 		res.writeHead(404);
-		res.end(e.name + ': ' + e.message);
+		res.end(e.name);
 	}
 }
 
