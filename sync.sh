@@ -63,7 +63,12 @@ service/tomcat/senchaTouchServlet.java \
 service/tomcat/web.xml \
 resources/images/otcs-5y.png \
 resources/images/otcs-1y.png \
-resources/images/otcs-6m.png"
+resources/images/otcs-6m.png \
+resources/images/unassigned.png \
+resources/images/favorites.png \
+resources/images/cases.png \
+resources/images/patches.png \
+resources/images/archive.png"
 
 echo "** Synchronize SVN Application OTCS Monitor **"
 

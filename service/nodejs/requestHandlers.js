@@ -389,10 +389,13 @@ function describe( callback, dataName, res ) {
 			// Add time stamp to the response
 			var tmp = new Date();
 			for ( var iterator in rows ) {
-				if( rows[iterator].id == 99 )
+				if( rows[iterator].id == 99 ) {
 					rows[iterator].category = "Dashboard";
-				else 
+					rows[iterator].icon = "resources/images/unassigned.png";
+				} else {
 					rows[iterator].category="OTCS Cases (" + database.tools.toLocalDate(tmp) + ")";
+					rows[iterator].icon = "resources/images/cases.png";
+				}
 			}
 			logger.trace( 'requestHandler.describe: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
 			// Add new entry for patches
@@ -400,22 +403,25 @@ function describe( callback, dataName, res ) {
 			rows[idx] = {};
 			rows[idx].id = 98;
 			rows[idx].category = "Dashboard";
-			rows[idx].title = "Patches for current products";
+			rows[idx].title = "Patches";
 			rows[idx].code = "Patches";
+			rows[idx].icon = "resources/images/patches.png";
 
 			idx++;
 			rows[idx] = {};
 			rows[idx].id = 97;
 			rows[idx].category = "Dashboard";
-			rows[idx].title = "Cases still monitored but closed recently";
+			rows[idx].title = "Close-wait cases";
 			rows[idx].code = "Transient";
+			rows[idx].icon = "resources/images/archive.png";
 
 			idx++;
 			rows[idx] = {};
 			rows[idx].id = 96;
 			rows[idx].category = "Dashboard";
-			rows[idx].title = "Favorites: Follow up on those cases";
+			rows[idx].title = "Favorites";
 			rows[idx].code = "Favorites";
+			rows[idx].icon = "resources/images/favorites.png";
 
 			// Format reply
 			res.write( callback + '(' );

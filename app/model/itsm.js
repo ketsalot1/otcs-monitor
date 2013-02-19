@@ -6,6 +6,7 @@ Ext.define("itsm.model.itsm", {
             { name: 'id', type: 'int' },
             { name: 'category', type: 'string' },
             { name: 'title', type: 'string' },
+            { name: 'icon', type: 'string' },
             { name: 'code', type: 'string' }
         ],
         validations: [
