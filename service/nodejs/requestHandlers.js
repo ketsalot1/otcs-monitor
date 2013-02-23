@@ -391,10 +391,10 @@ function describe( callback, dataName, res ) {
 			for ( var iterator in rows ) {
 				if( rows[iterator].id == 99 ) {
 					rows[iterator].category = "Dashboard";
-					rows[iterator].icon = "resources/images/unassigned.png";
+					rows[iterator].icon = "resources/images/iUnassigned-2.png";
 				} else {
 					rows[iterator].category="OTCS Cases (" + database.tools.toLocalDate(tmp) + ")";
-					rows[iterator].icon = "resources/images/cases.png";
+					rows[iterator].icon = "resources/images/iCases.png";
 				}
 			}
 			logger.trace( 'requestHandler.describe: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
@@ -405,15 +405,15 @@ function describe( callback, dataName, res ) {
 			rows[idx].category = "Dashboard";
 			rows[idx].title = "Patches";
 			rows[idx].code = "Patches";
-			rows[idx].icon = "resources/images/patches.png";
+			rows[idx].icon = "resources/images/iPatches.png";
 
 			idx++;
 			rows[idx] = {};
 			rows[idx].id = 97;
 			rows[idx].category = "Dashboard";
-			rows[idx].title = "Close-wait cases";
+			rows[idx].title = "Archive queue";
 			rows[idx].code = "Transient";
-			rows[idx].icon = "resources/images/archive.png";
+			rows[idx].icon = "resources/images/iArchive2.png";
 
 			idx++;
 			rows[idx] = {};
@@ -421,7 +421,7 @@ function describe( callback, dataName, res ) {
 			rows[idx].category = "Dashboard";
 			rows[idx].title = "Favorites";
 			rows[idx].code = "Favorites";
-			rows[idx].icon = "resources/images/favorites.png";
+			rows[idx].icon = "resources/images/iStar.png";
 
 			// Format reply
 			res.write( callback + '(' );
@@ -798,8 +798,8 @@ function favorites( callback, data, res ) {
 					connection.query(database.queries.DBQ030, [dataObj.caseId], function( error, info ) {
 						if( error ) throw({name: "DB Error", message:"Cannot remove from t05_fav"});
 						logger.trace('requestHandler.favorites: set. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
-						resp.code = info.affectedRows;
-						resp.message = info.message;
+						resp.value = 0
+						resp.text = info.message;
 						res.writeHead(200, {
 							'Content-Type': 'text/plain'
 						});
@@ -815,8 +815,8 @@ function favorites( callback, data, res ) {
 				}
 			} else {
 				logger.trace('requestHandler.favorites: set. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
-				resp.code = info.affectedRows;
-				resp.message = info.message;
+				resp.value = 1;
+				resp.text = info.message;
 				res.writeHead(200, {
 					'Content-Type': 'text/plain'
 				});
