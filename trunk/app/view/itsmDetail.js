@@ -22,6 +22,7 @@ Ext.define("itsm.view.itsmDetail", {
 		fullscreen: true,
 		scrollable:'vertical',
 		title: 'OTCS Monitor',
+		ui: 'round',
 		listeners: {
 			painted: function() {
 				console.log("itsmDetail.paint!");

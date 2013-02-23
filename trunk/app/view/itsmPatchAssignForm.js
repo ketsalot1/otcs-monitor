@@ -32,6 +32,7 @@ Ext.define("itsm.view.itsmPatchAssignForm", {
 			name: 'unlink',
 			label: 'Drop other links?',
 			labelWidth: '62%',
+			ui: 'round'
 		};
 
 		var formFrame = {
