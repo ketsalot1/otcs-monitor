@@ -1,6 +1,7 @@
 var server = require("./service");
 var router = require("./router");
 var requestHandlers = require("./requestHandlers");
+var mongoHandlers = require("./mongoHandlers");
 
 var handle = {};
 handle['search'] = requestHandlers.search;
@@ -31,5 +32,9 @@ handle['favorites'] = requestHandlers.favorites;
  * search handler is used to service the call.
  * Similar pattern is true for 'send' parameter
  */
+
+handle['mdb_test'] = mongoHandlers.testMDB;
+handle['mdb_select'] = mongoHandlers.selectMDB;
+handle['mdb_cursor'] = mongoHandlers.cursorMDB;
 
 server.service( router.route, handle );
