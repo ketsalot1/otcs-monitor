@@ -16,6 +16,39 @@ var url = format("mongodb://%s:%s@%s:%s/%s"
  
 */
 
+function insertMailMDB( callback, data, res ) {
+// <<<
+	var obj = JSON.parse(data);
+
+	try {
+		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
+			if(err) throw err;
+	
+			console.log("connected");
+	
+			var collection = db.collection('test');
+	
+			var doc = {"case": obj.caseNo, "htmlbody":obj.htmlBody};
+	
+			collection.insert(obj, {w:1}, function(err, result) {
+				if(err) throw err;
+				res.writeHead(200, {
+					'Content-Type': 'x-application/json'
+				});
+	
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write('[{"respCode":"200"},{"respMessage":"OK"}]}},"responseDetails":null,"responseStatus":200}');
+				res.end();
+			});  
+		});
+	}
+	catch(e) {
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
 function testMDB( callback, data, res ) {
 // <<<
 	MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
@@ -232,4 +265,5 @@ Db.connect(format("mongodb://%s:%s/node-mongo-examples?w=1", host, port), functi
 exports.testMDB = testMDB;
 exports.selectMDB = selectMDB;
 exports.cursorMDB = cursorMDB;
+exports.insertMailMDB = insertMailMDB;
 

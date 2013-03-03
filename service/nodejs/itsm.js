@@ -36,5 +36,6 @@ handle['favorites'] = requestHandlers.favorites;
 handle['mdb_test'] = mongoHandlers.testMDB;
 handle['mdb_select'] = mongoHandlers.selectMDB;
 handle['mdb_cursor'] = mongoHandlers.cursorMDB;
+handle['mdb_insert_mail'] = mongoHandlers.insertMailMDB;
 
 server.service( router.route, handle );
