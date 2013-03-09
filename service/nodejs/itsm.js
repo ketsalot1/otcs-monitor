@@ -37,5 +37,8 @@ handle['mdb_test'] = mongoHandlers.testMDB;
 handle['mdb_select'] = mongoHandlers.selectMDB;
 handle['mdb_cursor'] = mongoHandlers.cursorMDB;
 handle['mdb_insert_mail'] = mongoHandlers.insertMailMDB;
+handle['mdb_remove_mail'] = mongoHandlers.removeMailMDB;
+handle['mdb_retrieve_emails'] = mongoHandlers.retrieveEmailsFromMDB;
+handle['mdb_retrieve_email_count'] = mongoHandlers.retrieveEmailCountFromMDB
 
 server.service( router.route, handle );

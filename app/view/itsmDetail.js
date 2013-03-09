@@ -16,6 +16,7 @@ Ext.define("itsm.view.itsmDetail", {
 	],
 
  	alias: "widget.itsmdetail",
+	xtype: "itsmdetail",
 
 	config:{
 		id: 'itsmDetail',
@@ -105,6 +106,19 @@ Ext.define("itsm.view.itsmDetail", {
 				}
         };
 
+			var showEmailsButton = { 
+            xtype: "button",
+            ui: "action",
+            iconCls: "mail",
+            iconMask: true,
+				badgeText: "",
+				hidden: true,
+				id: "itsmdetail_mails",
+				listeners: {
+					tap: { fn: this.onDetailShowEmails, scope: this }
+				}
+        };
+
         var bottomToolbar = {
             xtype: "toolbar",
             docked: "bottom",
@@ -112,6 +126,7 @@ Ext.define("itsm.view.itsmDetail", {
             items: [
 					backButton,
 					{ xtype: 'spacer' },
+					showEmailsButton,
 					favoritesButton,
 					archiveButton,
 					userButton,
@@ -186,6 +201,28 @@ Ext.define("itsm.view.itsmDetail", {
 										lm.ctrls = 0;
 									}
 									this.getParent().setUIfromMask( lm );
+
+									var settings = Ext.getStore("settings");
+									var cnt = Ext.getStore('count');
+
+									var rec = settings.getAt(0);
+									var data = rec.get('settingsContainer');
+									var hostName = data[0];
+
+									cnt.getProxy().setUrl( hostName + '?cmd=mdb_retrieve_email_count&data={"caseNo": "' + post.get('case') + '"}' );
+									console.log('Request >' + cnt.getProxy().getUrl() + '<' );
+									cnt.load( function( record, operation, success ) {
+										Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+											if (button.getId() === 'itsmdetail_mails') {
+												console.log( 'E-Mail Details button found' );
+												if( success == true ) {
+													button.setBadgeText(Ext.getStore('count').getAt(0).get('count'));
+												} else {
+													button.setBadgeText("n/a");
+												}
+											}
+										});
+									});
 					},
 					back: function() {
 									var lm = {};
@@ -259,6 +296,19 @@ Ext.define("itsm.view.itsmDetail", {
 		}
 	},
 
+	onDetailShowEmails: function() {
+		var lm = {};
+		console.log("view.itsmDetail.showEmails");
+		if( typeof opentext.data.activeCase == 'object' ) { 
+			lm.back = 1;
+			lm.ctrls = 0;
+			this.setUIfromMask( lm );
+			this.fireEvent("detailShowEmailsCommand", opentext.data.activeCase);
+		} else {
+			console.error("No case selected");
+		}
+	},
+
 	onDetailLink: function() {
 		var lm = {};
 		console.log("view.itsmDetail.Link");
@@ -320,6 +370,10 @@ Ext.define("itsm.view.itsmDetail", {
 			if (button.getId() === 'itsmdetail_back') {
 				console.log( 'itsmdetail_back found!' );
 				setUIControlfromMask( button, mask.back );
+			}
+			if (button.getId() === 'itsmdetail_mails') {
+				console.log( 'itsmdetail_back found!' );
+				setUIControlfromMask( button, mask.ctrls );
 			}
 			if (button.getId() === 'itsmdetail_edit') {
 				console.log( 'itsmdetail_edit found!' );

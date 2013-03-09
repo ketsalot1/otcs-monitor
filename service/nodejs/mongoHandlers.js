@@ -16,8 +16,9 @@ var url = format("mongodb://%s:%s@%s:%s/%s"
  
 */
 
-function insertMailMDB( callback, data, res ) {
+function removeMailMDB( callback, data, res ) {
 // <<<
+	var r = {};
 	var obj = JSON.parse(data);
 
 	try {
@@ -28,16 +29,54 @@ function insertMailMDB( callback, data, res ) {
 	
 			var collection = db.collection('test');
 	
-			var doc = {"case": obj.caseNo, "htmlbody":obj.htmlBody};
+      	collection.remove({"caseNo":obj.caseNo}, {w:1}, function(err, docs) {
+				if(err) throw err;
+				res.writeHead(200, {
+					'Content-Type': 'x-application/json'
+				});
+
+				r.code = 200;
+				r.message = "OK";
+	
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(r));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end();
+			});  
+		});
+	}
+	catch(e) {
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+function insertMailMDB( callback, data, res ) {
+// <<<
+	var r = {};
+	var obj = JSON.parse(data);
+
+	try {
+		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
+			if(err) throw err;
+	
+			console.log("connected");
+	
+			var collection = db.collection('test');
 	
 			collection.insert(obj, {w:1}, function(err, result) {
 				if(err) throw err;
 				res.writeHead(200, {
 					'Content-Type': 'x-application/json'
 				});
+
+				r.code = 200;
+				r.message = "OK";
 	
 				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-				res.write('[{"respCode":"200"},{"respMessage":"OK"}]}},"responseDetails":null,"responseStatus":200}');
+				res.write(JSON.stringify(r));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
 				res.end();
 			});  
 		});
@@ -107,6 +146,87 @@ function cursorMDB( callback, data, res ) {
 
 				res.write('}},"responseDetails":null,"responseStatus":200}');
 				res.end();
+      	});
+		});
+	}
+	catch(e) {
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+function retrieveEmailsFromMDB( callback, data, res ) {
+// <<<
+	try {
+		dataObj = JSON.parse(data);
+		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
+			if(err) throw err;
+
+			var collection = db.collection('test');
+
+      	collection.find({"caseNo":dataObj.caseNo}).toArray(function(err, docs) {
+				if( err ) throw err;
+
+				for ( var iterator in docs ) {
+					docs[iterator].leaf="true";
+					docs[iterator].icon="resources/images/iEmail31.png";
+					if( typeof( docs[iterator].attachments ) != "undefined" ) {
+						if((typeof(docs[iterator].attachments.length ) == "number" ) && ( docs[iterator].attachments.length > 0 )) {
+							docs[iterator].icon="resources/images/iEmailAtt31.png";
+						}
+					}
+				}
+
+				res.writeHead(200, {
+					'Content-Type': 'x-application/json'
+				});
+				res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+
+				res.write(JSON.stringify(docs));
+
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				res.end(')');
+      	});
+		});
+	}
+	catch(e) {
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+function retrieveEmailCountFromMDB( callback, data, res ) {
+// <<<
+	var reply = {};
+	try {
+		dataObj = JSON.parse(data);
+		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
+			if(err) throw err;
+
+			var collection = db.collection('test');
+
+      	collection.find({"caseNo":dataObj.caseNo}).count(function(err, docs) {
+				if( err ) throw err;
+
+				reply.count = docs;
+
+				res.writeHead(200, {
+					'Content-Type': 'x-application/json'
+				});
+				if( callback ) 
+					res.write( callback + '(' );
+
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(reply));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+
+				if( callback )
+					res.end(')');
+				else
+					res.end();
       	});
 		});
 	}
@@ -266,4 +386,6 @@ exports.testMDB = testMDB;
 exports.selectMDB = selectMDB;
 exports.cursorMDB = cursorMDB;
 exports.insertMailMDB = insertMailMDB;
-
+exports.removeMailMDB = removeMailMDB;
+exports.retrieveEmailsFromMDB = retrieveEmailsFromMDB; 
+exports.retrieveEmailCountFromMDB = retrieveEmailCountFromMDB;

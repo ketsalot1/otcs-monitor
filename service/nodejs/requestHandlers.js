@@ -594,6 +594,7 @@ function sendCases( callback, dataName, res ) {
 			cases = rows;
 			connection.query(database.queries.DBQ008, function (error, rows, fields) {
 				for ( var iterator in cases ) {
+					cases[iterator].description = iterator + ': ' + cases[iterator].description;
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
 					cases[iterator].patches = "Patch: ";
