@@ -17,7 +17,9 @@ app/model/searchresult.js \
 app/model/aboutInfo.js \
 app/model/patches.js \
 app/model/db.js \
+app/model/count.js \
 app/model/itsmOverview.js \
+app/model/email.js \
 app/store/desktopITSM.js \
 app/store/itsm.js \
 app/store/settings.js \
@@ -25,7 +27,9 @@ app/store/searchresult.js \
 app/store/aboutInfo.js \
 app/store/patches.js \
 app/store/db.js \
+app/store/count.js \
 app/store/itsmOverview.js \
+app/store/email.js \
 app/view/ConfigurationView.js \
 app/view/itsmDetail.js \
 app/view/itsmList.js \
@@ -45,6 +49,7 @@ app/view/patchMainView.js \
 app/view/patchMgmtUpdateForm.js \
 app/view/patchMgmtInsertForm.js \
 app/view/projectMgmtInsertForm.js \
+app/view/emailView.js \
 styles/config.rb \
 styles/app.scss \
 service/all.data \
@@ -70,6 +75,10 @@ resources/images/iCases.png \
 resources/images/iPatches.png \
 resources/images/iStar.png \
 resources/images/iArchive2.png \
+resources/images/iEmail24.png \
+resources/images/iEmailAtt24.png \
+resources/images/iEmail31.png \
+resources/images/iEmailAtt31.png \
 resources/images/iArchive.png"
 
 echo "** Synchronize SVN Application OTCS Monitor **"

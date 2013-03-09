@@ -26,6 +26,7 @@ Ext.define("itsm.controller.itsm", {
 				itsmPatchAssignForm: "itsmpatchform",
 				itsmJiraAssignForm: "itsmjiraform",
 				itsmProjectAssignForm: "itsmprojectassignform",
+				emailView: "emailview",
 				patchMgmtView: "patchmainview"
 		},
 		control: {
@@ -44,7 +45,8 @@ Ext.define("itsm.controller.itsm", {
 					detailLinkPatchCommand: "onPatchLinkCase",
 					detailLinkProjectCommand: "onProjectLinkCase",
 					detailSetArchivedCommand: "onArchiveCase",
-					detailSetFavoritesCommand: "onSetFavorites"
+					detailSetFavoritesCommand: "onSetFavorites",
+					detailShowEmailsCommand: "onShowEmails"
 				},
 				configurationView: {
 					saveSettingsCommand:	"onSaveSettings",
@@ -79,6 +81,9 @@ Ext.define("itsm.controller.itsm", {
 					insertProjectCommand: "onNewProject",
 					insertPatchCommand: "onNewPatch",
 					updatePatchCommand: "onUpdatePatch"
+				},
+				emailView: {
+					emailViewBackCommand: "onBackMainList"
 				}
 		}
 	},
@@ -234,6 +239,14 @@ Ext.define("itsm.controller.itsm", {
 	},
 // >>>
 
+	onShowEmails: function(record) {
+// <<<
+		console.log("controller.itsm.onShowEmails");
+		console.log( record );
+		this.activateEmailView(record);
+	},
+// >>>
+
 	activateMainView: function () {
 // <<<
 		Ext.Viewport.animateActiveItem(this.getMainListContainer(), this.slideRightTransition);
@@ -292,13 +305,9 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			var hostName = data[0];
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
-//			var hostName = settings.getData().items[0].data.hostName;
-			/* New command structure */
 			s.getProxy().setUrl( hostName + '?cmd=send&data=' + record );
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
 
-//			s.getProxy().setUrl( hostName + '?otcs=' + record );
-//			console.log( 'controller: URL=' + s.getProxy().getUrl() );
 			s.load();
 
 			v = this.getItsmDetail();
@@ -317,6 +326,46 @@ Ext.define("itsm.controller.itsm", {
 	},
 	// >>>
 
+	activateEmailView: function( record )
+	{ // <<<
+		console.log("controller.itsm.activateEmailView");
+
+		var rec;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('email');
+		var v;
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			var hostName = data[0];
+			console.log( 'controller: URL=' + s.getProxy().getUrl() );
+//			var hostName = settings.getData().items[0].data.hostName;
+			/* New command structure */
+// cmd=mdb_retrieve_emails&data={"caseNo":"1648913"}
+			s.getProxy().setUrl( hostName + '?cmd=mdb_retrieve_emails&data={"caseNo":"' + record.case + '"}' );
+			console.log( 'controller: URL=' + s.getProxy().getUrl() );
+
+//			s.getProxy().setUrl( hostName + '?otcs=' + record );
+//			console.log( 'controller: URL=' + s.getProxy().getUrl() );
+			s.load();
+
+			v = this.getEmailView();
+			for ( var i in v.getItems().keys) {
+				if( v.getItems().keys[i].search('detailPanel') !== -1 ) {
+					v.getItems().items[i].setTitle('E-Mails');
+				}
+			}
+			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
+
+//			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+	// >>>
 
 	onInitImages: function(obj, opts) 
 /* This method is a poor man initiative to injets the Images
