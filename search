@@ -2,7 +2,13 @@
 
 if [ -n "$1" ]
 then
-	find . -name "*.js" -exec grep -l "$1" {} \; | tr '\n' ' ' | sed 's/\.\//"\.\//g' | sed 's/ /" /g' | xargs gvim
+	if [ -n "$2" ]
+	then
+		find . -name "*.js" -exec grep -l "$1" {} \; | tr '\n' ' ' | sed 's/\.\//"\.\//g' | sed 's/ /" /g' | xargs $2
+	else
+		echo "WARN: no program specified, using echo"
+		find . -name "*.js" -exec grep -l "$1" {} \; | tr '\n' ' ' | sed 's/\.\//"\.\//g' | sed 's/ /" /g' | xargs echo
+	fi
 else 
 	echo "ERROR: no search pattern found. Specify the search pattern"
 	exit -1
