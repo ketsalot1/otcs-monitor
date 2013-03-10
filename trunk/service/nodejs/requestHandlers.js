@@ -78,6 +78,7 @@ database.tools = (function() {
 	me.cfg.counter = 0;
 	me.cfg.patch = "";
 	me.cfg.connection = db.createConnection({ user: "root", password: "mysql", database: "test" });
+//	me.cfg.connection = db.createPool({ user: "root", password: "mysql", database: "test" });
 	return {
 		cfg: this.cfg,
 
@@ -87,6 +88,19 @@ database.tools = (function() {
 			logger.trace( 'tools.encodeHTML result = ' + tmp );
 			return tmp;
 		},
+
+		/*
+		setConnectionPool: function() {
+			cfg.connection = db.createPool({ user: "root", password: "mysql", database: "test" });
+			if( cfg.connection ) {
+				logger.trace( 'tools.setConnection: connection to mySQL database created' )
+				return 1;
+			} else { 
+				logger.error( 'tools.setConnection: connection to mySQL database failed' )
+				return 0;
+			}
+		},	
+		*/
 
 		setConnection: function() {
 			cfg.connection = db.createConnection({ user: "root", password: "mysql", database: "test" });
@@ -102,13 +116,31 @@ database.tools = (function() {
 		getConnection: function() {
 			if( cfg.connection ) {
 				logger.trace( 'tools.getConnection: connection object requested. Connecting ...' );
-				cfg.connection.connect();
+				if( !cfg.connected ) { 
+					cfg.connection.connect( function(err) {
+							if(err) throw(err);
+					});
+					cfg.connected = 1;
+				} else {
+					logger.error("tools.getConnection: cannot reconnect already connected object");
+					return null;
+				}
+				logger.trace( 'tools.getConnection: connected. Returning connection object.' );
 				return cfg.connection;
 			} else {
-				logger.warn( 'tools.getConnection: connection object requested but connect was not called before or connect failed. Re-creating ...' );
+				logger.warn( 'tools.getConnection: connection object requested but setConnection was not called before or connect failed. Re-creating ...' );
 				if( this.setConnection() ) {
 					logger.trace( 'tools.getConnection: connection object refreshed. Connecting ...' );
-					cfg.connection.connect();
+					if( !cfg.connected ) { 
+						cfg.connection.connect( function(err) {
+								if(err) throw(err);
+						});
+						cfg.connected = 1;
+					} else {
+						logger.error("tools.getConnection: cannot reconnect already connected object");
+						return null;
+					}
+					logger.trace( 'tools.getConnection: connected. Returning connection object.' );
 					return cfg.connection;
 				} else {
 					logger.error( 'tools.getConnection: connection object cannot be delivered.' );
@@ -121,6 +153,7 @@ database.tools = (function() {
 			if( cfg.connection ) {
 				cfg.connection.end();
 				cfg.connection = null;
+				cfg.connected = 0;
 				logger.trace("tools.closeConnection: closing DB connection and destroying connection object.");
 			} else {
 				logger.warn("tools.closeConnection: connection seems to closed already.");

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ -n "$1" ]
+then
+	find . -name "*.js" -exec grep -l "$1" {} \; | tr '\n' ' ' | sed 's/\.\//"\.\//g' | sed 's/ /" /g' | xargs gvim
+else 
+	echo "ERROR: no search pattern found. Specify the search pattern"
+	exit -1
+fi
+

@@ -122,7 +122,8 @@ Ext.define("itsm.view.emailView", {
 									lm.ctrls = 1;
 									console.log('nestedList.itemtap event');
 
-									opentext.data.activeCase = { 'case': post.get('caseNo'), 'id': post.get('_id') }; 
+									//	TODO - verify this. I don't think I need this ...
+									opentext.data.activeMail = { 'caseNo': post.get('caseNo'), 'mailSender': post.get('mailSender'), 'mailSubject': post.get('mailSubject') }; 
 
                   			this.getDetailCard().setHtml(post.get('mailHTMLBody'));
 									this.getParent().setUIfromMask( lm );
@@ -276,7 +277,7 @@ Ext.define("itsm.view.emailView", {
 
 	onEmailViewAction: function() {
 		console.log("view.emailView.action");
-		if( typeof opentext.data.activeCase == 'object' ) { 
+		if( typeof opentext.data.activeMail == 'object' ) { 
 //			this.fireEvent("detailSetFavoritesCommand", opentext.data.activeCase);
 
 
@@ -298,7 +299,12 @@ Ext.define("itsm.view.emailView", {
 	            		text: 'Reply',
 							scope: this,
 							handler: function() {
-								Ext.Msg.alert("Sorry, not available");
+								var d = 'mailto:' + opentext.data.activeMail.mailSender + '?cc=eng-ccc-projman@ixos.cz&subject=' + opentext.data.activeMail.mailSubject;
+								if( d.length > 255 ) { 
+									console.log( "Reply: mail command too long, cutting it");
+									d = 'mailto:' + opentext.data.activeMail.mailSender + '?cc=eng-ccc-projman@ixos.cz&subject=' + opentext.data.activeMail.mailSubject.substring(0,96) + '...' ;
+								}
+								document.location.href = d;
 								this.actions.hide();
 							}
 	        			},
@@ -306,7 +312,12 @@ Ext.define("itsm.view.emailView", {
 	            		text: 'Reply All',
 							scope: this,
 							handler: function() {
-								Ext.Msg.alert("Sorry, not available");
+								var d = 'mailto:' + opentext.data.activeMail.mailSender + '?cc=eng-ccc-projman@ixos.cz&subject=' + opentext.data.activeMail.mailSubject;
+								if( d.length > 255 ) { 
+									console.log( "Reply All: mail command too long, cutting it");
+									d = 'mailto:' + opentext.data.activeMail.mailSender + '?cc=eng-ccc-projman@ixos.cz&subject=' + opentext.data.activeMail.mailSubject.substring(0,96) + '...' ;
+								}
+								document.location.href = d;
 								this.actions.hide();
 							}
 	        			},
@@ -314,7 +325,12 @@ Ext.define("itsm.view.emailView", {
 	            		text: 'Forward',
 							scope: this,
 							handler: function() {
-								Ext.Msg.alert("Sorry, not available");
+								var d = 'mailto:address@nowhere.com?cc=eng-ccc-projman@ixos.cz&subject=' + opentext.data.activeMail.mailSubject;
+								if( d.length > 255 ) { 
+									console.log( "Forward: mail command too long, cutting it");
+									d = 'mailto:address@nowhere.com?cc=eng-ccc-projman@ixos.cz&subject=' + opentext.data.activeMail.mailSubject.substring(0,96) + '...' ;
+								}
+								document.location.href = d;
 								this.actions.hide();
 							}
 	        			}
