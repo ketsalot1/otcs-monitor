@@ -1,6 +1,9 @@
+var mongo = require("./mongoHandlers");
+
 var fs = require('fs'),
 	 db = require('mysql'),
 	 log4js = require('log4js');
+
 
 log4js.configure('log4js.configuration.json', {});
 
@@ -64,6 +67,9 @@ database.queries = (function() {
 		"DBQ033": 'select count(*) as "count" from t01_case where start_01 >= date_sub(curdate(),interval ? day);',
 		"DBQ034": 'select count(*) as "count", ceiling(avg(datediff(stop_01,start_01))) as "average" from t01_case where stop_01 >= date_sub(curdate(),interval ? day);',
 		"DBQ035": 'select count(*) as "count" from t02_patch where status_02 = "open";',
+
+		"DBQ036a": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 in (',
+		"DBQ036b": ') order by t01.case_01 asc;',
 
 		"DBQ999": 'nope'
 	};
@@ -456,6 +462,14 @@ function describe( callback, dataName, res ) {
 			rows[idx].code = "Favorites";
 			rows[idx].icon = "resources/images/iStar.png";
 
+			idx++;
+			rows[idx] = {};
+			rows[idx].id = 95;
+			rows[idx].category = "Dashboard";
+			rows[idx].title = "Todays Feed";
+			rows[idx].code = "Feed";
+			rows[idx].icon = "resources/images/iFeed.png";
+
 			// Format reply
 			res.write( callback + '(' );
 			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
@@ -537,24 +551,28 @@ function listPatches( callback, params, res ) {
 } // >>>
 
 
-function send( callback, dataName, res ) {
+function send( callback, data, res ) {
 // <<<
-	var dbq;
-	logger.trace('requestHandler.send: requested project: ' + dataName );
+	var dataObj = JSON.parse(data);
+	logger.trace('requestHandler.send: requested project: ' + dataObj.dataName );
 
-	if( dataName == "Patches" ) {
+	if( dataObj.dataName == "Patches" ) {
 		sendPatches( callback, res );
 		return;
 	}
-	if( dataName == "Transient" ) {
+	if( dataObj.dataName == "Transient" ) {
 		sendUnarchived( callback, res );
 		return;
 	}
-	if( dataName == "Favorites" ) {
+	if( dataObj.dataName == "Favorites" ) {
 		sendFavorites( callback, res );
 		return;
 	}
-	sendCases( callback, dataName, res );
+	if( dataObj.dataName == "Feed" ) {
+		mongo.retrieveRecentEmailsFromMDB( callback, data, res );
+		return;
+	}
+	sendCases( callback, dataObj.dataName, res );
 } // >>>
 
 
@@ -1521,6 +1539,55 @@ function itsmOverview( callback, empty, res ) {
 // >>>
 
 
+function getFeed( callback, list, res ) {
+// <<<
+	logger.trace('requestHandler.getFeed: requested list: ' + list );
+	try {
+		var connection = database.tools.getConnection();
+		var query = database.queries.DBQ036a + list + database.queries.DBQ036b;
+		connection.query(query, function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error.toString()});
+			res.writeHead(200, {
+				'Content-Type': 'x-application/json'
+			});
+			// Add terminators (leaf property) in the generated list and
+			// process details. Convert the line breaks into HTML markup.
+			logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
+			cases = rows;
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+				for ( var iterator in cases ) {
+					cases[iterator].description = iterator + ': ' + cases[iterator].description;
+					cases[iterator].leaf="true";
+					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
+					cases[iterator].patches = "Patch: ";
+					for ( var iter in rows ) {
+						if( cases[iterator].id != rows[iter].id ) continue; 
+						logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+						cases[iterator].patches += rows[iter].patch;
+						cases[iterator].patches += ", ";
+					}
+				}
+				if( callback )
+					res.write( callback + '(' );
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(cases));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				if( callback )
+					res.write(')');
+				res.end();
+				logger.trace('requestHandler.getFeed: response object flushed to client' );
+				database.tools.closeConnection();
+			});
+		});
+	}
+	catch(e) {
+		logger.error("Exception: " + e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+} // >>>
+
+
 
 exports.search = search;
 exports.describe = describe;
@@ -1546,3 +1613,5 @@ exports.getAllCases = getAllCases;
 exports.sendUnarchived=sendUnarchived;
 exports.itsmOverview=itsmOverview;
 exports.favorites=favorites;
+
+exports.getFeed=getFeed;
