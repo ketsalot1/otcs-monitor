@@ -41,4 +41,6 @@ handle['mdb_remove_mail'] = mongoHandlers.removeMailMDB;
 handle['mdb_retrieve_emails'] = mongoHandlers.retrieveEmailsFromMDB;
 handle['mdb_retrieve_email_count'] = mongoHandlers.retrieveEmailCountFromMDB
 
+handle['get_feed'] = mongoHandlers.retrieveRecentEmailsFromMDB;
+
 server.service( router.route, handle );

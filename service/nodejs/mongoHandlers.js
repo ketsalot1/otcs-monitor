@@ -1,4 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
+var sql = require("./requestHandlers");
 
 /*
 var format = require('util').format;
@@ -188,6 +189,64 @@ function retrieveEmailsFromMDB( callback, data, res ) {
 
 				res.write('}},"responseDetails":null,"responseStatus":200}');
 				res.end(')');
+      	});
+		});
+	}
+	catch(e) {
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+function retrieveRecentEmailsFromMDB( callback, data, res ) {
+// <<<
+	try {
+		var dataObj = JSON.parse(data);
+		var pattern = "";
+		var t = new Date();
+		var day = t.getDate();
+
+		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
+			if(err) throw err;
+
+			var collection = db.collection('test');
+
+			day -= parseInt(dataObj.daysBack); // TODO - debugging
+			if( day < 10 ) {
+				pattern = "0" + day.toString();
+			} else {
+				pattern = day.toString();
+			}
+			pattern = pattern + "." + (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString();
+			var query = { "sentOn": new RegExp('^' + pattern ) };
+
+			collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+				if( err ) throw err;
+
+				if( docs && (docs.length) > 0 ) {
+					pattern = docs[0].caseNo;
+
+					for ( var iterator in docs ) {
+						pattern = pattern + ", " + docs[iterator].caseNo;
+					}
+
+					sql.getFeed( callback, pattern, res );
+				} else {
+					res.writeHead(200, {
+						'Content-Type': 'x-application/json'
+					});
+					if( callback )
+						res.write( callback + '(' );
+					res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+
+					res.write(JSON.stringify(docs));
+
+					res.write('}},"responseDetails":null,"responseStatus":200}');
+					if( callback )
+						res.write(')');
+					res.end();
+				}
       	});
 		});
 	}
@@ -389,3 +448,4 @@ exports.insertMailMDB = insertMailMDB;
 exports.removeMailMDB = removeMailMDB;
 exports.retrieveEmailsFromMDB = retrieveEmailsFromMDB; 
 exports.retrieveEmailCountFromMDB = retrieveEmailCountFromMDB;
+exports.retrieveRecentEmailsFromMDB = retrieveRecentEmailsFromMDB;
