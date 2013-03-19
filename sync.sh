@@ -80,7 +80,15 @@ resources/images/iEmailAtt24.png \
 resources/images/iEmail31.png \
 resources/images/iEmailAtt31.png \
 resources/images/iFeed.png \
-resources/images/iArchive.png"
+resources/images/iFeed2.png \
+resources/images/iArchive.png \
+resources/images/iUpdated.png \
+resources/images/iOutdated.png \
+resources/images/iPending.png \
+resources/images/iExperimental.png \
+doc/css/default.css \
+doc/res/opentext.png \
+doc/api.html"
 
 echo "** Synchronize SVN Application OTCS Monitor **"
 

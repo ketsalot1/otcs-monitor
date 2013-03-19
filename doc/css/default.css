@@ -1,0 +1,212 @@
+body
+{
+background-color:#FFFFFF;
+background-image:url('../res/opentext.png');
+background-repeat:no-repeat;
+}
+
+.overlay_top
+{
+color:#086898;
+position: absolute;
+font-family:"Arial";
+font-size:38px;
+font-style: italic;
+font-weight:bold;
+top: 35px;
+left: 82px;
+z-index:10;
+}
+
+.overlay_bottom
+{
+color:#086898;
+position: absolute;
+font-family:"Arial";
+font-size:22px;
+font-style: normal;
+font-weight:bold;
+top: 122px;
+left: 612px;
+z-index:20;
+}
+
+.background
+{
+font-size: 92px;
+font-family: "Arial";
+font-weight: 900;
+color: #7AB2E1;
+position: absolute;
+top:48px;
+left: 16px;
+z-index:-10;
+}
+
+.content
+{
+position:absolute;
+top:155px;
+left:10px;
+width:960px;
+font-family: "Arial";
+font-size: 1em;
+color: #001C3C
+}
+
+.idented_40
+{
+padding-left:40px;
+padding-right:40px;
+}
+
+.courier
+{
+font-family:Monospace,Courier;
+}
+
+.thin_line
+{
+position: relative; 
+margin:0 0 0 0;
+left: 1px; 
+top: -16px; 
+width: 700px; 
+height: 1px; 
+background-color: #2888B8;
+}
+
+.footnote_line
+{
+position: relative; 
+margin:0 0 0 0;
+left: 1px; 
+top: -36px; 
+width: 700px; 
+height: 2px; 
+background-color: #2888B8;
+}
+
+.center
+{
+margin-left:auto;
+margin-right:auto;
+width: 55%;
+}
+
+.important
+{
+margin-left:auto;
+margin-right:auto;
+width: 90%;
+font-style:italic;
+background-color:#f18f8f;
+}
+
+th {
+	text-align: left;
+	font-weight: normal;
+	color: black;
+	padding: 3px 6px;
+	border-bottom: 1px solid #000080;
+}
+
+td.parameters {
+	padding: 3px 6px;
+	vertical-align:top;
+	text-align: left;
+	font-size: 0.85em;
+}
+
+td.navigation {
+	vertical-align: top;
+}
+
+.citation_framed
+{
+margin-left:auto;
+margin-right:auto;
+margin-top:10px;
+margin-bottom:10px;
+width:90%;
+background-color:#e0f0f0;
+}
+
+.citation_floating_left
+{
+float:left;
+margin:7px;
+background-color:#e0f0f0;
+font-style:italic;
+}
+
+.citation_floating_size_350
+{
+width:350px;
+}
+
+.citation_floating_size_220
+{
+width:170px;
+}
+
+.citation_floating_size_170
+{
+width:170px;
+}
+
+.emphasized
+{
+font-size:18px;
+font-weight:bold;
+}
+
+pre
+{
+clear:both;
+display:block;
+font-family:"Courier New",Courier,mono;
+line-height:1.4;
+margin:1em auto;
+overflow-y:auto;
+padding:8px;
+white-space:pre;
+width:94%; 
+background:#DDE;
+border:1px solid #aaa;
+font-size:0.86em
+}
+
+.footnote
+{
+clear:both;
+display:block;
+line-height:1.8;
+font-family:"Arial",Arial,mono;		  
+font-size:0.7em;
+margin-left:auto;
+margin-right:auto;
+width:65%;
+font-color: #2888B8;
+}
+
+.method {
+padding: 1em;
+background-color: #eef;
+}
+
+h4 {
+	font-size: 1.1em;
+}
+
+h6 {
+	font-size: 1.1em;
+	color: #99a;
+	margin: 0.5em 0em 0.25em 0em;
+}
+
+h3.api {
+	color: orange;
+	font-size: 1.4em;
+	font-weight: bold;
+}

@@ -139,7 +139,7 @@ Ext.define("itsm.view.itsmDetail", {
 			   id: 'detailPanel',
 			 	xtype: 'nestedlist',
 				title: 'OTCS Case',
-				displayField: 'description',
+//				displayField: 'description',
 //				data: { 'case': '111111', 'description': '--empty--' }, 
 //				tpl: '<div>{case} - {description}</div>',
 				store: Ext.getStore('desktopITSM'),
@@ -233,6 +233,10 @@ Ext.define("itsm.view.itsmDetail", {
 									lm.ctrls = 0;
 									this.getParent().setUIfromMask( lm );
 					}
+				},
+
+				getItemTextTpl: function(node) {
+					return '<table><tr><td><img src="{icon}" width="29px" height="29px"></td><td>&nbsp;&nbsp;</td><td><span style="font-weight: normal; font-size: 0.90em;">{description}</span></td></tr></table>';
 				}
 		  };
 
