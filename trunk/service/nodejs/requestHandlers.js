@@ -1,4 +1,5 @@
 var mongo = require("./mongoHandlers");
+var config = require("configure");
 
 var fs = require('fs'),
 	 db = require('mysql'),
@@ -24,7 +25,11 @@ database.queries = (function() {
 // <<<
 	return {
 		"DBQ001": 'select project_04 "id", long_text_04 "title", short_text_04 "code" from t04_project;',
-		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
+// TODO - start
+//		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
+		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", modified_01 as "modified" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
+//		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? and modified_01 >= date_sub(CURDATE(),interval ? day) order by t01.case_01 asc;',
+// TODO - stop 
 //		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ003": 'select name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
 //		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
@@ -34,7 +39,10 @@ database.queries = (function() {
 		"DBQ007": 'insert into t03_link (id_01, id_02) values ( ?,? );',
 		"DBQ008": 'select t03.id_01 "id", t02.name_02 "patch" from t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02;',
 		"DBQ009": 'select description_01 "details" from t01_case where id_01 = ?;',
-		"DBQ010": 'update t01_case set description_01 = ? where id_01 = ?;',
+// TODO - start
+//		"DBQ010": 'update t01_case set description_01 = ? where id_01 = ?;',
+		"DBQ010": 'update t01_case set description_01 = ?, modified_01 = CURDATE() where id_01 = ?;',
+// TODO - stop 
 		"DBQ011": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 in ("open","developed") order by name_02 asc;',
 		"DBQ012": 'insert into t02_patch (name_02, release_02, status_02) values (?,CURDATE(),"open");',
 		"DBQ013": 'update t02_patch set release_02 = ?, status_02 = ? where id_02 = ?;',
@@ -222,7 +230,22 @@ database.tools = (function() {
 				logger.error('Parsing Error: string >' + str + '< cannot be parsed by using the known rules' );
 				throw({'name': 'Parsng Error', "message": 'String >' + str + '< cannot be parsed by using the known rules' });
 			}
+		},
+// TODO - start
+		getAge: function( d1, d2 ) {
+   		var ONE_DAY = 1000 * 60 * 60 * 24;
+
+    		// Convert both dates to milliseconds
+    		//var date1_ms = date1.getTime()
+    		//var date2_ms = date2.getTime()
+
+ 		   // Calculate the difference in milliseconds
+    		var difference_ms = Math.abs(d1 - d2);
+
+    		// Convert back to days and return
+    		return Math.round(difference_ms/ONE_DAY);
 		}
+// TODO - stop
 	};
 }());
 // >>>
@@ -607,6 +630,7 @@ function sendPatches( callback, res ) {
 					}
 					results[iterator].details += "</ol>";
 					results[iterator].leaf = "true";
+					results[iterator].icon = "resources/images/iPatches.png";
 				}
 
 				logger.trace( 'requestHandler.preparePatch: formatting reply' );
@@ -631,8 +655,17 @@ function sendPatches( callback, res ) {
 function sendCases( callback, dataName, res ) {
 // <<<
 	var cases = [];
+// TODO - start
+	var reference = new Date();
+	var delta;
+	var limit1;
+	var limit2;
+
+// TODO - stop
 	logger.trace('requestHandler.sendCases: requested project: ' + dataName );
 	try {
+		limit1 = config.updateTime.updated || 2;
+		limit2 = config.updateTime.pending || 9;
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ002, [dataName], function (error, rows, fields) {
 			if( error ) throw({name: "DB Error", message: error.toString()});
@@ -645,6 +678,15 @@ function sendCases( callback, dataName, res ) {
 			cases = rows;
 			connection.query(database.queries.DBQ008, function (error, rows, fields) {
 				for ( var iterator in cases ) {
+// TODO - start
+					delta = database.tools.getAge( cases[iterator].modified, reference );
+					logger.trace( 'requestHandler: send days isnce last update: ' + rows.length );
+					cases[iterator].icon = "resources/images/iOutdated.png";
+					if( delta < limit2 )
+						cases[iterator].icon = "resources/images/iPending.png";
+					if( delta < limit1 )
+						cases[iterator].icon = "resources/images/iUpdated.png";
+// TODO - stop
 					cases[iterator].description = iterator + ': ' + cases[iterator].description;
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
@@ -691,6 +733,7 @@ function sendFavorites( callback, res ) {
 			cases = rows;
 			connection.query(database.queries.DBQ008, function (error, rows, fields) {
 				for ( var iterator in cases ) {
+					cases[iterator].icon = "resources/images/iExperimental.png";
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
 					cases[iterator].patches = "Patch: ";
@@ -736,6 +779,7 @@ function sendUnarchived( callback, res ) {
 			cases = rows;
 			connection.query(database.queries.DBQ008, function (error, rows, fields) {
 				for ( var iterator in cases ) {
+					cases[iterator].icon = "resources/images/iArchive.png";
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
 					cases[iterator].patches = "Patch: ";
@@ -1556,6 +1600,7 @@ function getFeed( callback, list, res ) {
 			cases = rows;
 			connection.query(database.queries.DBQ008, function (error, rows, fields) {
 				for ( var iterator in cases ) {
+					cases[iterator].icon = "resources/images/iFeed2.png";
 					cases[iterator].description = iterator + ': ' + cases[iterator].description;
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );

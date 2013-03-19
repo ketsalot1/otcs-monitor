@@ -1,0 +1,25 @@
+{
+   "updateTime" : {
+      "updated": 3,
+      "pending": 10,
+      "outdated": 30
+   },
+
+   "database": {
+    	"mySQL" : {
+         "host": "localhost",
+         "port": 0, 
+         "user": "root", 
+         "password": "mysql", 
+         "database": "test"
+      },
+      "mongoDB" : {
+         "host":"localhost",
+         "port": 27017,
+         "database":"itsm",
+         "collection":"test"
+      }
+   }
+}
+
+       

@@ -1,0 +1,315 @@
+<html>
+<head>
+<title>OpenText Mobile OTCS</title>
+<link rel="stylesheet" href="css/default.css" type="text/css"> 
+<script type="text/javascript">
+	function toggle(id) {
+		var el = document.getElementById(id);
+		el.style.display = (el.style.display != 'none' ? 'none' : '' );
+		document.getElementById("link-" + id).innerHTML = (el.style.display == 'none' ? 'expand' : 'collapse' );
+	}
+</script>
+</head>
+
+<body>
+
+<span class="overlay_top">Mobile Monitor RESTful API</span>
+<span class="background">MOTCS-API</span>
+<span class="overlay_bottom">Martin Metal, 2012-2013</span>
+
+<div style="position: absolute; left: 10px; top: 148px; width: 900px; height: 2px; background-color: #086898;"></div>
+<div style="position: absolute; left: 13px; top: 150px; width: 900px; height: 1px; background-color: #001C3C;"></div>
+<table class="content">
+<tr>
+<td width="180" class="navigation">
+	Main Documentation<br/>
+	&nbsp;&nbsp;<a href="motcs.html">Home</a><br/>
+</td>
+<td>
+
+<p>
+<h3><a name="platform_support">Table of Contents</a></h3>
+<div class="thin_line"></div>
+<ul type="none">
+	<li><a href="#insert_case">insert_case</a></li>
+	<li><a href="#mdb_insert_mail">mdb_insert_mail</a></li>
+</ul>
+</p><p>
+<h3><a name="introduction">Introduction</a></h3>
+<div class="thin_line"></div>
+</p><p>
+		  
+	The API to Mobile Monitor for OTCS (MOTCS_API) defines all CURD operation available for data in the system. The API uses one entry point defined by the reverse proxy. Recommended resource name is '/motcs/rest'. The resource takes always two parameters. One is <em>cmd</em> and the second one <em>data</em>. The cmd stands for command and is always plain string formated. The second parameter stands for payload data and is always JSON serialized. The payload should be always URI-protected / URI-encoded to guarantee the transter. The API supports both GET and POST method. We strongly recommend to use POST method exclusively to avoid any problem with data size being transferred.
+
+</p><p>
+
+	The following section described all available command that the API accepts. The index is given for commands only. Remember that the complete API call must contain the complete URI specification and parameter section to specify the URI seceltion procedure. 
+
+</p><p>
+
+	Example:
+
+</p>
+<pre><code>
+	http://m.opentext.net/motcs/rest?cmd=insert_case&amp;data={"caseNo":"192","caseSubject":"Hello World"}
+</code></pre>
+
+<h2>API Specification</h2>
+
+<h3 class="api"><a name="insert_case">insert_case</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id117137">POST</h4>
+		<h6>/motcs/rest?cmd=insert_case&amp;data={parameters}</h6>
+		<p>
+	Inserts new case into relational database. The command takes two parameters only. The additional metadata are pre-set to default value and can be modified by other API calls.
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseNo</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Case number originating in ITSM database.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseSubject</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
+					<td class="parameters"><p>Subject of the incidence case. The subject corresponds with the synopsis of the problem reported by the customer.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"caseNo":"111888",
+	"caseSubject":"OTCS Ticket 111999: Problem saving annotation in WinViewer 10.0.0. Update 006"
+}
+
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117100'); return false;" href="#"><em><span id="link-id117100">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117100" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":229,
+        "message":""
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the insert operation succeeded. The returned code brings the ordinal number of inserted case in the database (id_01 from the table t01_case).</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - Duplicate ID
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117101'); return false;" href="#"><em><span id="link-id117101">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117101" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message":"This case is already inserted"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the insert operation fails. The database already contains the case referred under the specified caseNo parameter. The caseNo must be unique.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117102'); return false;" href="#"><em><span id="link-id117102">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117102" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h3 class="api"><a name="mdb_insert_mail">mdb_insert_mail</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id117138">POST</h4>
+		<h6>/motcs/rest?cmd=mdb_insert_mail&amp;data={parameters}</h6>
+		<p>Inserts new mail into database. The link to the case is the case number. The API does not verify whether the case already exist. One can insert new e-mail having a case number that does not exist in the system yet. In that case the stored e-mail cannot be retrieved. It is not linked with any case. The system stores e-mail in different database than the relational data about the cases. Therefore the API does not implement any constraint between e-mail database and relation database.</p>
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseNo</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Case number originating in ITSM database.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>mailSubject</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
+					<td class="parameters"><p>Subject of the e-mail.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>mailSender</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
+					<td class="parameters"><p>String representation of the sender. Is not SMTP address, is the Outlook string.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>mailHTMLBody</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
+					<td class="parameters"><p>HTML formatted body of the e-mail.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>sentOn</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
+					<td class="parameters"><p>Create (sent) date in string representation. The Outlook exposes the datetime data type as Variant via the OLE interface. That representation is illegible to JavaScript and therefore the function 'Date()', 'Time()' respectively are called on the Variant before sending to JavaScript layer. The pattern "dd.m.yyyy hh:mm:ss &lt;AM|PM&gt;". (e.g.: "12.3.2013 12:21:35 PM") is resulting.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>attachements</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
+					<td class="parameters"><p>List of attachments. It is semicolon separated list, delivered by outlook. The list is either epmty or starts with the sequence '; ' followed by name of attachment(s). The attachments are semicolon delimited.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"caseNo":"165445",
+	"mailSubject":"OTCS Ticket 165445: Images distorted in full view.",
+	"mailHTMLBody":"&lt;HTML&gt;&lt;BODY&gt;&lt;P&gt;Hello Scan Team, the customer report image distortion&lt;/P&gt;&lt;/BODY&gt;&lt;/HTML&gt;",
+	"sentOn":"08.3.2013 11:37:21 AM",
+	"mailSender":"Open Text Customer Support",
+	"attachments":"; ixclient.log"
+}
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117103'); return false;" href="#"><em><span id="link-id117103">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117103" style="display: none;">
+					<p>The response body contain 'application/json' (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":200,
+        "message":"OK"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the e-mail is successfully inserted in the database. The return code just repeats the HTTP status code.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - Failed
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117104'); return false;" href="#"><em><span id="link-id117104">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117104" style="display: none;">
+					<p>The response body contain 'application/json' (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message":"Failed to insert e-mail in database"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the insert operation failed to insert new e-mail in the database. The text brings the details about the details of the problem.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117105'); return false;" href="#"><em><span id="link-id117105">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117105" style="display:none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+</td>
+</tr>
+</table>
+</body>
+</html>
+
+
