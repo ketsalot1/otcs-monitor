@@ -357,11 +357,14 @@ function search( callback, data, res ) {
 						cases[iterator].patches += ", ";
 					}
 				}
-				res.write( callback + '(' );
+				if( callback )
+					res.write( callback + '(' );
 				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
 				res.write(JSON.stringify(cases));
 				res.write('}},"responseDetails":null,"responseStatus":200}');
-				res.end(')');
+				if( callback )
+					res.end(')');
+				res.end();
 				database.tools.closeConnection();
 			});
 		});
@@ -524,11 +527,14 @@ function listProjects( callback, params, res ) {
 			});
 			logger.trace('requestHandler.listProjects: processing list of patches >' + rows.length + '<' );
 				// Format reply
-			res.write( callback + '(' );
+			if( callback )
+				res.write( callback + '(' );
 			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
 			res.write(JSON.stringify(rows));
 			res.write('}},"responseDetails":null,"responseStatus":200}');
-			res.end(')');
+			if( callback )
+				res.write(')');
+			res.end();
 			database.tools.closeConnection();
 		});
 	}
