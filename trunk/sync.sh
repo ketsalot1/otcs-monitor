@@ -85,6 +85,7 @@ resources/images/iArchive.png \
 resources/images/iUpdated.png \
 resources/images/iOutdated.png \
 resources/images/iPending.png \
+resources/images/iQuestion.png \
 resources/images/iExperimental.png \
 doc/css/default.css \
 doc/res/opentext.png \

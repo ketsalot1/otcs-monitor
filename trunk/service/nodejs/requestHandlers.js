@@ -346,6 +346,7 @@ function search( callback, data, res ) {
 			logger.trace('requestHandler: search running second quesry for patch information ...');
 			connection.query(database.queries.DBQ008, function (error, rows, fields) {
 				for ( var iterator in cases ) {
+					cases[iterator].icon= "resources/images/iQuestion.png";
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
 					cases[iterator].patches = "Patch: ";
