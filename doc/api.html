@@ -33,13 +33,14 @@
 <ul type="none">
 	<li><a href="#insert_case">insert_case</a></li>
 	<li><a href="#mdb_insert_mail">mdb_insert_mail</a></li>
+	<li><a href="#projects">projects</a></li>
 </ul>
 </p><p>
 <h3><a name="introduction">Introduction</a></h3>
 <div class="thin_line"></div>
 </p><p>
 		  
-	The API to Mobile Monitor for OTCS (MOTCS_API) defines all CURD operation available for data in the system. The API uses one entry point defined by the reverse proxy. Recommended resource name is '/motcs/rest'. The resource takes always two parameters. One is <em>cmd</em> and the second one <em>data</em>. The cmd stands for command and is always plain string formated. The second parameter stands for payload data and is always JSON serialized. The payload should be always URI-protected / URI-encoded to guarantee the transter. The API supports both GET and POST method. We strongly recommend to use POST method exclusively to avoid any problem with data size being transferred.
+	The API to Mobile Monitor for OTCS (MOTCS_API) defines all CURD operation available for data in the system. The API uses one entry point defined by the reverse proxy. Recommended resource name is '/motcs/rest'. The resource takes two mandatory parameters and one optional. One is <em>cmd</em> and the second one <em>data</em>. The last parameter is called <em>processSupportData</em> and is used by JOSNP calls only. The cmd stands for command and is always plain string formated. The second parameter stands for payload data and is always JSON serialized. The payload should be always URI-protected / URI-encoded to guarantee the transfer. The last parameter, the optional one, is importatn for JSONP integration. User can send over the name of the callback routine that is supposed to be called back on client. The return data are then serialized as a parameter of the callback method. The API supports both GET and POST method. We strongly recommend to use POST method exclusively to avoid any problem with data size being transferred.
 
 </p><p>
 
@@ -47,14 +48,24 @@
 
 </p><p>
 
-	Example:
+<h6><em>Example</em></h6>
 
 </p>
 <pre><code>
 	http://m.opentext.net/motcs/rest?cmd=insert_case&amp;data={"caseNo":"192","caseSubject":"Hello World"}
+
+	http://m.opentext.net/motcs/rest?cmd=insert_case&amp;data={"caseNo":"192","caseSubject":"Hello World"}&processSupportData=Ext.JsonP.callback19
 </code></pre>
 
 <h2>API Specification</h2>
+
+<p>
+
+	API description does not use the optional parameters. They are sent authomatically by the Sencha Touch framework when configured for JSONP data transfer.
+
+</p>
+
+<h2>Data Write Methods</h2>
 
 <h3 class="api"><a name="insert_case">insert_case</a></h3>
 <!-- <<< -->
@@ -306,10 +317,240 @@
 </div>
 <!-- >>> -->
 
+<h2>Data Read Methods</h2>
+
+<h3 class="api"><a name="projects">projects</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id117138">GET, POST</h4>
+		<h6>/motcs/rest?cmd=projects&amp;data={parameters}</h6>
+		<p>Retrieves the list of project and project owners. The short names are then used in other commands to fetch the case details.</p>
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>active</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Determines whether the retrieved list contain all oder active projects only.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"active":"1"
+}
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117106'); return false;" href="#"><em><span id="link-id117106">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117106" style="display: none;">
+					<p>The response body contain 'application/json' (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>{
+   "support_data": { 
+      "feed": { 
+         "title":"support data", 
+         "entries":[
+            {
+               "value":1,
+               "text":"Exchange"
+            },
+            {
+               "value":2,
+               "text":"Notes"
+            },
+            {
+               "value":99,
+               "text":"Unassigned"}
+         ]
+      }
+   },
+   "responseDetails":null,
+   "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the list of project could be retrieved from the database. The text property is used for subsequent call for list of cases.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - Failed
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117107'); return false;" href="#"><em><span id="link-id117107">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117107" style="display: none;">
+					<p>The response body contain 'application/json' (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message":"Failed to retrieve list of projects"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the select operation fails.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117108'); return false;" href="#"><em><span id="link-id117108">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117108" style="display:none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h3 class="api"><a name="search">search</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id117138">GET, POST</h4>
+		<h6>/motcs/rest?cmd=search&amp;data={parameters}</h6>
+		<p>Retrieves the list of support cases fitting the search pattern. The returned structure contain all the available information linked with the case in the ITSM Database. Search is using the SQL clause LIKE %pattern% to identify all the cases that fit the search criteria. The search command is searching the caseNo. only.</p>
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>pattern</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
+					<td class="parameters"><p>The support case number of just fragment of the support case number.</p></td>
+				</tr>
+			</tbody>
+		</table>
+      <p>Following example is searching for all cases that contain the fragment 1642. It will return the list of all cases that contain the fragment in any position. E.g. the fragment 1642 will be found in all those numbers: 1642, 16423, 81642, 816423.</p> 
+		<h6><em>Example</em></h6>
+		<pre><code>
+http://host/motcs/rest?cmd=search&amp;data={"pattern":"1642"}
+		</code></pre>
+
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117109'); return false;" href="#"><em><span id="link-id117109">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117109" style="display: none;">
+					<p>The response body contain 'application/json' (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+   "support_data": {
+      "feed": {
+         "title": "support data",
+         "entries": [
+            {
+               "id": 197,
+               "case": "1642672",
+               "description": "RE: OTCS Ticket 1642672 : Verschl?sselte DocIDs - Exchange Archive",
+               "status": "Bug-Open Ticket",
+               "details": "22.2.2013 - Niels creates the idea algorithm and Michelle needs to start ECCN form to change the number.&lt;br/&gt;",
+               "jira": null,
+               "icon": "resources/images/iQuestion.png",
+               "leaf": "true",
+               "patches": "Patch: "
+            }
+         ]
+      }
+   },
+   "responseDetails": null,
+   "responseStatus": 200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the query request finds one record only. The list might contain more entries when the searched pattern fits more support case numbers.<p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - Failed
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117110'); return false;" href="#"><em><span id="link-id117110">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117110" style="display: none;">
+					<p>The response body contain 'application/json' (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message":"Search failed"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the select operation fails.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117111'); return false;" href="#"><em><span id="link-id117111">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117111" style="display:none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
 </td>
 </tr>
 </table>
 </body>
 </html>
-
 
