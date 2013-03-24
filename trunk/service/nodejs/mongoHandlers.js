@@ -203,15 +203,30 @@ function retrieveRecentEmailsFromMDB( callback, data, res ) {
 // <<<
 	try {
 		var dataObj = JSON.parse(data);
+		var feedInput = {};
 		var pattern = "";
+		var response = "";
 		var t = new Date();
-		var day = t.getDate();
+		var day;
+		var query;
+				
+/* <<<
+		// Perform basic date calculation (add/subtract days from a date)
+		var day = new Date();
+		day.setDate(day.getDate() - 7);
+		day.toString();
+		(day.getMonth()+1).toString();
+		(day.getYear()+1900).toString();
+>>> */
+
+		feedInput.entries = [];
 
 		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
 			if(err) throw err;
 
 			var collection = db.collection('test');
 
+/* <<<
 			day -= parseInt(dataObj.daysBack); // TODO - debugging
 			if( day < 10 ) {
 				pattern = "0" + day.toString();
@@ -220,33 +235,123 @@ function retrieveRecentEmailsFromMDB( callback, data, res ) {
 			}
 			pattern = pattern + "." + (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString();
 			var query = { "sentOn": new RegExp('^' + pattern ) };
+>>> */
+
+			if( t.getDay() == 0 )
+				t.setDate(t.getDate() - 1);
+			if( t.getDay() == 6 )
+				t.setDate(t.getDate() - 1);
+			day = t.getDate();
+			if( day < 10 ) {
+				pattern = "0" + day.toString();
+			} else {
+				pattern = day.toString();
+			}
+			pattern = pattern + "." + (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString();
+			query = { "sentOn": new RegExp('^' + pattern ) };
 
 			collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
 				if( err ) throw err;
 
+				feedInput.entries[0] = {};
+				feedInput.entries[0].dateStr = pattern;
+				feedInput.entries[0].searchStr = "";
+
 				if( docs && (docs.length) > 0 ) {
-					pattern = docs[0].caseNo;
-
+					feedInput.entries[0].searchStr = docs[0].caseNo;
 					for ( var iterator in docs ) {
-						pattern = pattern + ", " + docs[iterator].caseNo;
+						feedInput.entries[0].searchStr = feedInput.entries[0].searchStr + ", " + docs[iterator].caseNo;
 					}
-
-					sql.getFeed( callback, pattern, res );
-				} else {
-					res.writeHead(200, {
-						'Content-Type': 'x-application/json'
-					});
-					if( callback )
-						res.write( callback + '(' );
-					res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-
-					res.write(JSON.stringify(docs));
-
-					res.write('}},"responseDetails":null,"responseStatus":200}');
-					if( callback )
-						res.write(')');
-					res.end();
 				}
+				// --------------------- 1 -----------------------------
+				t.setDate(t.getDate() - 1);
+				if( t.getDay() == 0 )
+					t.setDate(t.getDate() - 1);
+				if( t.getDay() == 6 )
+					t.setDate(t.getDate() - 1);
+				day = t.getDate();
+				if( day < 10 ) {
+					pattern = "0" + day.toString();
+				} else {
+					pattern = day.toString();
+				}
+				pattern = pattern + "." + (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString();
+				query = { "sentOn": new RegExp('^' + pattern ) };
+		
+				collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+					if( err ) throw err;
+		
+					feedInput.entries[1] = {};
+					feedInput.entries[1].dateStr = pattern;
+					feedInput.entries[1].searchStr = "";
+
+					if( docs && (docs.length) > 0 ) {
+						feedInput.entries[1].searchStr = docs[0].caseNo;
+						for ( var iterator in docs ) {
+							feedInput.entries[1].searchStr = feedInput.entries[1].searchStr + ", " + docs[iterator].caseNo;
+						}
+					}
+					// --------------------- 2 -----------------------------
+					t.setDate(t.getDate()-1);
+					if( t.getDay() == 0 )
+						t.setDate(t.getDate() - 1);
+					if( t.getDay() == 6 )
+						t.setDate(t.getDate() - 1);
+					day = t.getDate();
+					if( day < 10 ) {
+						pattern = "0" + day.toString();
+					} else {
+						pattern = day.toString();
+					}
+					pattern = pattern + "." + (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString();
+					query = { "sentOn": new RegExp('^' + pattern ) };
+			
+					collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+						if( err ) throw err;
+			
+						feedInput.entries[2] = {};
+						feedInput.entries[2].dateStr = pattern;
+						feedInput.entries[2].searchStr = "";
+	
+						if( docs && (docs.length) > 0 ) {
+							feedInput.entries[2].searchStr = docs[0].caseNo;
+							for ( var iterator in docs ) {
+								feedInput.entries[2].searchStr = feedInput.entries[2].searchStr + ", " + docs[iterator].caseNo;
+							}
+						}
+						// --------------------- 3 -----------------------------
+						t.setDate(t.getDate()-1);
+						if( t.getDay() == 0 )
+							t.setDate(t.getDate() - 1);
+						if( t.getDay() == 6 )
+							t.setDate(t.getDate() - 1);
+						day = t.getDate();
+						if( day < 10 ) {
+							pattern = "0" + day.toString();
+						} else {
+							pattern = day.toString();
+						}
+						pattern = pattern + "." + (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString();
+						query = { "sentOn": new RegExp('^' + pattern ) };
+				
+						collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+							if( err ) throw err;
+				
+							feedInput.entries[3] = {};
+							feedInput.entries[3].dateStr = pattern;
+							feedInput.entries[3].searchStr = "";
+
+							if( docs && (docs.length) > 0 ) {
+								feedInput.entries[3].searchStr = docs[0].caseNo;
+								for ( var iterator in docs ) {
+									feedInput.entries[3].searchStr = feedInput.entries[3].searchStr + ", " + docs[iterator].caseNo;
+								}
+							}
+							pattern = JSON.stringify(feedInput);
+							sql.getFeed( callback, pattern, res );
+				     	});
+			     	});
+		     	});
       	});
 		});
 	}
