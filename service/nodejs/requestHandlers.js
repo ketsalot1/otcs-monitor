@@ -116,6 +116,11 @@ database.tools = (function() {
 		},	
 		*/
 
+		filter: function( num ) {
+			logger.trace( "tools.filter: stripped bottom 14bits from number: " + num );
+			return( num & 0x3FFF );
+		},
+
 		setConnection: function() {
 			cfg.connection = db.createConnection({ user: "root", password: "mysql", database: "test" });
 			if( cfg.connection ) {
@@ -493,7 +498,7 @@ function describe( callback, dataName, res ) {
 			rows[idx] = {};
 			rows[idx].id = 95;
 			rows[idx].category = "Dashboard";
-			rows[idx].title = "Todays Feed";
+			rows[idx].title = "Activity";
 			rows[idx].code = "Feed";
 			rows[idx].icon = "resources/images/iFeed.png";
 
@@ -723,6 +728,81 @@ function sendCases( callback, dataName, res ) {
 } // >>>
 
 
+function sendCases_nested( callback, dataName, res ) {
+// <<<
+	var cases = [];
+// TODO - start
+	var reference = new Date();
+	var delta;
+	var limit1;
+	var limit2;
+
+// TODO - stop
+	logger.trace('requestHandler.sendCases: requested project: ' + dataName );
+	try {
+		limit1 = config.updateTime.updated || 2;
+		limit2 = config.updateTime.pending || 9;
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ002, [dataName], function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error.toString()});
+			res.writeHead(200, {
+				'Content-Type': 'x-application/json'
+			});
+
+			if( callback )
+				res.write( callback + '(' );
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":[');
+			res.write(' {"icon":"resources/images/iPending.png", "description":"Today","support_data":' );
+
+			// Add terminators (leaf property) in the generated list and
+			// process details. Convert the line breaks into HTML markup.
+			logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
+			cases = rows;
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+				for ( var iterator in cases ) {
+// TODO - start
+					delta = database.tools.getAge( cases[iterator].modified, reference );
+					logger.trace( 'requestHandler: send days isnce last update: ' + rows.length );
+					cases[iterator].icon = "resources/images/iOutdated.png";
+					if( delta < limit2 )
+						cases[iterator].icon = "resources/images/iPending.png";
+					if( delta < limit1 )
+						cases[iterator].icon = "resources/images/iUpdated.png";
+// TODO - stop
+					cases[iterator].description = iterator + ': ' + cases[iterator].description;
+					cases[iterator].leaf="true";
+					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
+					cases[iterator].patches = "Patch: ";
+					for ( var iter in rows ) {
+						if( cases[iterator].id != rows[iter].id ) continue; 
+						logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+						cases[iterator].patches += rows[iter].patch;
+						cases[iterator].patches += ", ";
+					}
+				}
+				// res.write( callback + '(' );
+				res.write('{ "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(cases));
+
+				res.write('}}}]');
+
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+				if( callback )
+					res.write(')');
+				res.end();
+				logger.trace('requestHandler.send: response object flushed to client' );
+				database.tools.closeConnection();
+			});
+		});
+	}
+	catch(e) {
+		logger.error("Exception: " + e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+} // >>>
+
+
 function sendFavorites( callback, res ) {
 // <<<
 	var cases = [];
@@ -825,6 +905,7 @@ function save( callback, dataObj, res ) {
 
 	try {
 		data = JSON.parse(dataObj);
+		data.caseId = database.tools.filter( data.caseId );
 		data.caseTxt = database.tools.toLocalDate(d) + ' - ' + data.caseTxt;
 		logger.trace('requestHandler.save: (' + data.caseId + ') ' + data.caseNo + ": " + data.caseTxt );
 		if( typeof data.caseNo != 'string' ) throw( { name: 'Case Number Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
@@ -863,6 +944,7 @@ function linkPatch( callback, data, res ) {
 // <<<
 	var resp = {};
 	var dataObj = JSON.parse(data);
+	dataObj.caseId = database.tools.filter( dataObj.caseId );
 	logger.trace('requestHandler.linkPatch: linking case >' + dataObj.caseId + '< with patch id >' + dataObj.patchId + '<, drop cmd >' + dataObj.drop + '<'  );
 	try {
 //		if( typeof dataObj.caseId != 'int' ) throw( { name: 'Case ID Invalid', message: 'The case id invalid or too complex. Use digits only' } );
@@ -890,9 +972,11 @@ function linkPatch( callback, data, res ) {
 function favorites( callback, data, res ) {
 // <<<
 	var resp = {};
-	var dataObj = JSON.parse(data);
-	logger.trace('requestHandler.favorites: case >' + dataObj.caseId + '< with patch id >' + dataObj.caseNo + '<'  );
+	var dataObj;
 	try {
+		dataObj = JSON.parse(data);
+		dataObj.caseId = database.tools.filter( dataObj.caseId );
+		logger.trace('requestHandler.favorites: case >' + dataObj.caseId + '< with patch id >' + dataObj.caseNo + '<'  );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ029, [dataObj.caseId], function (error, info) {
 			if( error ) {
@@ -946,6 +1030,7 @@ function _linkPatch( callback, data, res ) {
 // <<<
 	var resp = {};
 	var dataObj = JSON.parse(data);
+	dataObj.caseId = database.tools.filter( dataObj.caseId );
 	logger.trace('requestHandler._linkPatch: linking case >' + dataObj.caseId + '< with patch id >' + dataObj.patchId + '<, drop cmd >' + dataObj.drop + '<'  );
 	try {
 //		if( typeof dataObj.caseId != 'int' ) throw( { name: 'Case ID Invalid', message: 'The case id invalid or too complex. Use digits only' } );
@@ -1191,12 +1276,12 @@ function insertCase( callback, dataObj, res ) {
 			if( rows.length > 0 ) {
 				resp.code = 0;
 				resp.message = "This case is already inserted";
-				res.writeHead(200, {
+				res.writeHead(404, {
 					'Content-Type': 'text/plain'
 				});
 				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
 				res.write(JSON.stringify(resp));
-				res.end('}},"responseDetails":null,"responseStatus":200}');
+				res.end('}},"responseDetails":null,"responseStatus":404}');
 				logger.trace('requestHandler.newPatch: response object flushed to client' );
 				database.tools.closeConnection();
 			} else {
@@ -1377,6 +1462,7 @@ function updateProject( callback, dataObj, res ) {
 
 	try {
 		data = JSON.parse(dataObj);
+		data.caseId = database.tools.filter( data.caseId );
 		logger.trace('requestHandler.updateCase: (' + data.caseId + ') - ' + data.caseNo + ' with project >' + data.projectId + '<' );
 		if( typeof data.caseId != 'string' ) throw( { name: 'Case Code Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
 		if( typeof data.projectId != 'string' ) throw( { name: 'Project Code Invalid', message: 'The project number is invalid or too complex. Use digits only' } );
@@ -1593,21 +1679,206 @@ function itsmOverview( callback, empty, res ) {
 function getFeed( callback, list, res ) {
 // <<<
 	logger.trace('requestHandler.getFeed: requested list: ' + list );
+	var R = {};
+	R.support_data = {};
+	R.support_data.feed = {};
+	R.support_data.feed.title = "support data";
+	R.support_data.feed.entries = [];
+
 	try {
+		var listObj = JSON.parse(list);
 		var connection = database.tools.getConnection();
-		var query = database.queries.DBQ036a + list + database.queries.DBQ036b;
+
+		// <<< -----> 1st level v
+		R.support_data.feed.entries[0] = {};
+		R.support_data.feed.entries[0].icon = "resources/images/iClock.png";
+		R.support_data.feed.entries[0].description = listObj.entries[0].dateStr;
+		R.support_data.feed.entries[0].support_data = {};
+		R.support_data.feed.entries[0].support_data.feed = {};
+		R.support_data.feed.entries[0].support_data.feed.title = "support data";
+		R.support_data.feed.entries[0].support_data.feed.entries = [];
+
+		var query = database.queries.DBQ036a + listObj.entries[0].searchStr + database.queries.DBQ036b;
 		connection.query(query, function (error, rows, fields) {
 			if( error ) throw({name: "DB Error", message: error.toString()});
-			res.writeHead(200, {
-				'Content-Type': 'x-application/json'
+			// Add terminators (leaf property) in the generated list and
+			// process details. Convert the line breaks into HTML markup.
+			logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
+			R.support_data.feed.entries[0].support_data.feed.entries = rows;
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+				for ( var iterator in R.support_data.feed.entries[0].support_data.feed.entries ) {
+					R.support_data.feed.entries[0].support_data.feed.entries[iterator].icon = "resources/images/iFeed3.png";
+					R.support_data.feed.entries[0].support_data.feed.entries[iterator].description = iterator + ': ' + R.support_data.feed.entries[0].support_data.feed.entries[iterator].description;
+					R.support_data.feed.entries[0].support_data.feed.entries[iterator].leaf="true";
+					R.support_data.feed.entries[0].support_data.feed.entries[iterator].details = database.tools.encodeHTML( R.support_data.feed.entries[0].support_data.feed.entries[iterator].details );
+					R.support_data.feed.entries[0].support_data.feed.entries[iterator].patches = "Patch: ";
+					for ( var iter in rows ) {
+						if( R.support_data.feed.entries[0].support_data.feed.entries[iterator].id != rows[iter].id ) continue; 
+						logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[0].support_data.feed.entries[iterator].case + ')' );
+						R.support_data.feed.entries[0].support_data.feed.entries[iterator].patches += rows[iter].patch;
+						R.support_data.feed.entries[0].support_data.feed.entries[iterator].patches += ", ";
+					}
+					R.support_data.feed.entries[0].support_data.feed.entries[iterator].page =  listObj.entries[0].dateStr;
+				}
+				// >>>
+
+				// <<< -----> 2nd level v
+				R.support_data.feed.entries[1] = {};
+				R.support_data.feed.entries[1].icon = "resources/images/iCalendar2.png";
+				R.support_data.feed.entries[1].description = listObj.entries[1].dateStr;
+				R.support_data.feed.entries[1].support_data = {};
+				R.support_data.feed.entries[1].support_data.feed = {};
+				R.support_data.feed.entries[1].support_data.feed.title = "support data";
+				R.support_data.feed.entries[1].support_data.feed.entries = [];
+		
+				var query = database.queries.DBQ036a + listObj.entries[1].searchStr + database.queries.DBQ036b;
+				connection.query(query, function (error, rows, fields) {
+					if( error ) throw({name: "DB Error", message: error.toString()});
+					// Add terminators (leaf property) in the generated list and
+					// process details. Convert the line breaks into HTML markup.
+					logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
+					R.support_data.feed.entries[1].support_data.feed.entries = rows;
+					connection.query(database.queries.DBQ008, function (error, rows, fields) {
+						for ( var iterator in R.support_data.feed.entries[1].support_data.feed.entries ) {
+							R.support_data.feed.entries[1].support_data.feed.entries[iterator].icon = "resources/images/iFeed3.png";
+							R.support_data.feed.entries[1].support_data.feed.entries[iterator].description = iterator + ': ' + R.support_data.feed.entries[1].support_data.feed.entries[iterator].description;
+							R.support_data.feed.entries[1].support_data.feed.entries[iterator].leaf="true";
+							R.support_data.feed.entries[1].support_data.feed.entries[iterator].details = database.tools.encodeHTML( R.support_data.feed.entries[1].support_data.feed.entries[iterator].details );
+							R.support_data.feed.entries[1].support_data.feed.entries[iterator].patches = "Patch: ";
+							for ( var iter in rows ) {
+								if( R.support_data.feed.entries[1].support_data.feed.entries[iterator].id != rows[iter].id ) continue; 
+								logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[1].support_data.feed.entries[iterator].case + ')' );
+								R.support_data.feed.entries[1].support_data.feed.entries[iterator].patches += rows[iter].patch;
+								R.support_data.feed.entries[1].support_data.feed.entries[iterator].patches += ", ";
+							}
+							R.support_data.feed.entries[1].support_data.feed.entries[iterator].id =  R.support_data.feed.entries[1].support_data.feed.entries[iterator].id | 0x4000;  
+						}
+						// >>>
+
+						// <<< -----> 3rd level v
+						R.support_data.feed.entries[2] = {};
+						R.support_data.feed.entries[2].icon = "resources/images/iCalendar2.png";
+						R.support_data.feed.entries[2].description = listObj.entries[2].dateStr;
+						R.support_data.feed.entries[2].support_data = {};
+						R.support_data.feed.entries[2].support_data.feed = {};
+						R.support_data.feed.entries[2].support_data.feed.title = "support data";
+						R.support_data.feed.entries[2].support_data.feed.entries = [];
+				
+						var query = database.queries.DBQ036a + listObj.entries[2].searchStr + database.queries.DBQ036b;
+						connection.query(query, function (error, rows, fields) {
+							if( error ) throw({name: "DB Error", message: error.toString()});
+							// Add terminators (leaf property) in the generated list and
+							// process details. Convert the line breaks into HTML markup.
+							logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
+							R.support_data.feed.entries[2].support_data.feed.entries = rows;
+							connection.query(database.queries.DBQ008, function (error, rows, fields) {
+								for ( var iterator in R.support_data.feed.entries[2].support_data.feed.entries ) {
+									R.support_data.feed.entries[2].support_data.feed.entries[iterator].icon = "resources/images/iFeed3.png";
+									R.support_data.feed.entries[2].support_data.feed.entries[iterator].description = iterator + ': ' + R.support_data.feed.entries[2].support_data.feed.entries[iterator].description;
+									R.support_data.feed.entries[2].support_data.feed.entries[iterator].leaf="true";
+									R.support_data.feed.entries[2].support_data.feed.entries[iterator].details = database.tools.encodeHTML( R.support_data.feed.entries[2].support_data.feed.entries[iterator].details );
+									R.support_data.feed.entries[2].support_data.feed.entries[iterator].patches = "Patch: ";
+									for ( var iter in rows ) {
+										if( R.support_data.feed.entries[2].support_data.feed.entries[iterator].id != rows[iter].id ) continue; 
+										logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[2].support_data.feed.entries[iterator].case + ')' );
+										R.support_data.feed.entries[2].support_data.feed.entries[iterator].patches += rows[iter].patch;
+										R.support_data.feed.entries[2].support_data.feed.entries[iterator].patches += ", ";
+									}
+									R.support_data.feed.entries[2].support_data.feed.entries[iterator].id =  R.support_data.feed.entries[2].support_data.feed.entries[iterator].id | 0x8000;  
+								}
+								// >>>
+
+								// <<< -----> 4th level v
+								R.support_data.feed.entries[3] = {};
+								R.support_data.feed.entries[3].icon = "resources/images/iCalendar2.png";
+								R.support_data.feed.entries[3].description = listObj.entries[3].dateStr;
+								R.support_data.feed.entries[3].support_data = {};
+								R.support_data.feed.entries[3].support_data.feed = {};
+								R.support_data.feed.entries[3].support_data.feed.title = "support data";
+								R.support_data.feed.entries[3].support_data.feed.entries = [];
+						
+								var query = database.queries.DBQ036a + listObj.entries[3].searchStr + database.queries.DBQ036b;
+								connection.query(query, function (error, rows, fields) {
+									if( error ) throw({name: "DB Error", message: error.toString()});
+									// Add terminators (leaf property) in the generated list and
+									// process details. Convert the line breaks into HTML markup.
+									logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
+									R.support_data.feed.entries[3].support_data.feed.entries = rows;
+									connection.query(database.queries.DBQ008, function (error, rows, fields) {
+										for ( var iterator in R.support_data.feed.entries[3].support_data.feed.entries ) {
+											R.support_data.feed.entries[3].support_data.feed.entries[iterator].icon = "resources/images/iFeed3.png";
+											R.support_data.feed.entries[3].support_data.feed.entries[iterator].description = iterator + ': ' + R.support_data.feed.entries[3].support_data.feed.entries[iterator].description;
+											R.support_data.feed.entries[3].support_data.feed.entries[iterator].leaf="true";
+											R.support_data.feed.entries[3].support_data.feed.entries[iterator].details = database.tools.encodeHTML( R.support_data.feed.entries[3].support_data.feed.entries[iterator].details );
+											R.support_data.feed.entries[3].support_data.feed.entries[iterator].patches = "Patch: ";
+											for ( var iter in rows ) {
+												if( R.support_data.feed.entries[3].support_data.feed.entries[iterator].id != rows[iter].id ) continue; 
+												logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[3].support_data.feed.entries[iterator].case + ')' );
+												R.support_data.feed.entries[3].support_data.feed.entries[iterator].patches += rows[iter].patch;
+												R.support_data.feed.entries[3].support_data.feed.entries[iterator].patches += ", ";
+											}
+											R.support_data.feed.entries[3].support_data.feed.entries[iterator].id =  R.support_data.feed.entries[3].support_data.feed.entries[iterator].id | 0xC000;  
+										}
+										// >>>
+// ----> -----> ----> ----> -----> ----> ----> -----> ----> ----> -----> ---->
+
+										R.responseDetails = null;
+										R.responseStatus = 200;
+
+										res.writeHead(200, {
+											'Content-Type': 'x-application/json'
+										});
+										if( callback )
+											res.write( callback + '(' );
+										res.write(JSON.stringify(R));
+										if( callback )
+											res.write(')');
+										res.end();
+
+										logger.trace('requestHandler.getFeed: response object flushed to client' );
+										database.tools.closeConnection();
+									});
+								});
+							});
+						});
+					});
+				});
 			});
+		});
+	}
+	catch(e) {
+		logger.error("Exception: " + e.name + " - " + e.message );
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+} // >>>
+
+function getFeed_backup( callback, list, res ) {
+// <<<
+	logger.trace('requestHandler.getFeed: requested list: ' + list );
+
+	try {
+		var listObj = JSON.parse(list);
+		var connection = database.tools.getConnection();
+
+		res.writeHead(200, {
+			'Content-Type': 'x-application/json'
+		});
+		if( callback )
+			res.write( callback + '(' );
+		res.write('{"support_data": { "feed": { "title":"support data", "entries":[');
+		res.write('{"icon":"resources/images/iCalendar.png","description":"' + listObj.entries[0].dateStr + '","support_data":');
+
+		var query = database.queries.DBQ036a + listObj.entries[0].searchStr + database.queries.DBQ036b;
+		connection.query(query, function (error, rows, fields) {
+			if( error ) throw({name: "DB Error", message: error.toString()});
 			// Add terminators (leaf property) in the generated list and
 			// process details. Convert the line breaks into HTML markup.
 			logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
 			cases = rows;
 			connection.query(database.queries.DBQ008, function (error, rows, fields) {
 				for ( var iterator in cases ) {
-					cases[iterator].icon = "resources/images/iFeed2.png";
+					cases[iterator].icon = "resources/images/iFeed3.png";
 					cases[iterator].description = iterator + ': ' + cases[iterator].description;
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
@@ -1619,10 +1890,14 @@ function getFeed( callback, list, res ) {
 						cases[iterator].patches += ", ";
 					}
 				}
-				if( callback )
-					res.write( callback + '(' );
-				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+//				if( callback )
+//					res.write( callback + '(' );
+//				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+
+				res.write('{ "feed": { "title":"support data", "entries":');
 				res.write(JSON.stringify(cases));
+				res.write('}}}]');
+
 				res.write('}},"responseDetails":null,"responseStatus":200}');
 				if( callback )
 					res.write(')');

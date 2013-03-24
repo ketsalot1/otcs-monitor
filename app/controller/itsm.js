@@ -1,356 +1,386 @@
 Ext.define("itsm.controller.itsm", {
-extend: "Ext.app.Controller",
+	extend: "Ext.app.Controller",
 
-slideLeftTransition: { 
-type: 'slide', 
-direction: 'left' 
-},
+	slideLeftTransition: { 
+		type: 'slide', 
+		direction: 'left' 
+	},
 
-slideRightTransition: { 
-type: 'slide', 
-direction: 'right'
-},
+	slideRightTransition: { 
+		type: 'slide', 
+		direction: 'right'
+	},
 
-config: {
-refs: {
-// We're going to lookup our views by xtype. This is added 
-// throug the property 'alias' in the view definition.
-mainListContainer: "mainlistcontainer",
-itsmList: "itsmlist",
-itsmDetail: "itsmdetail",
-configurationView: "configurationview",
-searchForm: "searchform",
-itsmOverview: "itsmoverview",
-itsmEditForm: "itsmeditform",
-itsmLinkForms: "itsmlinkformcont",
-itsmPatchAssignForm: "itsmpatchform",
-itsmJiraAssignForm: "itsmjiraform",
-itsmProjectAssignForm: "itsmprojectassignform",
-emailView: "emailview",
-patchMgmtView: "patchmainview"
+	config: {
+		refs: {
+		// We're going to lookup our views by xtype. This is added 
+		// throug the property 'alias' in the view definition.
+			mainListContainer: "mainlistcontainer",
+			itsmList: "itsmlist",
+			itsmDetail: "itsmdetail",
+			configurationView: "configurationview",
+			searchForm: "searchform",
+			itsmOverview: "itsmoverview",
+			itsmEditForm: "itsmeditform",
+			itsmLinkForms: "itsmlinkformcont",
+			itsmPatchAssignForm: "itsmpatchform",
+			itsmJiraAssignForm: "itsmjiraform",
+			itsmProjectAssignForm: "itsmprojectassignform",
+			emailView: "emailview",
+			patchMgmtView: "patchmainview"
 		},
-control: {
-mainListContainer: {
-							 // The commands fired by the notes list container.
-itsmDetailCommand: "onITSMDetail",
-						 settingsCommand: "onSettings",
-						 patchMgmtCommand: "onPatchMgmt",
-						 searchCommand: "onSearch",
-						 initImageCommand: "onInitImages",
-						 swapChartCommand: "onChartSwap"
-						 },
-itsmDetail: {
-detailBackCommand: "onBackMainList",
-						 detailEditCommand: "onEditCase",
-						 detailLinkPatchCommand: "onPatchLinkCase",
-						 detailLinkProjectCommand: "onProjectLinkCase",
-						 detailSetArchivedCommand: "onArchiveCase",
-						 detailSetFavoritesCommand: "onSetFavorites",
-						 detailShowEmailsCommand: "onShowEmails"
-				},
-configurationView: {
-saveSettingsCommand:	"onSaveSettings",
-							purgeSettingsCommand: "onPurgeSettings",
-							backSettingsCommand: "onBackSettings"
-						 },
-searchForm: {
-searchCaseCommand: 'onSearchCase'
-				},
-itsmOverview: {
-initImageCommand: "onInitImages"
-				  },
-itsmEditForm: {
-saveCaseCommand: "onEditSave",
-					  backCaseEditCommand: "onCaseDetailBack"
-				  },
-itsmLinkForms: {
-linkCaseCommand: "onLinkSave",
-					  linkJiraCommand: "onJiraSave",
-					  backCaseLinkCommand: "onCaseDetailBack"
-					},
-itsmPatchAssignForm: {
-linkCaseCommand: "onLinkSave",
-					  backCaseLinkCommand: "onCaseDetailBack"
-							},
-itsmProjectAssignForm: {
-linkProjectCaseCommand: "onProjectAssignSave",
-								backCaseLinkCommand: "onCaseDetailBack"
-							  },
-patchMgmtView: {
-backCommand: "onBackMainList",
-				 insertProjectCommand: "onNewProject",
-				 insertPatchCommand: "onNewPatch",
-				 updatePatchCommand: "onUpdatePatch"
-					},
-emailView: {
-emailViewBackCommand: "onBackMainList"
-			  }
-			}
-		  },
-
-onBackMainList: function() {
-						 // <<<
-						 console.log("controller.itsm.onBackCommand");
-						 opentext.data.activeCase = {};
-						 this.activateMainView();
-					 },
-					 // >>>
-
-onEditCase: function(data) {
-					// <<<
-					console.log("controller.itsm.onEditCase: requesting Edit From for case: " + data.case );
-					Ext.Viewport.animateActiveItem(this.getItsmEditForm(), this.slideLeftTransition);
-				},
-				// >>>
-
-onPatchLinkCase: function(caseNo) {
-						  // <<<
-						  var settings = Ext.getStore("settings");
-						  var s = Ext.getStore('patches');
-						  var rec, data, hostName;
-
-						  console.log("controller.itsm.onPatchLinkCase: requesting Patch Assign for case: " + caseNo.id + '<, >' + caseNo.case + '<' );
-
-						  try {
-							  rec = settings.getAt(0);
-							  data = rec.get('settingsContainer');
-							  hostName = data[0];
-
-							  s.getProxy().setUrl( hostName + '?cmd=patches&data=open' );
-							  console.log('Request >' + s.getProxy().getUrl() + '<' );
-							  s.load();
-							  //			Ext.Viewport.animateActiveItem(this.getItsmPatchAssignForm(), this.slideLeftTransition);
-							  Ext.Viewport.animateActiveItem(this.getItsmLinkForms(), this.slideLeftTransition);
-						  }
-						  catch(e) {
-							  Ext.Msg.alert( e.name );
-						  }
-					  },
-					  // >>>
-
-onProjectLinkCase: function(caseNo) {
-							 // <<<
-							 var settings = Ext.getStore("settings");
-							 var s = Ext.getStore('patches');
-							 var rec, data, hostName;
-
-							 console.log("controller.itsm.onProjectLinkCase: requesting Project Assign for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
-
-							 try {
-								 rec = settings.getAt(0);
-								 data = rec.get('settingsContainer');
-								 hostName = data[0];
-
-								 s.getProxy().setUrl( hostName + '?cmd=projects&data=nope' );
-								 console.log('Request >' + s.getProxy().getUrl() + '<' );
-								 s.load();
-
-								 Ext.Viewport.animateActiveItem(this.getItsmProjectAssignForm(), this.slideLeftTransition);
-							 }
-							 catch(e) {
-								 Ext.Msg.alert( e.name );
-							 }
-						 },
-						 // >>>
-
-onArchiveCase : function(caseNo) {
-						 // <<<
-						 var settings = Ext.getStore("settings");
-						 var s = Ext.getStore('patches');
-						 var rec, data, hostName;
-
-						 console.log("controller.itsm.onArchiveCase: requesting Case Archival for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
-
-						 try {
-							 rec = settings.getAt(0);
-							 data = rec.get('settingsContainer');
-							 hostName = data[0];
-
-							 s.getProxy().setUrl( hostName + '?cmd=archive_case&data={"caseNo": "' + caseNo.case  + '"}' );
-							 console.log('Request >' + s.getProxy().getUrl() + '<' );
-							 s.load();
-
-							 //			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
-							 this.activateMainView();
-						 }
-						 catch(e) {
-							 Ext.Msg.alert( e.name );
-						 }
-					 },
-					 // >>>
-
-onSetFavorites : function(caseNo) {
-						  // <<<
-						  var settings = Ext.getStore("settings");
-						  var s = Ext.getStore('patches');
-						  var rec, data, hostName, badgeText;
-
-						  badgeText = "Err";
-
-						  console.log("controller.itsm.onSetFavorites: requesting Case Attention for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
-
-						  try {
-							  rec = settings.getAt(0);
-							  data = rec.get('settingsContainer');
-							  hostName = data[0];
-
-							  s.getProxy().setUrl( hostName + '?cmd=favorites&data={"caseId": "' + caseNo.id+ '", "caseNo": "' + caseNo.case  + '"}' );
-							  console.log('Request >' + s.getProxy().getUrl() + '<' );
-							  s.load(function( record, operation, success ) {
-									  if( success == true ) {
-									  if( operation.getResultSet()._records[0].node.value == 0 )
-									  badgeText = "0";
-									  if( operation.getResultSet()._records[0].node.value == 1 )
-									  badgeText = "1";
-									  } else {
-									  badgeText = "Err";
-									  }
-
-									  //				Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
-									  //				this.activateMainView();
-									  Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
-
-									  Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
-										  if (button.getId() === 'itsmdetail_fav') {
-										  console.log( 'itsmdetail_fav found!' );
-										  button.setBadgeText(badgeText);
-										  }
-										  });
-									  }, this );
-						  }
-						  catch(e) {
-							  Ext.Msg.alert( e.name );
-						  }
-					  },
-					  // >>>
-
-onSearchBack: function() {
-					  // <<<
-					  console.log("controller.itsm.onSearchBackCommand");
-					  this.activateMainView();
-				  },
-				  // >>>
-
-onITSMDetail: function(obj, record) {
-					  // <<<
-					  console.log("controller.itsm.onITSMDetail");
-					  console.log( record );
-					  this.activateITSMDetail(record);
-				  },
-				  // >>>
-
-onShowEmails: function(record) {
-					  // <<<
-					  console.log("controller.itsm.onShowEmails");
-					  console.log( record );
-					  this.activateEmailView(record);
-				  },
-				  // >>>
-
-activateMainView: function () {
-							// <<<
-							Ext.Viewport.animateActiveItem(this.getMainListContainer(), this.slideRightTransition);
-						},
-						// >>>
-
-onSettings: function() {
-					// <<<
-					Ext.Viewport.animateActiveItem(this.getConfigurationView(), this.slideLeftTransition);
-				},
-				// >>>
-
-onPatchMgmt: function() {
-					 // <<<
-					 var settings = Ext.getStore("settings");
-					 var s = Ext.getStore('patches');
-					 var rec, data, hostName;
-
-					 console.log('controller.itsm.onPatchMgmt: requesting Patch Management View' );
-
-					 try {
-						 rec = settings.getAt(0);
-						 data = rec.get('settingsContainer');
-						 hostName = data[0];
-
-						 s.getProxy().setUrl( hostName + '?cmd=patches&data=all' );
-						 console.log('Request >' + s.getProxy().getUrl() + '<' );
-						 s.load();
-
-						 Ext.Viewport.animateActiveItem(this.getPatchMgmtView(), this.slideLeftTransition);
-					 }
-					 catch(e) {
-						 Ext.Msg.alert( e.name );
-					 }
-				 },
-				 // >>>
-
-onSearch: function() {
-				 // <<<
-				 Ext.Viewport.animateActiveItem(this.getSearchForm(), this.slideLeftTransition);
-			 },
-			 // >>>
-
-activateITSMDetail: function (record) 
-{ // <<<
-	console.log("controller.itsm.activateITSMDetail");
-
-	var rec;
-	var data = [];
-	var settings = Ext.getStore("settings");
-	var s = Ext.getStore('desktopITSM');
-	var v;
-
-	try {
-		rec = settings.getAt(0);
-		data = rec.get('settingsContainer');
-		var hostName = data[0];
-		console.log( 'controller: URL=' + s.getProxy().getUrl() );
-		s.getProxy().setUrl( hostName + '?cmd=send&data={"dataName":"' + record + '","daysBack":"0"}' );
-		console.log( 'controller: URL=' + s.getProxy().getUrl() );
-
-		s.load();
-
-		v = this.getItsmDetail();
-		for ( var i in v.getItems().keys) {
-			if( v.getItems().keys[i].search('detailPanel') !== -1 ) {
-				v.getItems().items[i].setTitle('OTCS Cases');
+		control: {
+			mainListContainer: {
+				// The commands fired by the notes list container.
+				itsmDetailCommand: "onITSMDetail",
+				settingsCommand: "onSettings",
+				patchMgmtCommand: "onPatchMgmt",
+				searchCommand: "onSearch",
+				initImageCommand: "onInitImages",
+				swapChartCommand: "onChartSwap"
+			},
+			itsmDetail: {
+				detailBackCommand: "onBackMainList",
+				detailEditCommand: "onEditCase",
+				detailLinkPatchCommand: "onPatchLinkCase",
+				detailLinkProjectCommand: "onProjectLinkCase",
+				detailSetArchivedCommand: "onArchiveCase",
+				detailSetFavoritesCommand: "onSetFavorites",
+				detailShowEmailsCommand: "onShowEmails"
+			},
+			configurationView: {
+				saveSettingsCommand:	"onSaveSettings",
+				purgeSettingsCommand: "onPurgeSettings",
+				backSettingsCommand: "onBackSettings"
+			},
+			searchForm: {
+				searchCaseCommand: 'onSearchCase'
+			},
+			itsmOverview: {
+				initImageCommand: "onInitImages"
+			},
+			itsmEditForm: {
+				saveCaseCommand: "onEditSave",
+				backCaseEditCommand: "onCaseDetailBack"
+			},
+			itsmLinkForms: {
+				linkCaseCommand: "onLinkSave",
+				linkJiraCommand: "onJiraSave",
+				backCaseLinkCommand: "onCaseDetailBack"
+			},
+			itsmPatchAssignForm: {
+				linkCaseCommand: "onLinkSave",
+				backCaseLinkCommand: "onCaseDetailBack"
+			},
+			itsmProjectAssignForm: {
+				linkProjectCaseCommand: "onProjectAssignSave",
+				backCaseLinkCommand: "onCaseDetailBack"
+			},
+			patchMgmtView: {
+				backCommand: "onBackMainList",
+				insertProjectCommand: "onNewProject",
+				insertPatchCommand: "onNewPatch",
+				updatePatchCommand: "onUpdatePatch"
+			},
+			emailView: {
+				emailViewBackCommand: "onBackMailList"
 			}
 		}
-		Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
+	},
 
-		//			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
-	}
-	catch(e) {
-		Ext.Msg.alert( e.name );
-	}
-},
+	onBackMailList: function( caseNo ) {
+	// <<<
+		console.log("controller.itsm.onBackMailCommand: navigate to case = " . caseNo );
+		opentext.data.activeCase = {};
+		this.showITSMDetail();
+	},
 	// >>>
 
-	activateEmailView: function( record )
+	onBackMainList: function() {
+	// <<<
+		console.log("controller.itsm.onBackCommand.");
+		opentext.data.activeCase = {};
+		this.activateMainView();
+	},
+	// >>>
+	
+	onEditCase: function(data) {
+	// <<<
+		console.log("controller.itsm.onEditCase: requesting Edit From for case: " + data.case );
+		Ext.Viewport.animateActiveItem(this.getItsmEditForm(), this.slideLeftTransition);
+	},
+	// >>>
+	
+	onPatchLinkCase: function(caseNo) {
+	// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('patches');
+		var rec, data, hostName;
+	
+		console.log("controller.itsm.onPatchLinkCase: requesting Patch Assign for case: " + caseNo.id + '<, >' + caseNo.case + '<' );
+	
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+	
+			s.getProxy().setUrl( hostName + '?cmd=patches&data=open' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+			//	Ext.Viewport.animateActiveItem(this.getItsmPatchAssignForm(), this.slideLeftTransition);
+			Ext.Viewport.animateActiveItem(this.getItsmLinkForms(), this.slideLeftTransition);
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+	// >>>
+	
+	onProjectLinkCase: function(caseNo) {
+	// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('patches');
+		var rec, data, hostName;
+	
+		console.log("controller.itsm.onProjectLinkCase: requesting Project Assign for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
+	
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+	
+			s.getProxy().setUrl( hostName + '?cmd=projects&data=nope' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+	
+			Ext.Viewport.animateActiveItem(this.getItsmProjectAssignForm(), this.slideLeftTransition);
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+	// >>>
+	
+	onArchiveCase : function(caseNo) {
+	// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('patches');
+		var rec, data, hostName;
+	
+		console.log("controller.itsm.onArchiveCase: requesting Case Archival for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
+	
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+	
+			s.getProxy().setUrl( hostName + '?cmd=archive_case&data={"caseNo": "' + caseNo.case  + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+	
+			//Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
+			this.activateMainView();
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+	// >>>
+	
+	onSetFavorites : function(caseNo) {
+	// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('patches');
+		var rec, data, hostName, badgeText;
+	
+		badgeText = "Err";
+	
+		console.log("controller.itsm.onSetFavorites: requesting Case Attention for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
+	
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+	
+			s.getProxy().setUrl( hostName + '?cmd=favorites&data={"caseId": "' + caseNo.id+ '", "caseNo": "' + caseNo.case  + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load(function( record, operation, success ) {
+				if( success == true ) {
+					if( operation.getResultSet()._records[0].node.value == 0 )
+						badgeText = "0";
+					if( operation.getResultSet()._records[0].node.value == 1 )
+						badgeText = "1";
+				} else {
+					badgeText = "Err";
+				}
+	
+				//Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
+				//this.activateMainView();
+				Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+	
+				Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+					if (button.getId() === 'itsmdetail_fav') {
+						console.log( 'itsmdetail_fav found!' );
+						button.setBadgeText(badgeText);
+					}
+				});
+			}, this );
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+	// >>>
+	
+	onSearchBack: function() {
+	// <<<
+		console.log("controller.itsm.onSearchBackCommand");
+		this.activateMainView();
+	},
+	// >>>
+	
+	onITSMDetail: function(obj, record) {
+	// <<<
+		console.log("controller.itsm.onITSMDetail");
+		console.log( record );
+		this.activateITSMDetail(record);
+	},
+	// >>>
+	
+	onShowEmails: function(record) {
+	// <<<
+		console.log("controller.itsm.onShowEmails");
+		console.log( record );
+		this.activateEmailView(record);
+	},
+	// >>>
+	
+	activateMainView: function () {
+	// <<<
+		Ext.Viewport.animateActiveItem(this.getMainListContainer(), this.slideRightTransition);
+	},
+	// >>>
+	
+	onSettings: function() {
+	// <<<
+		Ext.Viewport.animateActiveItem(this.getConfigurationView(), this.slideLeftTransition);
+	},
+	// >>>
+	
+	onPatchMgmt: function() {
+	// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('patches');
+		var rec, data, hostName;
+	
+		console.log('controller.itsm.onPatchMgmt: requesting Patch Management View' );
+	
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+	
+			s.getProxy().setUrl( hostName + '?cmd=patches&data=all' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load();
+	
+			Ext.Viewport.animateActiveItem(this.getPatchMgmtView(), this.slideLeftTransition);
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+	// >>>
+	
+	onSearch: function() {
+	// <<<
+		Ext.Viewport.animateActiveItem(this.getSearchForm(), this.slideLeftTransition);
+	},
+	// >>>
+	
+	activateITSMDetail: function (record) 
 	{ // <<<
-		console.log("controller.itsm.activateEmailView");
-
+		console.log("controller.itsm.activateITSMDetail");
+	
 		var rec;
 		var data = [];
 		var settings = Ext.getStore("settings");
-		var s = Ext.getStore('email');
+		var s = Ext.getStore('desktopITSM');
 		var v;
-
+	
 		try {
 			rec = settings.getAt(0);
 			data = rec.get('settingsContainer');
 			var hostName = data[0];
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
-//			var hostName = settings.getData().items[0].data.hostName;
+			s.getProxy().setUrl( hostName + '?cmd=send&data={"dataName":"' + record + '","daysBack":"0"}' );
+			console.log( 'controller: URL=' + s.getProxy().getUrl() );
+	
+			s.load();
+	
+			this.showITSMDetail();
+/* <<<
+			v = this.getItsmDetail();
+			for ( var i in v.getItems().keys) {
+				if( v.getItems().keys[i].search('detailPanel') !== -1 ) {
+					v.getItems().items[i].setTitle('OTCS Cases');
+				}
+			}
+			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
+	
+			//			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+>>> */
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+		// >>>
+
+	showITSMDetail: function()
+	{ // <<<
+		var v;
+
+		try {
+			v = this.getItsmDetail();
+			for ( var i in v.getItems().keys) {
+				if( v.getItems().keys[i].search('detailPanel') !== -1 ) {
+					v.getItems().items[i].setTitle('OTCS Cases');
+				}
+			}
+			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+// >>>
+	
+	activateEmailView: function( record )
+	{ // <<<
+		console.log("controller.itsm.activateEmailView");
+	
+		var rec;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('email');
+		var v;
+	
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			var hostName = data[0];
+			console.log( 'controller: URL=' + s.getProxy().getUrl() );
+	//			var hostName = settings.getData().items[0].data.hostName;
 			/* New command structure */
-// cmd=mdb_retrieve_emails&data={"caseNo":"1648913"}
+	// cmd=mdb_retrieve_emails&data={"caseNo":"1648913"}
 			s.getProxy().setUrl( hostName + '?cmd=mdb_retrieve_emails&data={"caseNo":"' + record.case + '"}' );
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
-
-//			s.getProxy().setUrl( hostName + '?otcs=' + record );
-//			console.log( 'controller: URL=' + s.getProxy().getUrl() );
+	
+	//			s.getProxy().setUrl( hostName + '?otcs=' + record );
+	//			console.log( 'controller: URL=' + s.getProxy().getUrl() );
 			s.load();
-
+	
 			v = this.getEmailView();
 			for ( var i in v.getItems().keys) {
 				if( v.getItems().keys[i].search('detailPanel') !== -1 ) {
@@ -358,8 +388,8 @@ activateITSMDetail: function (record)
 				}
 			}
 			Ext.Viewport.animateActiveItem(v, this.slideLeftTransition);
-
-//			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+	
+	//			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
 		}
 		catch(e) {
 			Ext.Msg.alert( e.name );

@@ -81,12 +81,16 @@ resources/images/iEmail31.png \
 resources/images/iEmailAtt31.png \
 resources/images/iFeed.png \
 resources/images/iFeed2.png \
+resources/images/iFeed3.png \
 resources/images/iArchive.png \
 resources/images/iUpdated.png \
 resources/images/iOutdated.png \
 resources/images/iPending.png \
 resources/images/iQuestion.png \
 resources/images/iExperimental.png \
+resources/images/iCalendar.png \
+resources/images/iCalendar2.png \
+resources/images/iClock.png \
 doc/css/default.css \
 doc/res/opentext.png \
 doc/api.html"
@@ -148,7 +152,9 @@ echo "start your node server:"
 echo "  node --debug ./service/nodejs/start.js"
 echo " "
 echo "start your remote debugger:"
-echo "  node-inspector &"
+echo "  node-inspector --web-port=8686 &"
+echo " "
+echo "to start debugging on 0.0.0.0:8686"
 echo " "
 echo "Make sure that you use the right version of the compass:"
 echo "  /var/lib/gems/1.8/bin/compass compile"

@@ -6,7 +6,7 @@ Ext.define("itsm.view.itsmList", {
     },
     config: {
         loadingText: "Loading Cases...",
-        emptyText: '</pre><div class="notes-list-empty-text">No case found.</div><pre>',
+        emptyText: '</pre><div class="notes-list-empty-text">Cannot retrieve data from the server. Server down or data set empty.</div><pre>',
         onItemDisclosure: true,
 		  ui: 'round',
         grouped: true,
