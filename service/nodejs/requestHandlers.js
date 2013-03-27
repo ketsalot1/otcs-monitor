@@ -1464,8 +1464,8 @@ function updateProject( callback, dataObj, res ) {
 		data = JSON.parse(dataObj);
 		data.caseId = database.tools.filter( data.caseId );
 		logger.trace('requestHandler.updateCase: (' + data.caseId + ') - ' + data.caseNo + ' with project >' + data.projectId + '<' );
-		if( typeof data.caseId != 'string' ) throw( { name: 'Case Code Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
-		if( typeof data.projectId != 'string' ) throw( { name: 'Project Code Invalid', message: 'The project number is invalid or too complex. Use digits only' } );
+		if( ! data.caseId  ) throw( { name: 'Case Code Invalid', message: 'The case number is invalid or too complex. Use digits only' } );
+		if( ! data.projectId  ) throw( { name: 'Project Code Invalid', message: 'The project number is invalid or too complex. Use digits only' } );
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ018, [data.projectId, data.caseId], function (error, info) {
 			if( error ) throw({name: "DB Error", message: error.toString()});
@@ -1698,9 +1698,11 @@ function getFeed( callback, list, res ) {
 		R.support_data.feed.entries[0].support_data.feed.title = "support data";
 		R.support_data.feed.entries[0].support_data.feed.entries = [];
 
+		if( listObj.entries[0].searchStr.length == 0 ) 
+			listObj.entries[0].searchStr= "999999999"; // set non-null but non-existent string.
 		var query = database.queries.DBQ036a + listObj.entries[0].searchStr + database.queries.DBQ036b;
 		connection.query(query, function (error, rows, fields) {
-			if( error ) throw({name: "DB Error", message: error.toString()});
+			if( error ) throw({name: "DB Error", message: error});
 			// Add terminators (leaf property) in the generated list and
 			// process details. Convert the line breaks into HTML markup.
 			logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
@@ -1731,9 +1733,11 @@ function getFeed( callback, list, res ) {
 				R.support_data.feed.entries[1].support_data.feed.title = "support data";
 				R.support_data.feed.entries[1].support_data.feed.entries = [];
 		
+				if( listObj.entries[1].searchStr.length == 0 ) 
+					listObj.entries[1].searchStr= "999999999"; // set non-null but non-existent string.
 				var query = database.queries.DBQ036a + listObj.entries[1].searchStr + database.queries.DBQ036b;
 				connection.query(query, function (error, rows, fields) {
-					if( error ) throw({name: "DB Error", message: error.toString()});
+					if( error ) throw({name: "DB Error", message: error});
 					// Add terminators (leaf property) in the generated list and
 					// process details. Convert the line breaks into HTML markup.
 					logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
@@ -1764,9 +1768,11 @@ function getFeed( callback, list, res ) {
 						R.support_data.feed.entries[2].support_data.feed.title = "support data";
 						R.support_data.feed.entries[2].support_data.feed.entries = [];
 				
+						if( listObj.entries[2].searchStr.length == 0 ) 
+							listObj.entries[2].searchStr= "999999999"; // set non-null but non-existent string.
 						var query = database.queries.DBQ036a + listObj.entries[2].searchStr + database.queries.DBQ036b;
 						connection.query(query, function (error, rows, fields) {
-							if( error ) throw({name: "DB Error", message: error.toString()});
+							if( error ) throw({name: "DB Error", message: error});
 							// Add terminators (leaf property) in the generated list and
 							// process details. Convert the line breaks into HTML markup.
 							logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
@@ -1797,9 +1803,11 @@ function getFeed( callback, list, res ) {
 								R.support_data.feed.entries[3].support_data.feed.title = "support data";
 								R.support_data.feed.entries[3].support_data.feed.entries = [];
 						
+								if( listObj.entries[2].searchStr.length == 0 ) 
+									listObj.entries[2].searchStr= "999999999"; // set non-null but non-existent string.
 								var query = database.queries.DBQ036a + listObj.entries[3].searchStr + database.queries.DBQ036b;
 								connection.query(query, function (error, rows, fields) {
-									if( error ) throw({name: "DB Error", message: error.toString()});
+									if( error ) throw({name: "DB Error", message: error});
 									// Add terminators (leaf property) in the generated list and
 									// process details. Convert the line breaks into HTML markup.
 									logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
@@ -1852,6 +1860,7 @@ function getFeed( callback, list, res ) {
 		res.end(e.name + ': ' + e.message);
 	}
 } // >>>
+
 
 function getFeed_backup( callback, list, res ) {
 // <<<
