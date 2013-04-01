@@ -80,7 +80,8 @@ Ext.define("itsm.controller.itsm", {
 				backCommand: "onBackMainList",
 				insertProjectCommand: "onNewProject",
 				insertPatchCommand: "onNewPatch",
-				updatePatchCommand: "onUpdatePatch"
+				updatePatchCommand: "onUpdatePatch",
+				archivePatchCommand: "onArchivePatch"
 			},
 			emailView: {
 				emailViewBackCommand: "onBackMailList"
@@ -124,7 +125,7 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			hostName = data[0];
 	
-			s.getProxy().setUrl( hostName + '?cmd=patches&data=open' );
+			s.getProxy().setUrl( hostName + '?cmd=patches&data={"filter":"open"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load();
 			//	Ext.Viewport.animateActiveItem(this.getItsmPatchAssignForm(), this.slideLeftTransition);
@@ -164,7 +165,7 @@ Ext.define("itsm.controller.itsm", {
 	onArchiveCase : function(caseNo) {
 	// <<<
 		var settings = Ext.getStore("settings");
-		var s = Ext.getStore('patches');
+		var s = Ext.getStore('db');
 		var rec, data, hostName;
 	
 		console.log("controller.itsm.onArchiveCase: requesting Case Archival for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
@@ -176,7 +177,16 @@ Ext.define("itsm.controller.itsm", {
 	
 			s.getProxy().setUrl( hostName + '?cmd=archive_case&data={"caseNo": "' + caseNo.case  + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
-			s.load();
+			s.load( function( record, operation, success ) {
+				var txt = "0";
+				if( success ) {
+					txt = record[0].getData().value;
+					if( (txt * 1 ) == 1 )
+						Ext.Msg.alert('Archive', 'Case has been archived.', Ext.emptyFn);
+					else
+						Ext.Msg.alert('Error', 'Case archiving failed.', Ext.emptyFn);
+				}
+			});
 	
 			//Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
 			this.activateMainView();
@@ -280,7 +290,7 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			hostName = data[0];
 	
-			s.getProxy().setUrl( hostName + '?cmd=patches&data=all' );
+			s.getProxy().setUrl( hostName + '?cmd=patches&data={"filter":"all"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load();
 	
@@ -684,7 +694,8 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			hostName = data[0];
 
-			s.getProxy().setUrl( hostName + '?cmd=update_project&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","projectId":"' + obj.projectId + '"}' );
+//			s.getProxy().setUrl( hostName + '?cmd=update_project&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","projectId":"' + obj.projectId + '"}' );
+			s.getProxy().setUrl( hostName + '?cmd=update_project&data={"caseNo": "' + caseData.case + '","projectId":"' + obj.projectId + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load();
 
@@ -821,6 +832,45 @@ Ext.define("itsm.controller.itsm", {
 		}
 	},
 // >>>
+
+	onArchivePatch: function() {
+// <<<
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var db = Ext.getStore('db');
+		var s = Ext.getStore('desktopITSM');
+		var v;
+
+		try {
+			console.log('controller archiving patches' );
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			var hostName = data[0];
+
+			db.getProxy().setUrl( hostName + '?cmd=archive_patch_ex&data={"none": "none"}' );
+			console.log('Request >' + db.getProxy().getUrl() + '<' );
+			db.load( function( record, operation, success ) {
+				var txt = "Fail";
+				if( success ) {
+					txt = record[0].getData().value;
+				}
+				Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+					if (button.getId() === 'patch_mgmt_archive') {
+						console.log( 'patch management panel: save button found, badge text: >' + txt + '<');
+						button.setBadgeText(txt);
+					}
+				});
+			});
+
+//			this.activateMainView();
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+	},
+// >>>
+
 
 	// Base Class functions.
 	launch: function () {

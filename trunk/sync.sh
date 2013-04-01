@@ -91,6 +91,12 @@ resources/images/iExperimental.png \
 resources/images/iCalendar.png \
 resources/images/iCalendar2.png \
 resources/images/iClock.png \
+resources/icons/Icon@2x.png \
+resources/icons/Icon~ipad@2x.png \
+resources/icons/Icon~ipad.png \
+resources/icons/Icon.png \
+resources/icons/icon-spot~ipad.png \
+resources/icons/iTunesArtwork.png \
 doc/css/default.css \
 doc/res/opentext.png \
 doc/api.html"

@@ -5,7 +5,8 @@ Ext.define("itsm.view.itsmPatchAssignForm", {
 		title: 'Assign to Patch',
 		id: 'patchFormId',
 		iconCls: 'refresh',
-		layout: 'vbox'
+		layout: 'vbox',
+		scrollable: false
 	},
 
 	initialize: function () { // <<<

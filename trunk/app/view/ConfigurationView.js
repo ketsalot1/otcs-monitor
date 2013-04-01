@@ -5,7 +5,8 @@ Ext.define("itsm.view.ConfigurationView", {
 		title: 'Settings',
 		id: 'infoSubmitForm',
 		iconCls: 'refresh',
-		layout: 'vbox'
+		layout: 'vbox',
+		scrollable: false
 	},
 
 	initialize: function () { // <<<

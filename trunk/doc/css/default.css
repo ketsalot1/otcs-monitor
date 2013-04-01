@@ -118,6 +118,26 @@ td.parameters {
 	font-size: 0.85em;
 }
 
+div.internal_parameters {
+	padding: 1px 7px 5px 7px;
+	margin: 1px 1px 1px 1px;
+	margin: 2px 2px 2px 2px;	  
+}
+
+div.toc-1 {
+	font-weight: bold;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+div.toc-2 {
+	padding-left: 18px;
+}
+
+div.toc-3 {
+	padding-left: 36px;
+}
+
 td.navigation {
 	vertical-align: top;
 }
@@ -209,4 +229,12 @@ h3.api {
 	color: orange;
 	font-size: 1.4em;
 	font-weight: bold;
+}
+
+h2 {
+	padding-top: 56px;
+}
+
+h1 {
+	padding-top: 96px;
 }

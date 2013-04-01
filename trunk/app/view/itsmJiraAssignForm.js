@@ -5,7 +5,8 @@ Ext.define("itsm.view.itsmJiraAssignForm", {
 		title: 'Link case with Jira ID',
 		id: 'itsmJiraAssignFormId',
 		iconCls: 'refresh',
-		layout: 'vbox'
+		layout: 'vbox',
+		scrollable: false
 	},
 
 	initialize: function () { // <<<

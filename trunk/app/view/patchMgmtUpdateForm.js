@@ -5,7 +5,9 @@ Ext.define("itsm.view.patchMgmtUpdateForm", {
 		title: 'Update a Patch',
 		id: 'patchMgmtUpdateFormId',
 		iconCls: 'refresh',
-		layout: 'vbox'
+		layout: 'vbox',
+		scrollable: false // prevent the form pannel to move around when using carousel control. Smooth transition
+								// check on small display, if the from does not need scrolling though.
 	},
 
 	initialize: function () { // <<<
