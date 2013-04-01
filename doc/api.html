@@ -3,11 +3,13 @@
 <title>OpenText Mobile OTCS</title>
 <link rel="stylesheet" href="css/default.css" type="text/css"> 
 <script type="text/javascript">
+// <<<
 	function toggle(id) {
 		var el = document.getElementById(id);
 		el.style.display = (el.style.display != 'none' ? 'none' : '' );
 		document.getElementById("link-" + id).innerHTML = (el.style.display == 'none' ? 'expand' : 'collapse' );
 	}
+// >>>
 </script>
 </head>
 
@@ -27,57 +29,155 @@
 </td>
 <td width="844px">
 
-<p>
 <h3><a name="platform_support">Table of Contents</a></h3>
 <div class="thin_line"></div>
 <ul type="none">
-	<li><a href="#insert_case">insert_case</a></li>
-	<li><a href="#mdb_insert_mail">mdb_insert_mail</a></li>
-	<li><a href="#projects">projects</a></li>
-	<li><a href="#search">search</a></li>
+	<li><div class="toc-1">Write Access Functions</div></li>
+	<li><div class="toc-2">Create Functions</div></li>
+	<li><div class="toc-3"><a href="#insert_case">insert_case</a></div></li>
+	<li><div class="toc-3"><a href="#mdb_insert_mail">mdb_insert_mail</a></div></li>
+	<li><div class="toc-3"><a href="#create_patch">create_patch</a></div></li>
+	<li><div class="toc-2">Update Functions</div></li>
+	<li><div class="toc-3"><a href="#set_case_status">set_case_status</a></div></li>
+	<li><div class="toc-3"><a href="#insert_jira_link">insert_jira_link</a></div></li>
+	<li><div class="toc-3"><a href="#insert_project_link">insert_project_link</a></div></li>
+	<li><div class="toc-3"><a href="#insert_patch_link">insert_patch_link</a></div></li>
+	<li><div class="toc-3"><a href="#update_case_info">update_case_info</a></div></li>
+	<li><div class="toc-3"><a href="#update_case_info_ex">update_case_info_ex</a></div></li>
+	<li><div class="toc-3"><a href="#update_patch">update_patch</a></div></li>
+	<li><div class="toc-3"><a href="#archive_patch">archive_patch</a></div></li>
+	<li><div class="toc-3"><a href="#archive_case">archive_case</a></div></li>
+	<li><div class="toc-1">Read Access Functions</div></li>
+	<li><div class="toc-2">Fetch Functions</div></li>
+	<li><div class="toc-3"><a href="#projects">projects</a></div></li>
+	<li><div class="toc-3"><a href="#patches">patches</a></div></li>
+	<li><div class="toc-3"><a href="#search">search</a></div></li>
 </ul>
-</p><p>
+
 <h3><a name="introduction">Introduction</a></h3>
 <div class="thin_line"></div>
-</p><p>
-		  
-	The API to Mobile Monitor for OTCS (MOTCS_API) defines all CURD operation available for data in the system. The API uses one entry point defined by the reverse proxy. Recommended resource name is '/motcs/rest'. The resource takes two mandatory parameters and one optional. One is <em>cmd</em> and the second one <em>data</em>. The last parameter is called <em>processSupportData</em> and is used by JOSNP calls only. The cmd stands for command and is always plain string formated. The second parameter stands for payload data and is always JSON serialized. The payload should be always URI-protected / URI-encoded to guarantee the transfer. The last parameter, the optional one, is importatn for JSONP integration. User can send over the name of the callback routine that is supposed to be called back on client. The return data are then serialized as a parameter of the callback method. The API supports both GET and POST method. We strongly recommend to use POST method exclusively to avoid any problem with data size being transferred.
 
-</p><p>
+<p>The API to Mobile Monitor for OTCS (MOTCS_API) defines necessary CURD operation required to work with data available in the system. The API uses one entry point. Typically is the entry point defined by a reverse proxy. Recommended resource name is '/motcs/rest'. The resource takes two mandatory parameters and several optional. First mandatory parameter is <em>cmd</em> and the second one is <em>data</em>. The parameter <em>cmd</em> stands for command and is always plain string formated. The second parameter stands for payload data and is always JSON serialized. The payload should be always URI-protected / URI-encoded to guarantee the transfer.</p>
 
-	The following section described all available command that the API accepts. The index is given for commands only. Remember that the complete API call must contain the complete URI specification and parameter section to specify the URI seceltion procedure. 
+<p>The optimal parameters are required by used JSONP protocol. JSONP requires a name of callback function that is called when data is ready for upload. The callback name is stored under <em>processSupportData</em>. User can send over the name of the callback routine that is supposed to be called back on client. The return data are then serialized as a parameter of the callback method. The API additionally supports 3 mode parameters required for integration with Sencha Touch. They are used for paging support and session identification.</p>
 
-</p><p>
+<p>The API supports both GET and POST method. We strongly recommend to use POST method exclusively to avoid any problem with data size being transferred. </p>
 
 <h6><em>Example</em></h6>
 
-</p>
 <pre><code>
 	http://m.opentext.net/motcs/rest?cmd=insert_case&amp;data={"caseNo":"192","caseSubject":"Hello World"}
 
-	http://m.opentext.net/motcs/rest?cmd=insert_case&amp;data={"caseNo":"192","caseSubject":"Hello World"}&processSupportData=Ext.JsonP.callback19
+	http://m.opentext.net/motcs/rest?cmd=insert_case&amp;data={"caseNo":"192","caseSubject":"Hello World"}
+	&amp;processSupportData=Ext.JsonP.callback19&amp;page=0&amp;limit=25
 </code></pre>
 
-<h2>API Specification</h2>
+<h1>API Specification</h1>
 
 <p>
 
-	API description does not use the optional parameters. They are sent authomatically by the Sencha Touch framework when configured for JSONP data transfer.
+	API description does not use the optional parameters. They are sent automatically by the Sencha Touch framework when configured for JSONP data transfer. The optional parameters are defining callback function, page size for paging support. The callback function is mandatory for Sencha Touch integration while the data transfer is using JSONP schema. The paging support is not implemented at this point of time and all paging related parameters (limit, page) are discarded on the server.
 
 </p>
 
-<h2>Data Write Methods</h2>
+<h1>Write Access Functions</h1>
+<h2>Create Functions</h2>
 
 <h3 class="api"><a name="insert_case">insert_case</a></h3>
 <!-- <<< -->
 <div class="thin_line"></div>
 <div class="methods">
 	<div class="method">
-		<h4 id="id117137">POST</h4>
+		<h4 id="id-foo-001">POST</h4>
 		<h6>/motcs/rest?cmd=insert_case&amp;data={parameters}</h6>
 		<p>
-	Inserts new case into relational database. The command takes two parameters only. The additional metadata are pre-set to default value and can be modified by other API calls.
-		</p>
+	This is prime function of the system, it inserts new case into relational database. The command takes two parameters only - case number and case subject. Both are typically extracted from the e-mail traffic started between CS and Dev. Additional meta data are pre-set to default values and can be modified by other API calls. The additional meta data are:
+	</p>
+		<table>
+			<tbody>
+				<tr>
+					<td class="parameters">id</td>
+					<td class="parameters">this is an internal identifier of a case. This number is a running
+						number automatically increased by database engine with every insert into T01_CASE.
+						This identifier is important for integration with Sencha Touch framework, for
+						consistency of the data store and model. See 'activity' view for more details.
+					</td>
+				</tr>
+				<tr>
+					<td class="parameters">case</td>
+					<td class="parameters">Is an integer number unique to a support case. Each support case 
+						is reported ad tracked based on the case number. Also known as OCTS Ticket Number.
+						This number of set by this create function, cannot be altered later.
+					</td>
+				</tr>
+				<tr>
+					<td class="parameters">description</td>
+					<td class="parameters">Is the short characteristic on the problem. Usually it brings
+						the problem statement made by customer. The monitoring system is using the subject
+						of the opening e-mail as the description of the case. This is set initially in the
+						create function and cannot be altered later.
+					</td>
+				</tr>
+				<tr>
+					<td class="parameters">status</td>
+					<td class="parameters">It is a string representation of the status of the case. The
+						status is extracted from ITSM system regulary and flushed into local database running
+						under this monitoring system. The status can be set by function <a href="#set_case_status">
+						set_case_status</a>.
+					</td>
+				</tr>
+				<tr>
+					<td class="parameters">details</td>
+					<td class="parameters">This is a long string that stores the progress of work when processing 
+						the reported problem. It can contain any notes relevant for the case. This information
+						is available in the local database under this monitor, not available in the ITSM system.
+						The detail information can be continuously expanded by using function call <a href="#update_case_info_ex">
+						update_case_info_ex</a>. Default value is 'null'. 
+					</td>
+				</tr>
+				<tr>
+					<td class="parameters">jira</td>
+					<td class="parameters">This string reads the Jira ID of the corresponding Jira tracking number.
+						Most of the support cases is linked with its counterpart in Jira tracking system. This filed
+						duplicated that information inside the local database. Function <a href="#insert_jira_link">
+						insert_jira_link</a> to link a case with an Jira ID. Default value is 'null'. 
+					</td>
+				</tr>
+				<tr>
+					<td class="parameters">patches</td>
+					<td class="parameters">This is a string that concatenates all linked patches with a specific case.
+						The relationship between a case and a patch is 1 to n, meaning that one case might be referred by 
+						more patches (typical situation when fixing one issue in many versions of the same product that
+						is already shipping). Use function <a href="#insert_patch_link">insert_patch_link</a> to link 
+						a case with an patch ID. Default value is 'null'. 
+					</td>
+				</tr>
+				<tr>
+					<td class="parameters">project</td>
+					<td class="parameters">This is a string that links the case with a specific product/project/owner.
+						Each case might be assigned to one project only, the relationship is 1 to 1.
+						<a href="#insert_project_link">insert_project_link</a> to link 
+						a case with an existing project. Default value is 'Unassigned', having internal id = 99. 
+					</td>
+				</tr>
+				<tr>
+					<td class="parameters">active</td>
+					<td class="parameters">This is a flag saying whether case is still actively processed or whether
+						the case is already closed on ITSM system and therefore archived for monitoring database.
+						The function <a href="#archive_case">archive_case</a> sets the case archived once it receives
+						status 'Closed'. Default value is 'active'. 
+					</td>
+				</tr>
+				<tr>
+					<td class="parameters">modified</td>
+					<td class="parameters">This is a date field that gets automatically set to current time every
+						time the function <a href="#update_case_info_ex">update_case_info_ex</a> gets called. This
+						time stamp is used to determine the icon of the case in the <a href="#search">search</a> function.
+					  	Default value is 'null'. 
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
 		<h6>request query parameters</h6>
 		<!-- Request description <<< -->
@@ -188,7 +288,7 @@
 <div class="thin_line"></div>
 <div class="methods">
 	<div class="method">
-		<h4 id="id117138">POST</h4>
+		<h4 id="id-foo-001">POST</h4>
 		<h6>/motcs/rest?cmd=mdb_insert_mail&amp;data={parameters}</h6>
 		<p>Inserts new mail into database. The link to the case is the case number. The API does not verify whether the case already exist. One can insert new e-mail having a case number that does not exist in the system yet. In that case the stored e-mail cannot be retrieved. It is not linked with any case. The system stores e-mail in different database than the relational data about the cases. Therefore the API does not implement any constraint between e-mail database and relation database.</p>
 		<h6>request query parameters</h6>
@@ -318,16 +418,1203 @@
 </div>
 <!-- >>> -->
 
-<h2>Data Read Methods</h2>
+<h3 class="api"><a name="create_patch">create_patch</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=create_patch&amp;data={parameters}</h6>
+		<p>
+	Use this command to insert new patch into the database. The patches can be later linked with case and thus indicate the scope of a patch. In this function, user can specify the patch name. The ETA is automatically set as today() and status is set as 'open'. Use function <a href="#update_patch">update_patch</a> to modify ETA or status of a patch created in this step. The list of all patches is delivered by function <a href="#patches">patches</a>. Function <a href="#insert_patch_link">insert_patch_link</a> is used to link an existing patch with an existing case.   
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>patchName</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">string</a></em></p></td>
+					<td class="parameters"><p>Name of the new patch. The parameter cannot be empty. The list of all available patches is retrieved in <a href="#patches">patches</a> function.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"patchName": "PRD-1020-012"
+}
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117133'); return false;" href="#"><em><span id="link-id117133">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117133" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":200,
+        "message":"Rows matched: 1 Changed: 1 Warnings: 0"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the insert operation succeeded. The returned code is 200 and the message says the number of updated rows in the database. The number of updated rows is supposed to be 1. Other number than 1 might indicate a database error.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117134'); return false;" href="#"><em><span id="link-id117134">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117134" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message": "Patch Name Invalid: The patch name is empty or not a string. Use string only"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the insert operation fails to create the database record with supplied data. Most typical problem is wrong parameter name, which results in the empty string of the patch name. Use function <a href="#patches">patches</a> to retrieve the complete list of patches before you try to create a new one. The server returns as well this code if the parameter name is correct (patchName) but its value is not a string (more complex structure) or if the string is empty.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117135'); return false;" href="#"><em><span id="link-id117135">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117135" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h2>Update Functions</h2>
+
+<h3 class="api"><a name="set_case_status">set_case_status</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=set_case_status&amp;data={parameters}</h6>
+		<p>
+	Use this command to set the status of a case. The status of the case corresponds with the status in ITSM database. The status is a string and does not have any constraint in the database. The only check is for type 'string' and emptiness. Non string objects and empty strings are rejected. This function is called by the Selenium client. The client fetches the status from ITSM system via the Web interface and flushes it into the local database.  
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseNo</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Case number originating in ITSM database.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseStatus</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
+					<td class="parameters"><p>Text status of the case extracted from ITSM database. Can be virtually any string. The string containing pattern 'close' indicates that the case is already closing in the ITSM database and is suggested for 'archive' operation in the local database as well.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"caseNo":"111888",
+	"caseStatus":"Progress To-Do"
+}
+
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117142'); return false;" href="#"><em><span id="link-id117142">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117142" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":200,
+        "value":"1",
+        "message":"(Rows matched: 1  Changed: 1  Warnings: 0"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation succeeded. The returned attribute 'value' brings the number on lines that has been changed in the database. The correct value should be always 1. If the number if higher, then the database contain duplicate records. Return value 0 means that no record with specific case number was found in the database. It attribute 'value' contain 0 the code should read 404 - not found.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117143'); return false;" href="#"><em><span id="link-id117143">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117143" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "value":0,
+        "message": "(Rows matched: 0  Changed: 0  Warnings: 0"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation fails to update any record. The database contains no record under the given case number parameter. The same error is returned if the supplied 'caseStatus' is not a string or is a empty string.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117144'); return false;" href="#"><em><span id="link-id117144">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117144" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h3 class="api"><a name="insert_jira_link">insert_jira_link</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=insert_jira_link&amp;data={parameters}</h6>
+		<p>
+	Use this command to link an existing case with jira ID. The case should already exist before using this command. An update for non-existing case will return code 0 inside the response structure. The system cannot check whether the given Jira ID is valid or not. The provided string is simply linked with the given OTCS case.  
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseNo</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Case number originating in ITSM database.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>jiraId</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
+					<td class="parameters"><p>Jira identifier linked to the given OTCS Ticket. Id does not need to exist in Jira beforehand, is not checked against Jira system. The format of Jira Id is e.g. VIEW-32. It a string.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"caseNo":"111888",
+	"jiraId":"VIEW-561"
+}
+
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117112'); return false;" href="#"><em><span id="link-id117112">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117112" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":1,
+        "message":"(Rows matched: 1  Changed: 1  Warnings: 0"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation succeeded. The returned code brings the number on lines that has been chnaged in the database. The correct value should be always 1. If the number if higher, then the database contain duplicate records. Return value 0 means that no record with specific case number was found in the database. This commands updates column jira_01 in the table t01_case.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>200 - record not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117113'); return false;" href="#"><em><span id="link-id117113">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117113" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":0,
+        "message": "(Rows matched: 0  Changed: 0  Warnings: 0"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation fails to update any record. The database contains no record under the given case number parameter. It is still returned under the HTTP return code 200, as this is not the failure in the application.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117114'); return false;" href="#"><em><span id="link-id117114">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117114" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h3 class="api"><a name="insert_project_link">insert_project_link</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=insert_project_link&amp;data={parameters}</h6>
+		<p>
+	Use this command to link an existing case with project ID. The case should already exist before using this command. An update for non-existing case will return code 0 inside the response structure. The system will return http response "404 not found" error code if trying to link an existing case with a non-existent project ID. The valid project id can be retrieved from database by using the function <a href="#projects">projects</a>.  
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseNo</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Case number originating in ITSM database.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>projectId</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Project Id. It must be a valid code. The valid codes can fetch the function <a href="#projects">projects</a></p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"caseNo":"111888",
+	"projectId":"4"
+}
+
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117115'); return false;" href="#"><em><span id="link-id117115">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117115" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":200,
+        "message":"(Rows matched: 1  Changed: 1  Warnings: 0"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation succeeded. The returned code is 200 and the message says how many records were successfully updated. The number of updated rows is supposed to be 1. Number 0 means that no record were updated. That indicates invalid case number.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117116'); return false;" href="#"><em><span id="link-id117116">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117116" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message": "Error: ER_NO_REFERENCED_ROW_: Cannot add or update a child row: ..."
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation fails to update given record. The reason for the failure can be that the given project id does not exist in the system yet. Check the used project Id with the data delivered by the function <a href="#projects">projects</a>. The integrity of database is corrupt if one receives this response for a valid project id. Contact database administrator and verify the schema for constraints and foreign keys.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117117'); return false;" href="#"><em><span id="link-id117117">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117117" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h3 class="api"><a name="insert_patch_link">insert_patch_link</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=insert_patch_link&amp;data={parameters}</h6>
+		<p>
+	Use this command to link an existing case with patch. Both case  and referred patch must already exist before using this command. An update for non-existing case will return code 404, as well as an update for non-existing patch. The Case Id can be retrieved by using function <a href="#search">search</a>. The Patch Id is delivered by function <a href="#patches">patches</a>.   
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseId</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Case ID in local database. It is not Case No. from ITSM. Case Id is retrieved in <a href="#search">search</a> function.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>patchId</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Patch Id from local database. It must be a valid code delivered by <a href="#patches">patches</a> function.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>drop</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#boolean">boolean</a></em></p></td>
+					<td class="parameters"><p>Flag controls the count of patches assigned to case. Each case might be assigned to more patches. The value 1 will cause that the existing assignment for the case are dropped and just one is created based on the patch id submitted in this call. Value 0 will result into adding new assignment to the list of assignments that already may exist for the given case Id.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"caseId":"244",
+	"patchId":"24",
+	"drop":"1"
+}
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117118'); return false;" href="#"><em><span id="link-id117118">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117118" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":200,
+        "message":"OK"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the insert operation succeeded. The returned code is 200 and the message says OK. The number of inserted rows is supposed to be 1. Number 0 means that no record were inserted.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117119'); return false;" href="#"><em><span id="link-id117119">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117119" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message": "Error: ER_NO_REFERENCED_ROW_: Cannot add or update a child row: ..."
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the insert operation fails to create record with supplied data. Database schema constrains both case id and patch id. Therefore is not possible to insert any link record with invalid data. The valid ids are delivered by function <a href="#patches">projects</a>, <a href="#search">search</a> respectively. The integrity of database is corrupt if one receives this response for a valid combination of patch and case ids. Contact database administrator and verify the schema for constraints and foreign keys.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117120'); return false;" href="#"><em><span id="link-id117120">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117120" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h3 class="api"><a name="update_case_info">update_case_info</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=update_case_info&amp;data={parameters}</h6>
+		<p>
+	Use this command to add status information to the case. Status information is merged with the existing information. The application logic adds automatically the time stamp to the text. This function requires case ID as the identification of the case. Do not mix it up wit hthe case number coming from ITSM system. Case ID is unique to the database only and provides internal integrity. See function <a href="#update_case_info_ex">update_case_info_ex</a> if you want to use case number is the identification key instead of case ID.   
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseId</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Case ID in local database. It is not Case No. from ITSM. Case Id is retrieved in <a href="#search">search</a> function.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseTxt</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">string</a></em></p></td>
+					<td class="parameters"><p>Textual information that will be merged with the existing status information stored already in the local database.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"caseId":"244",
+	"caseTxt":"work stalled, capacity allocated to current version only. Work will resume on April 5th."
+}
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117124'); return false;" href="#"><em><span id="link-id117124">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117124" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":200,
+        "message":"OK"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation succeeded. The returned code is 200 and the message says OK. This operation can accept just plain text, do not use HTML or another markup. Do not use neither double quotation mark not single quotation mark. That will break the text parsing function server side. Sorry for limited robustness at the moment.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117125'); return false;" href="#"><em><span id="link-id117125">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117125" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message": "Too many or too few entries returned ..."
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation fails to add the text in to the database. The reason my be that the given Case ID does not exist in the database yet or the text to add is empty. Use <a href="#search">search</a> function to identify the case that you want to add your comment to. This error is also reported if the database integrity gets corrupt and more entries have the same ID. The internal datbase constrain must prevent it actually.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117126'); return false;" href="#"><em><span id="link-id117126">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117126" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h3 class="api"><a name="update_case_info_ex">update_case_info_ex</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=update_case_info_ex&amp;data={parameters}</h6>
+		<p>
+	Use this command to add status information to the case. Status information is merged with the existing information. The application logic adds automatically the time stamp to the text. This function requires case number as the identification of the case. Do not mix it up with the case ID coming from local database only. Case number though does not need to be unique in the contrary to the case ID. This is the convenience method extending the original function <a href="#update_case_info">update_case_info</a>.   
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseNo</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Case number in ITSM system. It is not Case ID. from local database. Case number is retrieved in <a href="#search">search</a> function.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseTxt</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">string</a></em></p></td>
+					<td class="parameters"><p>Textual information that will be merged with the existing status information stored already in the local database.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"caseNo":"1645542",
+	"caseTxt":"work stalled, capacity allocated to current version only. Work will resume on April 5th."
+}
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117127'); return false;" href="#"><em><span id="link-id117127">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117127" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":200,
+        "message":"OK"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation succeeded. The returned code is 200 and the message says OK. This operation can accept just plain text, do not use HTML or another markup. Do not use neither double quotation mark not single quotation mark. That will break the text parsing function server side. Sorry for limited robustness at the moment.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117128'); return false;" href="#"><em><span id="link-id117128">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117128" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message": "Too many or too few entries returned ..."
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation fails to add the text in to the database. The reason my be that the given Case number does not exist in the database yet or the text to add is empty. Use <a href="#search">search</a> function to identify the case that you want to add your comment to. This error is also reported if the database integrity gets corrupt and more entries have the same number. The internal database constrain does not prevent it.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117129'); return false;" href="#"><em><span id="link-id117129">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117129" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h3 class="api"><a name="update_patch">update_patch</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=update_patch&amp;data={parameters}</h6>
+		<p>
+	Use this command to update a patch. User can set the ETA and status of the patch. ETA is a date, status is any arbitrary string though the application logic uses today either 'open', 'developed' or 'archived'. The key used to identify a patch is 'Patch Id'. The patch Id is delivered by function <a href="#patches">patches</a>.   
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>patchId</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Patch Id of the patch that you want to alter. Patch Id is retrieved in <a href="#patches">patches</a> function.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>patchETA</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">string</a></em></p></td>
+					<td class="parameters"><p>Is a string representation of the Estimated Arrival of the patch. The string format must follow the pattern 'mm/dd/yyyy'. The server side logic cannot parse another formats of the string representing date.</p></td>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>patchStatus</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#boolean">string</a></em></p></td>
+					<td class="parameters"><p>The status is a string description. It can virtually accept any string of non-zero length. The semantic of used string should be controlled in the calling application. User can retrieve the list of patches in certain status by using the function <a href="#patches">patches</a>, parameter "filter". Though user can set any string as the status of a patch the application logic recognizes following three status strings:</p>
+						<div class="internal_parameters">
+							<table>
+								<tbody>
+									<tr>
+										<td class="parameters">open</td>
+										<td class="parameters">Will set the patch as open. Is is a common state before the
+									  		 patch gets developed and shipped to CS.</td>
+									</tr>
+									<tr>
+										<td class="parameters">developed</td>
+										<td class="parameters">A patch gets this status after it gets finished and delivered to CS.
+										A patch is this status is not listed in the active patches.</td>
+									</tr>
+									<tr>
+										<td class="parameters">archived</td>
+										<td class="parameters">A patch gets archived if all the referred cases get closed in ITSM system.
+										A patch is this status is not listed in the active patches.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"patchId": "24",
+	"patchETA":"04/30/2013",
+	"patchStatus":"open"
+}
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117130'); return false;" href="#"><em><span id="link-id117130">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117130" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":200,
+        "message":"Rows matched: 1 Changed: 1 Warnings: 0"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation succeeded. The returned code is 200 and the message says the number of updated rows in the database. The number of updated rows is supposed to be 1. Number 0 means that no record were updated, which indicates the wrong patch id.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117131'); return false;" href="#"><em><span id="link-id117131">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117131" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message": "Error: The requested patch id was not found in the database."
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation fails to update the database record with supplied data. Most typical problem is malformed string bringing the date. Be aware that the only supported format is 'mm/dd/yyyy'. The application does not recognize any other string format. Other problem might be a wrong patch id. Use function <a href="#patches">patches</a> to retrieve the complete list of patches before you try to update one of them. The server returns as well this code if the status string is not a string (more complex structure) or if the string is empty.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117132'); return false;" href="#"><em><span id="link-id117132">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117132" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h3 class="api"><a name="archive_patch">archive_patch</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=archive_patch&amp;data={parameters}</h6>
+		<p>
+	Use this command to archive patches. The application logic archives the patches that are in status 'developed' and contain only inactive cases. Such patch can be archived in one go. Once a patch gets archived it is not listed by function <a href="#patches">patches</a> any more. Archived patches still exist in the database, as well as the archive (inactive) cases but they are not received through API.   
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>flag</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">boolean</a></em></p></td>
+					<td class="parameters"><p>Is a flag without any meaning now.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+	cmd=archive_patch&data={"flag":"0"}
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117136'); return false;" href="#"><em><span id="link-id117136">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117136" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":200,
+        "value": 3,
+        "message":"Rows matched: 1 Changed: 1 Warnings: 0"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation succeeded. The returned code is 200 and the message says the number of updated rows in the database in last cycle. The return structure additionally contains the attribute 'value', which reads the number of archived patches in this run.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117137'); return false;" href="#"><em><span id="link-id117137">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117137" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message": "Error: The requested patch id was not found in the database."
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation fails to update the database record with supplied data. Most typical problem is malformed string bringing the date. Be aware that the only supported format is 'mm/dd/yyyy'. The application does not recognize any other string format. Other problem might be a wrong patch id. Use function <a href="#patches">patches</a> to retrieve the complete list of patches before you try to update one of them. The server returns as well this code if the status string is not a string (more complex structure) or if the string is empty.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117138'); return false;" href="#"><em><span id="link-id117138">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117138" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h3 class="api"><a name="archive_case">archive_case</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=archive_case&amp;data={parameters}</h6>
+		<p>
+	Use this command to archive a single case identified by its case number. Archived cases remain stored in the database but are not showed in the UI. Archived case can be still found and displayed by <a href="#search">search</a> function when the using the flag 'searchAll' set to 1 (true).
+		</p>
+
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>caseNo</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#integer">integer</a></em></p></td>
+					<td class="parameters"><p>Case number originating in ITSM database.</p></td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"caseNo":"111888"
+}
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK 
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117139'); return false;" href="#"><em><span id="link-id117139">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117139" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":200,
+        "value":"1",
+        "message":"(Rows matched: 1  Changed: 1  Warnings: 0"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation succeeded. The returned code brings the number on lines that has been chnaged in the database. The correct value should be always 1. If the number if higher, then the database contain duplicate records. Return value 0 means that no record with specific case number was found in the database. This commands updates column jira_01 in the table t01_case.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117140'); return false;" href="#"><em><span id="link-id117140">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117140" style="display: none;">
+					<p>application/json (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "value":"0",
+        "message": "(Rows matched: 0  Changed: 0  Warnings: 0"
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":404
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the update operation fails to update any record. The database contains no record under the given case number parameter. It is still returned under the HTTP return code 200, as this is not the failure in the application.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117141'); return false;" href="#"><em><span id="link-id117141">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117141" style="display: none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
+<h1>Read Access Functions</h1>
+
+<h2>Fetch Methods</h2>
 
 <h3 class="api"><a name="projects">projects</a></h3>
 <!-- <<< -->
 <div class="thin_line"></div>
 <div class="methods">
 	<div class="method">
-		<h4 id="id117138">GET, POST</h4>
+		<h4 id="id-foo-001">GET, POST</h4>
 		<h6>/motcs/rest?cmd=projects&amp;data={parameters}</h6>
-		<p>Retrieves the list of project and project owners. The short names are then used in other commands to fetch the case details.</p>
+		<p>Retrieves the list of project ids and short description. The short names are then used in other commands to fetch the case details.</p>
 		<h6>request query parameters</h6>
 		<!-- Request description <<< -->
 		<table>
@@ -434,14 +1721,152 @@
 </div>
 <!-- >>> -->
 
+<h3 class="api"><a name="patches">patches</a></h3>
+<!-- <<< -->
+<div class="thin_line"></div>
+<div class="methods">
+	<div class="method">
+		<h4 id="id-foo-001">GET, POST</h4>
+		<h6>/motcs/rest?cmd=patches&amp;data={parameters}</h6>
+		<p>Retrieves the list of non-archived patches. The list consists of id, patch name and ETA. The ids are internal to used database only, name corresponds with official patch name. ETA is the currently estimated availability of the patch to customers. The status of the patch listed in the list is either 'open' or 'developed'. The list does not contain patches in the status 'archived'. Database maintain all the data about any case and patch delivered since the monitoring started. Though UI does not show case or patches that are already archived. Therefore this command does not return the patches with the status 'archived'.</p>
+		<h6>request query parameters</h6>
+		<!-- Request description <<< -->
+		<table>
+			<tbody>
+				<tr>
+					<th>parameter</th>
+					<th>value</th>
+					<th>description</th>
+				</tr>
+				<tr>
+					<td class="parameters"><p><strong>filter</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
+					<td class="parameters">
+						<p>Filters the list of patches. Supported filters are is the table:</p>
+							<div class="internal_parameters">
+							<table>
+								<tbody>
+									<tr>
+										<td class="parameters">open</td>
+										<td class="parameters">Returns only the opened patches. The already archived or developed
+									  		 patches will be filtered out.</td>
+									</tr>
+									<tr>
+										<td class="parameters">all</td>
+										<td class="parameters">Does not apply any filter and delivers the complete list of patches</td>
+									</tr>
+								</tbody>
+							</table>
+							<p>remember, please, that the patches with the 'archived' status are listed by none of the filters. You have to use database client to list all the patches registered in the system</p>
+							</div>
+						</td>
+				</tr>
+			</tbody>
+		</table>
+		<h6><em>Example</em></h6>
+		<pre><code>
+{
+	"filter":"open"
+}
+		</code></pre>
+		<!-- >>> -->
+
+		<h6>available response representations:</h6>
+		<!-- Response description <<< -->
+		<ul>
+			<li>
+				<div>200 - OK
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117121'); return false;" href="#"><em><span id="link-id117121">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117121" style="display: none;">
+					<p>The response body contain 'application/json' (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+	"support_data": {
+		"feed": {
+			"title": "support data",
+			"entries": [
+				{
+					"text": "ESC-0971-010",
+					"value": 18,
+					"eta": "02/18/2013"
+				},
+				{
+					"text": "ESC-1000-006",
+					"value": 15,
+					"eta": "04/19/2013"
+				},
+				{
+					"text": "WIV-0970-023",
+					"value": 8,
+					"eta": "05/16/2013"
+				}
+			]
+		}-
+	},
+	"responseDetails": null,
+	"responseStatus": 200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the list of project could be retrieved from the database. The text property is used for subsequent call for list of cases.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>404 - not found
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117122'); return false;" href="#"><em><span id="link-id117122">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117122" style="display: none;">
+					<p>The response body contain 'application/json' (<abbr title="{http://research.sun.com/wadl/2006/10} ">property</abbr>)</p>
+					<h6>Example</h6>
+					<pre><code>
+{
+  "support_data":{ 
+    "feed": {
+      "title":"support data", 
+      "entries":{
+        "code":404,
+        "message":"Filter Error: No filter or invalid filter specified. Use 'all' or 'open' filters."
+      }
+    }
+  },
+  "responseDetails":null,
+  "responseStatus":200
+}
+					</code></pre>
+					<p></p>
+					<p>Returned if the select operation fails.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+			<li>
+				<div>503 - Service Temporarily Unavailable
+				<!-- Response description <<< -->
+				[<a onclick="toggle('id117123'); return false;" href="#"><em><span id="link-id117123">expand</span></em></a>]
+				</div>
+				<div class="toggle" id="id117123" style="display:none;">
+					<p>The application server or reverse proxy are not available. One of them or both might crash.</p>
+				</div>
+				<!-- >>> -->
+			</li>
+		</ul>
+	</div>
+	<!-- >>> -->
+</div>
+<!-- >>> -->
+
 <h3 class="api"><a name="search">search</a></h3>
 <!-- <<< -->
 <div class="thin_line"></div>
 <div class="methods">
 	<div class="method">
-		<h4 id="id117138">GET, POST</h4>
+		<h4 id="id-foo-001">GET, POST</h4>
 		<h6>/motcs/rest?cmd=search&amp;data={parameters}</h6>
-		<p>Retrieves the list of support cases fitting the search pattern. The returned structure contain all the available information linked with the case in the ITSM Database. Search is using the SQL clause LIKE %pattern% to identify all the cases that fit the search criteria. The search command is searching the caseNo. only.</p>
+		<p>Retrieves the list of support cases fitting the search pattern. The function tries to match the ITSM Case Number against the 'pattern' parameter. The returned structure contain all the available information linked with the case in the ITSM Database. Search is using the SQL clause LIKE %pattern% to identify all the cases that fit the search criteria.</p>
 		<h6>request query parameters</h6>
 		<!-- Request description <<< -->
 		<table>
@@ -456,12 +1881,20 @@
 					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#string">string</a></em></p></td>
 					<td class="parameters"><p>The support case number of just fragment of the support case number.</p></td>
 				</tr>
+				<tr>
+					<td class="parameters"><p><strong>searchAll</strong></p></td>
+					<td class="parameters"><p><em><a href="http://www.w3.org/TR/xmlschema-2/#boolean">boolean</a></em></p></td>
+					<td class="parameters"><p>If set the search seeks the pattern in all cases available in the database. If unset the search is limited to active cases only and the archived cases remains not searched.</p></td>
+				</tr>
 			</tbody>
 		</table>
       <p>Following example is searching for all cases that contain the fragment 1642. It will return the list of all cases that contain the fragment in any position. E.g. the fragment 1642 will be found in all those numbers: 1642, 16423, 81642, 816423.</p> 
 		<h6><em>Example</em></h6>
 		<pre><code>
-http://host/motcs/rest?cmd=search&amp;data={"pattern":"1642"}
+{
+   "pattern":"1642",
+   "searchAll":"1"
+}
 		</code></pre>
 
 		<!-- >>> -->

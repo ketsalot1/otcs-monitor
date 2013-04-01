@@ -5,7 +5,8 @@ Ext.define("itsm.view.itsmProjectAssignForm", {
 		title: 'Assign to Project',
 		id: 'projectFormId',
 		iconCls: 'refresh',
-		layout: 'vbox'
+		layout: 'vbox',
+		scrollable: false
 	},
 
 	initialize: function () { // <<<

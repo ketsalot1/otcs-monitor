@@ -22,6 +22,16 @@ Ext.define("itsm.view.patchMainView", {
 			}
 		};
 
+		var archiveButton = {
+			xtype: "button",
+			ui: "action",
+			text: "Archive",
+			id: "patch_mgmt_archive",
+			listeners: {
+				tap: { fn: this.onArchiveButtonTap, scope: this }
+			}
+		};
+
 		var saveButton = {
 			xtype: "button",
 			ui: "action",
@@ -34,11 +44,12 @@ Ext.define("itsm.view.patchMainView", {
 
 		var topToolbar = {
 			xtype: "toolbar",
-			title: 'Manage',
-			docked: "top",
+//			title: 'Manage',
+			docked: "bottom",
 			items: [
 				backButton,
 				{ xtype: "spacer" },
+				archiveButton,
 				saveButton
 			]
 		};
@@ -73,16 +84,33 @@ Ext.define("itsm.view.patchMainView", {
 
 		this.add([topToolbar,patchCarousel]);
 
+/*
+		Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+			if (button.getId() === 'patch_mgmt_archive') {
+				button.show();
+			}
+		});
+*/
 		console.log("view.patchMainView.initialize event leaving");
    },
 // >>>
 
 	onCarouselItemChange: function() {
-		console.log("patchView.carousel.itemChange event fired. Active page index = " + this.getItems().items[1].activeIndex);
+		var index = this.getItems().items[1].activeIndex;
+		console.log("patchView.carousel.itemChange event fired. Active page index = " + index);
 		Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
 			if (button.getId() === 'patch_mgmt_save') {
 				console.log( 'patch management panel: save button found!' );
 				button.setBadgeText("");
+			}
+			if (button.getId() === 'patch_mgmt_archive') {
+				console.log( 'patch management panel: archive button found!' );
+				if( index == 0 )
+					button.show();
+				else {
+					button.hide();
+					button.setBadgeText("");
+				}
 			}
 		});
 	},
@@ -146,5 +174,20 @@ Ext.define("itsm.view.patchMainView", {
 			Ext.Msg.alert("Form", "Cannot access form data" );
 			console.error(e.name + ": " + e.message);
 		}
-	}
+	},
+
+	onArchiveButtonTap: function() {
+		var lm = {};
+		console.log("view.itsmDetail.setArchived");
+
+		function onReply(btn) {
+			if( btn == "yes" ) {
+				this.fireEvent("archivePatchCommand");
+			} else {
+				console.log("view.patchMainView.archivePatch - operation canceled");
+			}
+		}
+
+		Ext.Msg.confirm("Confirmation", "Archive patches?", onReply, this );
+	},
 });

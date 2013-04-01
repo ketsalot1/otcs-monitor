@@ -3,6 +3,7 @@ Ext.define('itsm.model.db', {
 	config: {
 		fields: [
 			{ name: 'code', type: 'string' },
+			{ name: 'value', type: 'string' },
 			{ name: 'message', type: 'string' },
 		]
    }

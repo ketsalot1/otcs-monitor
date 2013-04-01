@@ -5,7 +5,8 @@ Ext.define("itsm.view.searchForm", {
 		title: 'Search',
 		id: 'searchFormId',
 		iconCls: 'refresh',
-		layout: 'vbox'
+		layout: 'vbox',
+		scrollable: false
 	},
 
 	initialize: function () { // <<<

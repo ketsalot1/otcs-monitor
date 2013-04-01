@@ -129,11 +129,11 @@ Ext.define("itsm.view.MainListContainer", {
 >>> */
 		};
 
+		opentext.data.carousel = itsmOverview;
 		/* Right after the main view is initialized, get the data for the 
 		 * the application. Use sequenced call, as the server side cannot 
 		 * handle paralell requests yet!
 		 */
-		opentext.data.carousel = itsmOverview;
 
 		var settings = Ext.getStore('settings');
 		var rec = settings.getAt(0);
@@ -164,6 +164,7 @@ Ext.define("itsm.view.MainListContainer", {
 		}
 
 		this.add([topToolbar,itsmList,itsmOverview]);
+//		this.add([itsmList,itsmOverview,topToolbar]);
 
 		console.log("view.mainListContainer.initialize event leaving");
    },
