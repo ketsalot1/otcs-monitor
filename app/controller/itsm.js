@@ -200,7 +200,7 @@ Ext.define("itsm.controller.itsm", {
 	onSetFavorites : function(caseNo) {
 	// <<<
 		var settings = Ext.getStore("settings");
-		var s = Ext.getStore('patches');
+		var s = Ext.getStore('db');
 		var rec, data, hostName, badgeText;
 	
 		badgeText = "Err";

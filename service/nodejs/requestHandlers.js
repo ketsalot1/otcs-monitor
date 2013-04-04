@@ -328,36 +328,47 @@ tools.sync = (function() {
 // <<<
 	var me = this;
 	me.cfg = {};
-	me.cfg.refs = [];
+	me.cfg.refs = {};
+//	me.cfg.refs = [];
 	return {
 		cfg: this.cfg,
 
 		createInstance: function( cnt ) {
 			var d = new Date();
 			var tmp = d.toISOString();
-			var i = this.cfg.refs.length;
+//			var i = this.cfg.refs.length;
 
-			this.cfg.refs[i] = {};
-			this.cfg.refs[i].name = tmp;
-			this.cfg.refs[i].refCnt = cnt;
+			this.cfg.refs[tmp] = cnt;
+
+//			this.cfg.refs[i] = {};
+//			this.cfg.refs[i].name = tmp;
+//			this.cfg.refs[i].refCnt = cnt;
 
 			return tmp;
 		},
 
 		decrement: function( instance ) {
+/*
 			for ( var iterator in this.cfg.refs ) {
 				if( this.cfg.refs[iterator].name == instance )
 					this.cfg.refs[iterator].refCnt--; 
 			}
+*/
+			this.cfg.refs[instance]--;
 		},
 
 		isUnlocked: function( instance ) {
+			if( this.cfg.refs[instance] == 0 )
+				return true;
+			return false;
+/*
 			for ( var iterator in this.cfg.refs ) {
 				if( this.cfg.refs[iterator].name == instance )
 					if( this.cfg.refs[iterator].refCnt == 0 )
 						return true;
 			}
 			return false;
+*/
 		}
 	}
 }());
@@ -1095,8 +1106,9 @@ function favorites( callback, data, res ) {
 					connection.query(database.queries.DBQ030, [dataObj.caseId], function( error, info ) {
 						if( !error ) { 
 							logger.trace('requestHandler.favorites: set. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
-							resp.code = 0
-							resp.message = info.message;
+							resp.code = 200;
+							resp.value = 0;
+							resp.message = info.message || "OK";
 						}
 						database.tools.cb_response_create( error, resp, res, callback ); 
 					});
@@ -1106,8 +1118,9 @@ function favorites( callback, data, res ) {
 				}
 			} else {
 				logger.trace('requestHandler.favorites: set. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
-				resp.code = 1;
-				resp.message = info.message;
+				resp.code = 200;
+				resp.value = info.affectedRows;
+				resp.message = info.message || "OK";
 				database.tools.cb_response_create( error, resp, res, callback ); 
 			}
 		});

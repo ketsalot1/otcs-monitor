@@ -137,3 +137,22 @@ Appending B - additional modules installed to Node.js
  	npm install mysql@2.0.0-alpha3 (alternatively)
 	npm install log4js
 
+5. Auto recovery from crash and database backup:
+
+   Following entries are required in crontab:
+
+   0 3 * * * /usr/local/sbin/backup_itsm_db.sh
+   */15 * * * * /home/martinme/Develop/google/itsm/recover.me.sh
+
+   where the recover.me.sh is under source control as part of project and the database
+   backup script is:
+
+
+		#!/bin/bash
+		BACKUP=`date +"/home/martinme/Ubuntu One/My Backups/%Y%m%d-backup-itsm.sql"`
+		mysqldump --opt --add-drop-database -u root --password=mysql --databases test > "$BACKUP"
+		
+		BACKUP=`date +"/home/martinme/Ubuntu One/My Backups/%Y%m%d-backup-mongo"`
+		/usr/local/bin/mongodump --collection test --db itsm --out "$BACKUP"
+
+
