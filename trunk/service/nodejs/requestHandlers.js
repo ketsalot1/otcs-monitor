@@ -572,8 +572,13 @@ function describe( callback, dataName, res ) {
 						rows[iterator].category = "Dashboard";
 						rows[iterator].icon = "resources/images/iUnassigned-2.png";
 					} else {
-						rows[iterator].category="OTCS Cases (" + database.tools.toLocalDate(tmp) + ")";
-						rows[iterator].icon = "resources/images/iCases.png";
+						if( rows[iterator].id < 50 ) {
+							rows[iterator].category="OTCS Cases (" + database.tools.toLocalDate(tmp) + ")";
+							rows[iterator].icon = "resources/images/iCases.png";
+						} else {
+							rows[iterator].category="Projects (" + database.tools.toLocalDate(tmp) + ")";
+							rows[iterator].icon = "resources/images/iProject2.png";
+						} 
 					}
 				}
 				logger.trace( 'requestHandler.describe: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
@@ -772,11 +777,11 @@ function sendCases( callback, dataName, res ) {
 					for ( var iterator in cases ) {
 						delta = database.tools.getAge( cases[iterator].modified, reference );
 						logger.trace( 'requestHandler: send days isnce last update: ' + rows.length );
-						cases[iterator].icon = "resources/images/iOutdated.png";
+						cases[iterator].icon = "resources/images/iOutdated1.png";
 						if( delta < limit2 )
-							cases[iterator].icon = "resources/images/iPending.png";
+							cases[iterator].icon = "resources/images/iPending1.png";
 						if( delta < limit1 )
-							cases[iterator].icon = "resources/images/iUpdated.png";
+							cases[iterator].icon = "resources/images/iUpdated1.png";
 						cases[iterator].description = iterator + ': ' + cases[iterator].description;
 						cases[iterator].leaf="true";
 						cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
@@ -935,7 +940,7 @@ function sendUnarchived( callback, res ) {
 			connection.query(database.queries.DBQ008, function (error, rows, fields) {
 				if( !error ) { 
 					for ( var iterator in cases ) {
-						cases[iterator].icon = "resources/images/iArchive.png";
+						cases[iterator].icon = "resources/images/iArchive3.png";
 						cases[iterator].leaf="true";
 						cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
 						cases[iterator].patches = "Patch: ";
@@ -1751,7 +1756,7 @@ function getFeed( callback, list, res ) {
 
 		// <<< -----> 1st level v
 		R.support_data.feed.entries[0] = {};
-		R.support_data.feed.entries[0].icon = "resources/images/iClock.png";
+		R.support_data.feed.entries[0].icon = "resources/images/iClock1.png";
 		R.support_data.feed.entries[0].description = listObj.entries[0].dateStr;
 		R.support_data.feed.entries[0].support_data = {};
 		R.support_data.feed.entries[0].support_data.feed = {};

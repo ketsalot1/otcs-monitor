@@ -181,61 +181,62 @@ Ext.define("itsm.view.itsmDetail", {
 				},
 
 				listeners: {
+//					itemtap: { fn: this.onItemTap, scope: this },
+
 					itemtap: function(nestedList, list, index, element, post) {
-									var lm = {};
-									console.log('nestedList.itemtap event');
-//                  			this.getDetailCard().setHtml(post.get('description') + '<br/><div class="list-item-underlined">&nbsp;<br/></div>' + post.get('status') + '<br/><div class="list-item-underlined">&nbsp;</div><br/>' + post.get('details'));
-
-									opentext.data.activeCase = { 'case': post.get('case'), 'id': post.get('id') }; 
-
-									lm.back = 0;
-									// patches entries has the detail card only.
-									if( post.get('patches') != null ) {
-										if( post.get('jira') != null ) {
-                  					this.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+						var lm = {};
+						console.log('nestedList.itemtap event');
+				
+						opentext.data.activeCase = { 'case': post.get('case'), 'id': post.get('id') }; 
+				
+						lm.back = 0;
+						// patches entries has the detail card only.
+						if( post.get('patches') != null ) {
+							if( post.get('jira') != null ) {
+				          this.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+							} else {
+				          this.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[none]<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+							}
+							lm.ctrls = 1;
+				
+							var settings = Ext.getStore("settings");
+							var cnt = Ext.getStore('count');
+				
+							var rec = settings.getAt(0);
+							var data = rec.get('settingsContainer');
+							var hostName = data[0];
+				
+							cnt.getProxy().setUrl( hostName + '?cmd=mdb_retrieve_email_count&data={"caseNo": "' + post.get('case') + '"}' );
+							console.log('Request >' + cnt.getProxy().getUrl() + '<' );
+							cnt.load( function( record, operation, success ) {
+								Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+									// slopy, not sure if the Button gets the saem ID again and again ...
+									if( button.getId() === 'ext-button-7' )
+										button.setText("OTCS Case");
+									if (button.getId() === 'itsmdetail_mails') {
+										console.log( 'E-Mail Details button found' );
+										if( success == true ) {
+											button.setBadgeText(Ext.getStore('count').getAt(0).get('count'));
 										} else {
-                  					this.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[none]<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+											button.setBadgeText("n/a");
 										}
-										lm.ctrls = 1;
-
-										var settings = Ext.getStore("settings");
-										var cnt = Ext.getStore('count');
-
-										var rec = settings.getAt(0);
-										var data = rec.get('settingsContainer');
-										var hostName = data[0];
-
-										cnt.getProxy().setUrl( hostName + '?cmd=mdb_retrieve_email_count&data={"caseNo": "' + post.get('case') + '"}' );
-										console.log('Request >' + cnt.getProxy().getUrl() + '<' );
-										cnt.load( function( record, operation, success ) {
-											Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
-												// slopy, not sure if the Button gets the saem ID again and again ...
-												if( button.getId() === 'ext-button-7' )
-													button.setText("OTCS Case");
-												if (button.getId() === 'itsmdetail_mails') {
-													console.log( 'E-Mail Details button found' );
-													if( success == true ) {
-														button.setBadgeText(Ext.getStore('count').getAt(0).get('count'));
-													} else {
-														button.setBadgeText("n/a");
-													}
-												}
-											});
-										});
-									} else {
-                  				this.getDetailCard().setHtml("<div style=\"font-size: 1.1em; font-weight: bold;\">Schedule: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
-										lm.ctrls = 0;
 									}
-									this.getParent().setUIfromMask( lm );
-
-									if( this.getTitle() && (this.getTitle().length > 0)) {
-										console.log("nestedList.itemtap event: curretn list has title:" + this.getTitle() );
-									} else {
-										console.log("nestedList.itemtap event: current list has no title. Set to 'Activity'");
-										this.setTitle("Activity");
-									}
-
+								});
+							});
+						} else {
+				        this.getDetailCard().setHtml("<div style=\"font-size: 1.1em; font-weight: bold;\">Schedule: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+							lm.ctrls = 0;
+						}
+						this.getParent().setUIfromMask( lm );
+				
+						if( this.getTitle() && (this.getTitle().length > 0)) {
+							console.log("nestedList.itemtap event: curretn list has title:" + this.getTitle() );
+						} else {
+							console.log("nestedList.itemtap event: current list has no title. Set to 'Activity'");
+							this.setTitle("Activity");
+						}
 					},
+
 					back: function() {
 									var lm = {};
 									console.log('nestedList.back event');
@@ -292,6 +293,60 @@ Ext.define("itsm.view.itsmDetail", {
 		}
 	},
 >>> */
+
+	onItemtap: function(nestedList, list, index, element, post) {
+		var lm = {};
+		console.log('nestedList.itemtap event');
+
+		opentext.data.activeCase = { 'case': post.get('case'), 'id': post.get('id') }; 
+
+		lm.back = 0;
+		// patches entries has the detail card only.
+		if( post.get('patches') != null ) {
+			if( post.get('jira') != null ) {
+          this.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+			} else {
+          this.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[none]<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+			}
+			lm.ctrls = 1;
+
+			var settings = Ext.getStore("settings");
+			var cnt = Ext.getStore('count');
+
+			var rec = settings.getAt(0);
+			var data = rec.get('settingsContainer');
+			var hostName = data[0];
+
+			cnt.getProxy().setUrl( hostName + '?cmd=mdb_retrieve_email_count&data={"caseNo": "' + post.get('case') + '"}' );
+			console.log('Request >' + cnt.getProxy().getUrl() + '<' );
+			cnt.load( function( record, operation, success ) {
+				Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+					// slopy, not sure if the Button gets the saem ID again and again ...
+					if( button.getId() === 'ext-button-7' )
+						button.setText("OTCS Case");
+					if (button.getId() === 'itsmdetail_mails') {
+						console.log( 'E-Mail Details button found' );
+						if( success == true ) {
+							button.setBadgeText(Ext.getStore('count').getAt(0).get('count'));
+						} else {
+							button.setBadgeText("n/a");
+						}
+					}
+				});
+			});
+		} else {
+        this.getDetailCard().setHtml("<div style=\"font-size: 1.1em; font-weight: bold;\">Schedule: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+			lm.ctrls = 0;
+		}
+		this.getParent().setUIfromMask( lm );
+
+		if( this.getTitle() && (this.getTitle().length > 0)) {
+			console.log("nestedList.itemtap event: curretn list has title:" + this.getTitle() );
+		} else {
+			console.log("nestedList.itemtap event: current list has no title. Set to 'Activity'");
+			this.setTitle("Activity");
+		}
+	},
 
 	onDetailBack: function() {
 		var lm = {};
