@@ -1,7 +1,7 @@
 #!/bin/bash
 
 start_engine() {
-   cd /home/martinme/Develop/google/itsm/service/nodejs
+   cd $FLD
    nohup /usr/local/bin/node --debug ./itsm.js --config ./config.json &
    sleep 5
 	COUNT=`ps -ef | grep "[0-9] /usr/local/bin/node --debug ./itsm.js" | wc -l`
