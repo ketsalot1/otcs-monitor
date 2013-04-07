@@ -181,8 +181,9 @@ Ext.define("itsm.view.itsmDetail", {
 				},
 
 				listeners: {
-//					itemtap: { fn: this.onItemTap, scope: this },
+					itemtap: { fn: this.onItemTap, scope: this },
 
+								/*
 					itemtap: function(nestedList, list, index, element, post) {
 						var lm = {};
 						console.log('nestedList.itemtap event');
@@ -236,6 +237,7 @@ Ext.define("itsm.view.itsmDetail", {
 							this.setTitle("Activity");
 						}
 					},
+*/
 
 					back: function() {
 									var lm = {};
@@ -293,8 +295,8 @@ Ext.define("itsm.view.itsmDetail", {
 		}
 	},
 >>> */
-
-	onItemtap: function(nestedList, list, index, element, post) {
+// Ext.dataview.NestedList this, Ext.dataview.List list, Number index, Ext.dom.Element target, Ext.data.Record record, Ext.event.Event e, Object eOpts )
+	onItemTap: function(nestedList, list, index, element, post) {
 		var lm = {};
 		console.log('nestedList.itemtap event');
 
@@ -304,9 +306,9 @@ Ext.define("itsm.view.itsmDetail", {
 		// patches entries has the detail card only.
 		if( post.get('patches') != null ) {
 			if( post.get('jira') != null ) {
-          this.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+          nestedList.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
 			} else {
-          this.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[none]<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+          nestedList.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[none]<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
 			}
 			lm.ctrls = 1;
 
@@ -335,16 +337,16 @@ Ext.define("itsm.view.itsmDetail", {
 				});
 			});
 		} else {
-        this.getDetailCard().setHtml("<div style=\"font-size: 1.1em; font-weight: bold;\">Schedule: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+        nestedList.getDetailCard().setHtml("<div style=\"font-size: 1.1em; font-weight: bold;\">Schedule: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
 			lm.ctrls = 0;
 		}
-		this.getParent().setUIfromMask( lm );
+		nestedList.getParent().setUIfromMask( lm );
 
-		if( this.getTitle() && (this.getTitle().length > 0)) {
-			console.log("nestedList.itemtap event: curretn list has title:" + this.getTitle() );
+		if( nestedList.getTitle() && (nestedList.getTitle().length > 0)) {
+			console.log("nestedList.itemtap event: curretn list has title:" + nestedList.getTitle() );
 		} else {
 			console.log("nestedList.itemtap event: current list has no title. Set to 'Activity'");
-			this.setTitle("Activity");
+			nestedList.setTitle("Activity");
 		}
 	},
 
