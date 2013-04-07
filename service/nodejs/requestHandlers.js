@@ -26,13 +26,14 @@ database.queries = (function() {
 // <<<
 	return {
 		"DBQ001": 'select project_04 "id", long_text_04 "title", short_text_04 "code" from t04_project;',
-		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", modified_01 as "modified" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
+		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 //		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? and modified_01 >= date_sub(CURDATE(),interval ? day) order by t01.case_01 asc;',
 //		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ003": 'select name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
 //		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
-		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
+//		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
+		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.case_01 like ? and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
 		"DBQ006": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ007": 'insert into t03_link (id_01, id_02) values ( ?,? );',
 		"DBQ008": 'select t03.id_01 "id", t02.name_02 "patch" from t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02;',
@@ -56,12 +57,16 @@ database.queries = (function() {
 		"DBQ023": 'select id_02 as "id" from t02_patch where id_02 in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 0 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and id_02 not in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and status_02 not like "archived";',
 		"DBQ024": 'update t01_case set status_01 = ? where case_01 = ?;',
 		"DBQ025": 'update t01_case set jira_01 = ? where case_01 = ?;',
-		"DBQ026": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
+//		"DBQ026": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
+		"DBQ026": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.active_01 = 1 and t01.case_01 like ? and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
 		"DBQ027": 'select t01.id_01 "id", t01.case_01 "case", t04.short_text_04 "owner" from t01_case t01, t04_project t04 where t01.active_01 = 1 and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
-		"DBQ028": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.status_01 like "%lose%" and t01.active_01 = 1 order by t01.case_01 asc;',
+//		"DBQ028": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.status_01 like "%lose%" and t01.active_01 = 1 order by t01.case_01 asc;',
+		"DBQ028":  'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.status_01 like "%lose%" and t01.active_01 = 1 order by t01.case_01 asc;',
+
 		"DBQ029": 'insert into t05_fav values( ? );',
 		"DBQ030": 'delete from t05_fav where id_01 = ?;',
-		"DBQ031": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04, t05_fav t05 where t01.project_01 = t04.project_04 and t01.id_01 = t05.id_01 order by t01.case_01 asc;',
+//		"DBQ031": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04, t05_fav t05 where t01.project_01 = t04.project_04 and t01.id_01 = t05.id_01 order by t01.case_01 asc;',
+		"DBQ031": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04, t05_fav t05 where t01.project_01 = t04.project_04 and t01.id_01 = t05.id_01 order by t01.case_01 asc;',
 
 		"opened_last_week": 'select count(*) from t01_case where start_01 > date_sub(curdate(),interval 7 day) order by start_01 asc;',
 		"closed_last_week": 'select count(*) from t01_case where stop_01 > date_sub(curdate(),interval 7 day) order by start_01 asc;',
@@ -74,7 +79,8 @@ database.queries = (function() {
 		"DBQ034": 'select count(*) as "count", ceiling(avg(datediff(stop_01,start_01))) as "average" from t01_case where stop_01 >= date_sub(curdate(),interval ? day);',
 		"DBQ035": 'select count(*) as "count" from t02_patch where status_02 = "open";',
 
-		"DBQ036a": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 in (',
+//		"DBQ036a": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 in (',
+		"DBQ036a": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.case_01 in (',
 		"DBQ036b": ') order by t01.case_01 asc;',
 
 		"DBQ999": 'nope'
@@ -99,6 +105,16 @@ database.tools = (function() {
 			logger.trace( 'tools.encodeHTML input = ' + str );
 			logger.trace( 'tools.encodeHTML result = ' + tmp );
 			return tmp;
+		},
+
+		/* Send the CCS3 styled cusotm table. The parsing replies on existing
+		 * structure inside SQL database, which is created by the corresponding
+		 * insert functions.
+		 */
+		encodeHTMLTable: function( str ) {
+			var tmp = (str).replace(/\n/g, '</span></div><div class="custom-row"><span class="custom-cell"><strong>').replace(/([0-9]) - /g, "$1</strong></span><span class=\"custom-cell\">");
+			tmp += '&nbsp;</strong></span><span class="custom-cell">&nbsp;</span></div></div>';
+			return('<div id="detail-card-table"><div class="custom-row"><span class="custom-cell"><strong>' + tmp ); 
 		},
 
 		/*
@@ -470,8 +486,8 @@ function search( callback, data, res ) {
 					for ( var iterator in cases ) {
 						cases[iterator].icon= "resources/images/iQuestion.png";
 						cases[iterator].leaf="true";
-						cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-						cases[iterator].patches = "Patch: ";
+						cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
+						cases[iterator].patches = "&nbsp;";
 						for ( var iter in rows ) {
 							if( cases[iterator].id != rows[iter].id ) continue; 
 							logger.trace( 'requestHandler: search found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
@@ -784,8 +800,8 @@ function sendCases( callback, dataName, res ) {
 							cases[iterator].icon = "resources/images/iUpdated1.png";
 						cases[iterator].description = iterator + ': ' + cases[iterator].description;
 						cases[iterator].leaf="true";
-						cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-						cases[iterator].patches = "Patch: ";
+						cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
+						cases[iterator].patches = "&nbsp;";
 						for ( var iter in rows ) {
 							if( cases[iterator].id != rows[iter].id ) continue; 
 							logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
@@ -849,7 +865,7 @@ function sendCases_nested( callback, dataName, res ) {
 					cases[iterator].description = iterator + ': ' + cases[iterator].description;
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-					cases[iterator].patches = "Patch: ";
+					cases[iterator].patches = "&nbsp;";
 					for ( var iter in rows ) {
 						if( cases[iterator].id != rows[iter].id ) continue; 
 						logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
@@ -901,8 +917,8 @@ function sendFavorites( callback, res ) {
 					for ( var iterator in cases ) {
 						cases[iterator].icon = "resources/images/iExperimental.png";
 						cases[iterator].leaf="true";
-						cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-						cases[iterator].patches = "Patch: ";
+						cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
+						cases[iterator].patches = "&nbsp;";
 						for ( var iter in rows ) {
 							if( cases[iterator].id != rows[iter].id ) continue; 
 							logger.trace( 'requestHandler: sendFavorites found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
@@ -942,8 +958,8 @@ function sendUnarchived( callback, res ) {
 					for ( var iterator in cases ) {
 						cases[iterator].icon = "resources/images/iArchive3.png";
 						cases[iterator].leaf="true";
-						cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-						cases[iterator].patches = "Patch: ";
+						cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
+						cases[iterator].patches = "&nbsp;";
 						for ( var iter in rows ) {
 							if( cases[iterator].id != rows[iter].id ) continue; 
 							logger.trace( 'requestHandler: sendUnarchived found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
@@ -1784,8 +1800,8 @@ function getFeed( callback, list, res ) {
 					R.support_data.feed.entries[0].support_data.feed.entries[iterator].icon = "resources/images/iFeed3.png";
 					R.support_data.feed.entries[0].support_data.feed.entries[iterator].description = iterator + ': ' + R.support_data.feed.entries[0].support_data.feed.entries[iterator].description;
 					R.support_data.feed.entries[0].support_data.feed.entries[iterator].leaf="true";
-					R.support_data.feed.entries[0].support_data.feed.entries[iterator].details = database.tools.encodeHTML( R.support_data.feed.entries[0].support_data.feed.entries[iterator].details );
-					R.support_data.feed.entries[0].support_data.feed.entries[iterator].patches = "Patch: ";
+					R.support_data.feed.entries[0].support_data.feed.entries[iterator].details = database.tools.encodeHTMLTable( R.support_data.feed.entries[0].support_data.feed.entries[iterator].details );
+					R.support_data.feed.entries[0].support_data.feed.entries[iterator].patches = "&nbsp;";
 					for ( var iter in rows ) {
 						if( R.support_data.feed.entries[0].support_data.feed.entries[iterator].id != rows[iter].id ) continue; 
 						logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[0].support_data.feed.entries[iterator].case + ')' );
@@ -1826,8 +1842,8 @@ function getFeed( callback, list, res ) {
 							R.support_data.feed.entries[1].support_data.feed.entries[iterator].icon = "resources/images/iFeed3.png";
 							R.support_data.feed.entries[1].support_data.feed.entries[iterator].description = iterator + ': ' + R.support_data.feed.entries[1].support_data.feed.entries[iterator].description;
 							R.support_data.feed.entries[1].support_data.feed.entries[iterator].leaf="true";
-							R.support_data.feed.entries[1].support_data.feed.entries[iterator].details = database.tools.encodeHTML( R.support_data.feed.entries[1].support_data.feed.entries[iterator].details );
-							R.support_data.feed.entries[1].support_data.feed.entries[iterator].patches = "Patch: ";
+							R.support_data.feed.entries[1].support_data.feed.entries[iterator].details = database.tools.encodeHTMLTable( R.support_data.feed.entries[1].support_data.feed.entries[iterator].details );
+							R.support_data.feed.entries[1].support_data.feed.entries[iterator].patches = "&nbsp;";
 							for ( var iter in rows ) {
 								if( R.support_data.feed.entries[1].support_data.feed.entries[iterator].id != rows[iter].id ) continue; 
 								logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[1].support_data.feed.entries[iterator].case + ')' );
@@ -1868,8 +1884,8 @@ function getFeed( callback, list, res ) {
 									R.support_data.feed.entries[2].support_data.feed.entries[iterator].icon = "resources/images/iFeed3.png";
 									R.support_data.feed.entries[2].support_data.feed.entries[iterator].description = iterator + ': ' + R.support_data.feed.entries[2].support_data.feed.entries[iterator].description;
 									R.support_data.feed.entries[2].support_data.feed.entries[iterator].leaf="true";
-									R.support_data.feed.entries[2].support_data.feed.entries[iterator].details = database.tools.encodeHTML( R.support_data.feed.entries[2].support_data.feed.entries[iterator].details );
-									R.support_data.feed.entries[2].support_data.feed.entries[iterator].patches = "Patch: ";
+									R.support_data.feed.entries[2].support_data.feed.entries[iterator].details = database.tools.encodeHTMLTable( R.support_data.feed.entries[2].support_data.feed.entries[iterator].details );
+									R.support_data.feed.entries[2].support_data.feed.entries[iterator].patches = "&nbsp;";
 									for ( var iter in rows ) {
 										if( R.support_data.feed.entries[2].support_data.feed.entries[iterator].id != rows[iter].id ) continue; 
 										logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[2].support_data.feed.entries[iterator].case + ')' );
@@ -1910,8 +1926,8 @@ function getFeed( callback, list, res ) {
 											R.support_data.feed.entries[3].support_data.feed.entries[iterator].icon = "resources/images/iFeed3.png";
 											R.support_data.feed.entries[3].support_data.feed.entries[iterator].description = iterator + ': ' + R.support_data.feed.entries[3].support_data.feed.entries[iterator].description;
 											R.support_data.feed.entries[3].support_data.feed.entries[iterator].leaf="true";
-											R.support_data.feed.entries[3].support_data.feed.entries[iterator].details = database.tools.encodeHTML( R.support_data.feed.entries[3].support_data.feed.entries[iterator].details );
-											R.support_data.feed.entries[3].support_data.feed.entries[iterator].patches = "Patch: ";
+											R.support_data.feed.entries[3].support_data.feed.entries[iterator].details = database.tools.encodeHTMLTable( R.support_data.feed.entries[3].support_data.feed.entries[iterator].details );
+											R.support_data.feed.entries[3].support_data.feed.entries[iterator].patches = "&nbsp;";
 											for ( var iter in rows ) {
 												if( R.support_data.feed.entries[3].support_data.feed.entries[iterator].id != rows[iter].id ) continue; 
 												logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[3].support_data.feed.entries[iterator].case + ')' );
@@ -1983,7 +1999,7 @@ function getFeed_backup( callback, list, res ) {
 					cases[iterator].description = iterator + ': ' + cases[iterator].description;
 					cases[iterator].leaf="true";
 					cases[iterator].details = database.tools.encodeHTML( cases[iterator].details );
-					cases[iterator].patches = "Patch: ";
+					cases[iterator].patches = "&nbsp;";
 					for ( var iter in rows ) {
 						if( cases[iterator].id != rows[iter].id ) continue; 
 						logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );

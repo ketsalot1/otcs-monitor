@@ -182,8 +182,7 @@ Ext.define("itsm.view.itsmDetail", {
 
 				listeners: {
 					itemtap: { fn: this.onItemTap, scope: this },
-
-								/*
+								/* <<<
 					itemtap: function(nestedList, list, index, element, post) {
 						var lm = {};
 						console.log('nestedList.itemtap event');
@@ -237,8 +236,9 @@ Ext.define("itsm.view.itsmDetail", {
 							this.setTitle("Activity");
 						}
 					},
-*/
-
+ >>> */
+					back: { fn: this.onBack, scope: this }
+/* <<<
 					back: function() {
 									var lm = {};
 									console.log('nestedList.back event');
@@ -248,6 +248,7 @@ Ext.define("itsm.view.itsmDetail", {
 									lm.ctrls = 0;
 									this.getParent().setUIfromMask( lm );
 					}
+>>> */
 				},
 
 				getItemTextTpl: function(node) {
@@ -295,7 +296,17 @@ Ext.define("itsm.view.itsmDetail", {
 		}
 	},
 >>> */
-// Ext.dataview.NestedList this, Ext.dataview.List list, Number index, Ext.dom.Element target, Ext.data.Record record, Ext.event.Event e, Object eOpts )
+
+	onBack: function(nestedList) {
+		var lm = {};
+		console.log('nestedList.back event');
+//   	this.callParent(arguments);
+
+		lm.back = 1;
+		lm.ctrls = 0;
+		nestedList.getParent().setUIfromMask( lm );
+	},
+
 	onItemTap: function(nestedList, list, index, element, post) {
 		var lm = {};
 		console.log('nestedList.itemtap event');
@@ -306,9 +317,94 @@ Ext.define("itsm.view.itsmDetail", {
 		// patches entries has the detail card only.
 		if( post.get('patches') != null ) {
 			if( post.get('jira') != null ) {
-          nestedList.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+          nestedList.getDetailCard().setHtml( " \
+					 <div class=\"custom-header\"> \
+					 <h3 class=\"custom-header-overlap\">Details</h3></div> \
+					 <ul class=\"custom-list\"> \
+				    <li class=\"custom-left-item\"> \
+				    	<div class=\"custom-wrap\"> \
+				      	<strong class=\"custom-name\">Case:</strong> \
+				         <span class=\"custom-list-idented\">" + post.get('case') + "</span> \
+				      </div> \
+				   </li> \
+					<li class=\"custom-right-item\"> \
+				      <div class=\"custom-wrap\"> \
+				         <strong class=\"custom-name\">Status:</strong> \
+				         <span>" + post.get('status') + "</span> \
+				      </div> \
+				   </li> \
+				    <li class=\"custom-left-item\"> \
+				    	<div class=\"custom-wrap\"> \
+				      	<strong class=\"custom-name\">Patches:</strong> \
+				         <span class=\"custom-list-idented\">" + post.get('patches') + "</span> \
+				      </div> \
+				   </li> \
+					<li class=\"custom-right-item\"> \
+				      <div class=\"custom-wrap\"> \
+				         <strong class=\"custom-name\">Jira:</strong> \
+				         <span>[<a href=\"https://jira.opentext.com/browse/" + post.get('jira') + "\">" + post.get('jira') + "]</a></span> \
+				      </div> \
+				   </li> \
+				    <li class=\"custom-left-item\"> \
+				    	<div class=\"custom-wrap\"> \
+				      	<strong class=\"custom-name\">Project:</strong> \
+				         <span class=\"custom-list-idented\">" + post.get('project') + "</span> \
+				      </div> \
+				   </li> \
+					</ul> \
+					 <div class=\"custom-header\"> \
+					 <h3 class=\"custom-header-overlap\">Chronicle</h3></div> \
+					<div style=\"font-size: 0.8em;padding-left:8px;\">" + post.get('details') + "</div>");
+
+/*
+					 "<div class=\"custom-header\"><h3 class=\"custom-header-overlap\">Details</h3></div>
+					 <div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/><div class=\"custom-header\"><h3 class=\"custom-header-overlap\">History</h3></div><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+
+*/
+
 			} else {
-          nestedList.getDetailCard().setHtml("<div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[none]<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+          nestedList.getDetailCard().setHtml(" \
+					 <div class=\"custom-header\"> \
+					 <h3 class=\"custom-header-overlap\">Details</h3></div> \
+					 <ul class=\"custom-list\"> \
+				    <li class=\"custom-left-item\"> \
+				    	<div class=\"custom-wrap\"> \
+				      	<strong class=\"custom-name\">Case:</strong> \
+				         <span class=\"custom-list-idented\">" + post.get('case') + "</span> \
+				      </div> \
+				   </li> \
+					<li class=\"custom-right-item\"> \
+				      <div class=\"custom-wrap\"> \
+				         <strong class=\"custom-name\">Status:</strong> \
+				         <span>" + post.get('status') + "</span> \
+				      </div> \
+				   </li> \
+				    <li class=\"custom-left-item\"> \
+				    	<div class=\"custom-wrap\"> \
+				      	<strong class=\"custom-name\">Patches:</strong> \
+				         <span class=\"custom-list-idented\">" + post.get('patches') + "</span> \
+				      </div> \
+				   </li> \
+					<li class=\"custom-right-item\"> \
+				      <div class=\"custom-wrap\"> \
+				         <strong class=\"custom-name\">Jira:</strong> \
+				         <span>[not set yet]</span> \
+				      </div> \
+				   </li> \
+				    <li class=\"custom-left-item\"> \
+				    	<div class=\"custom-wrap\"> \
+				      	<strong class=\"custom-name\">Project:</strong> \
+				         <span class=\"custom-list-idented\">" + post.get('project') + "</span> \
+				      </div> \
+				   </li> \
+					</ul> \
+					 <div class=\"custom-header\"> \
+					 <h3 class=\"custom-header-overlap\">Chronicle</h3></div> \
+					<div style=\"font-size: 0.8em;padding-left:8px;\">" + post.get('details') + "</div>");
+					 
+/*
+					 <div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[none]<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>'
+*/
 			}
 			lm.ctrls = 1;
 
