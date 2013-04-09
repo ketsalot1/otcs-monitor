@@ -27,13 +27,26 @@ Ext.define("itsm.view.projectMgmtInsertForm", {
 			labelWidth: '25%'
 		};
 
+		var projectCategory = {
+			xtype: 'selectfield',
+			label: 'Category:',
+			name: 'category',
+			labelWidth: '25%',
+			options: [
+				{ text: "Maintenance", value: "OTCS Cases" },
+				{ text: "Current Version", value: "Projects" },
+				{ text: "Miscellaneous", value: "Miscellaneous" }
+			]
+		};
+
 		var formFrame = {
 			xtype: 'fieldset',
 			title: 'New Project',
-			instructions: 'Enter the name and description of a new project. The project will get a unique ID automatically.',
+			instructions: 'Enter the name and description of a new project. Select one of the available categories. The project will get a unique ID automatically.',
 			items: [
 				projectName,
-				projectDescription
+				projectDescription,
+				projectCategory,
 			]
 		};	
 

@@ -139,7 +139,6 @@ Ext.define("itsm.view.patchMainView", {
 					throw({name:"Form Problem", message:"Cannot find requested form"});
 				obj.patchId = src.getFields().patch.getValue();
 				obj.patchETA = src.getFields().eta.getFormattedValue();
-				debugger;
 				if( src.getFields().released.getValue() == 1 )
 					obj.patchStatus = "open";
 				else
@@ -167,6 +166,7 @@ Ext.define("itsm.view.patchMainView", {
 					throw({name:"Form Problem", message:"Cannot find requested form"});
 				obj.name = src.getFields().name.getValue();
 				obj.description = src.getFields().description.getValue();
+				obj.category = src.getFields().category.getValue();
 				this.fireEvent("insertProjectCommand", obj);
 			}
 		}

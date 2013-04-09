@@ -92,7 +92,8 @@ Ext.define("itsm.controller.itsm", {
 	onBackMailList: function( caseNo ) {
 	// <<<
 		console.log("controller.itsm.onBackMailCommand: navigate to case = " . caseNo );
-		opentext.data.activeCase = {};
+//		Don't clear the activeCase object, that will render the detail panel infunctional.
+//		opentext.data.activeCase = {};
 		this.showITSMDetail();
 	},
 	// >>>
@@ -530,7 +531,7 @@ Ext.define("itsm.controller.itsm", {
 		}
 		settings.sync();
 
-		s.getProxy().setUrl( hostName + '?cmd=describe&data=Descriptor' );
+		s.getProxy().setUrl( hostName + '?cmd=describe_ex&data=Descriptor' );
 		console.log( 'controller: URL=' + s.getProxy().getUrl() );
 
 //		s.getProxy().setUrl( hostName + '?otcs=Descriptor' );
@@ -780,7 +781,7 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			var hostName = data[0];
 
-			db.getProxy().setUrl( hostName + '?cmd=create_project&data={"name": "' + obj.name + '","description": "' + obj.description + '"}' );
+			db.getProxy().setUrl( hostName + '?cmd=create_project_ex&data={"name": "' + obj.name + '","description": "' + obj.description + '","category": "' + obj.category + '"}' );
 			console.log('Request >' + db.getProxy().getUrl() + '<' );
 			db.load();
 

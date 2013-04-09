@@ -26,6 +26,7 @@ database.queries = (function() {
 // <<<
 	return {
 		"DBQ001": 'select project_04 "id", long_text_04 "title", short_text_04 "code" from t04_project;',
+	 "DBQ001EX": 'select project_04 "id", long_text_04 "title", short_text_04 "code", category_04 "category" from t04_project;',
 		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 //		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? and modified_01 >= date_sub(CURDATE(),interval ? day) order by t01.case_01 asc;',
 //		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
@@ -47,6 +48,7 @@ database.queries = (function() {
 		"DBQ014": 'delete from t03_link where id_01 = ?;',
 		"DBQ015": 'select (max(project_04)+1) "id" from t04_project;',
 		"DBQ016": 'insert into t04_project( project_04,short_text_04,long_text_04) values (?,?,?);', 
+	 "DBQ016EX": 'insert into t04_project( project_04,short_text_04,long_text_04,category_04) values (?,?,?,?);', 
 		"DBQ017": 'select project_04 "value", short_text_04 "text" from t04_project;',
 //		"DBQ018": 'update t01_case set project_01 = ? where id_01 = ?;',
 		"DBQ018": 'update t01_case set project_01 = ? where case_01 = ?;',
@@ -570,6 +572,76 @@ function send_file( callback, dataName, res ) {
 }
 // >>>
 
+
+// IN PROGRESS - TODO
+function describeEx( callback, dataName, res ) {
+// <<<
+	var dbq;
+	logger.trace('requestHandler.describeEx' );
+	try {
+		logger.trace('requestHandler.describeEx: constructing descriptor file' );
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ001EX, function (error, rows, fields) {
+			if( !error ) {
+				// Add time stamp to the response
+				var tmp = new Date();
+				for ( var iterator in rows ) {
+					rows[iterator].icon= "resources/images/iQuestion.png";
+					if( rows[iterator].id == 99 ) {
+//						rows[iterator].category = "Dashboard";
+						rows[iterator].icon = "resources/images/iUnassigned-2.png";
+					}
+				  	if( (rows[iterator].category).match("OTCS Cases")) {
+						rows[iterator].category = rows[iterator].category + " (" + database.tools.toLocalDate(tmp) + ")";
+						rows[iterator].icon = "resources/images/iCases.png";
+					}
+				  	if( (rows[iterator].category).match("Project")) {
+							rows[iterator].category = rows[iterator].category + " (" + database.tools.toLocalDate(tmp) + ")";
+							rows[iterator].icon = "resources/images/iProject2.png";
+					}
+				}
+				logger.trace( 'requestHandler.describe: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
+				// Add new entry for patches
+				var idx = rows.length;
+				rows[idx] = {};
+				rows[idx].id = 98;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Patches";
+				rows[idx].code = "Patches";
+				rows[idx].icon = "resources/images/iPatches.png";
+
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 97;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Archive queue";
+				rows[idx].code = "Transient";
+				rows[idx].icon = "resources/images/iArchive2.png";
+
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 96;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Favorites";
+				rows[idx].code = "Favorites";
+				rows[idx].icon = "resources/images/iStar.png";
+	
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 95;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Activity";
+				rows[idx].code = "Feed";
+				rows[idx].icon = "resources/images/iFeed.png";
+			}
+			database.tools.cb_response_fetch( error, rows, fields, res, callback );
+		});
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
 
 // DONE
 function describe( callback, dataName, res ) {
@@ -1178,7 +1250,37 @@ function _linkPatch( callback, data, res ) {
 // >>>
 
 
-// DONE
+// IN PROGRESS - TODO
+function createProjectEx( callback, data, res ) {
+// <<<
+	var resp = {};
+	var dataObj = JSON.parse(data);
+	logger.trace('requestHandler.createProject: name >' + dataObj.name + '< description >' + dataObj.description + '<'  );
+	try {
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ015, function (error, rows, fields) {
+			if( error ) { 
+				database.tools.response_error(error.toString(), res );
+				return;
+			}
+			dataObj.id = rows[0].id;
+			connection.query(database.queries.DBQ016EX, [dataObj.id, dataObj.name, dataObj.description, dataObj.category], function (error, info) {
+				if( !error ) {
+					logger.trace('requestHandler.createProject: inser done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+					resp.code = info.affectedRows;
+					resp.message = info.message;
+				}
+				database.tools.cb_response_create( error, resp, res, callback ); 
+			});
+		});
+	}
+	catch( e ) {
+		database.tools.response_error(error.toString(), res );
+	}
+} 
+// >>>
+
+
 function createProject( callback, data, res ) {
 // <<<
 	var resp = {};
@@ -2035,6 +2137,7 @@ function getFeed_backup( callback, list, res ) {
 
 exports.search = search;
 exports.describe = describe;
+exports.describeEx = describeEx; // IN PROGRESS - TODO
 exports.send = send;
 exports.save = save;
 exports.saveEx = saveEx;
@@ -2048,6 +2151,7 @@ exports.newPatch = newPatch;
 exports.updatePatch = updatePatch;
 exports.updateCaseStatus = updateCaseStatus;
 exports.createProject = createProject;
+exports.createProjectEx = createProjectEx; // IN PROGRESS - TODO
 exports.updateProject = updateProject;
 exports.insertCase = insertCase;
 exports.insertCaseFull = insertCaseFull;

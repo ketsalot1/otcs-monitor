@@ -117,3 +117,41 @@
 	border-right-style: solid;
 */
 }
+
+.custom-details-table {
+	display: table;
+}
+
+.custom-details-row {
+	display: table-row;
+}
+
+.custom-details-cell-name {
+	display: table-cell;
+	padding-right: 8px;
+	padding-top: 6px;
+	padding-left: 8px;
+	font-weight: bold;
+	color: #666;
+	min-width: 80px;
+}
+
+.custom-details-cell-value {
+	display: table-cell;
+	padding-right: 8px;
+	padding-top: 6px;
+	padding-left: 8px;
+	min-width: 140px;
+}
+
+.right {
+	float: right; 
+}
+
+.collspan {
+	clear: both;
+}
+
+.left {
+	text-align: left;
+}
