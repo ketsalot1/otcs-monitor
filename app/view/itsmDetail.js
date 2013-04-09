@@ -320,91 +320,92 @@ Ext.define("itsm.view.itsmDetail", {
           nestedList.getDetailCard().setHtml( " \
 					 <div class=\"custom-header\"> \
 					 <h3 class=\"custom-header-overlap\">Details</h3></div> \
-					 <ul class=\"custom-list\"> \
-				    <li class=\"custom-left-item\"> \
-				    	<div class=\"custom-wrap\"> \
-				      	<strong class=\"custom-name\">Case:</strong> \
-				         <span class=\"custom-list-idented\">" + post.get('case') + "</span> \
-				      </div> \
-				   </li> \
-					<li class=\"custom-right-item\"> \
-				      <div class=\"custom-wrap\"> \
-				         <strong class=\"custom-name\">Status:</strong> \
-				         <span>" + post.get('status') + "</span> \
-				      </div> \
-				   </li> \
-				    <li class=\"custom-left-item\"> \
-				    	<div class=\"custom-wrap\"> \
-				      	<strong class=\"custom-name\">Patches:</strong> \
-				         <span class=\"custom-list-idented\">" + post.get('patches') + "</span> \
-				      </div> \
-				   </li> \
-					<li class=\"custom-right-item\"> \
-				      <div class=\"custom-wrap\"> \
-				         <strong class=\"custom-name\">Jira:</strong> \
-				         <span>[<a href=\"https://jira.opentext.com/browse/" + post.get('jira') + "\">" + post.get('jira') + "]</a></span> \
-				      </div> \
-				   </li> \
-				    <li class=\"custom-left-item\"> \
-				    	<div class=\"custom-wrap\"> \
-				      	<strong class=\"custom-name\">Project:</strong> \
-				         <span class=\"custom-list-idented\">" + post.get('project') + "</span> \
-				      </div> \
-				   </li> \
-					</ul> \
-					 <div class=\"custom-header\"> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Subject:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('description') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Status:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('status') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Case:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('case') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Jira:</div> \
+							<div class=\"custom-details-cell-value left\">[<a href=\"https://jira.opentext.com/browse/" + post.get('jira') + "\">" + post.get('jira') + "</a>]</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Project:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('project') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table collspan\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Patches:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('patches') + "</div> \
+						</div> \
+					</div> \
+					 <div class=\"collspan\">&nbsp;</div> \
+					 <div class=\"custom-header collspan\"> \
 					 <h3 class=\"custom-header-overlap\">Chronicle</h3></div> \
-					<div style=\"font-size: 0.8em;padding-left:8px;\">" + post.get('details') + "</div>");
-
-/*
-					 "<div class=\"custom-header\"><h3 class=\"custom-header-overlap\">Details</h3></div>
-					 <div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[<a href="http://jira.opentext.com/browse/' + post.get('jira') + '">' + post.get('jira')  + ']</a><br/><br/><div class=\"custom-header\"><h3 class=\"custom-header-overlap\">History</h3></div><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
-
-*/
+					<div style=\"font-size: 0.8em;padding-left:8px; clear: both\">" + post.get('details') + "</div>");
 
 			} else {
+
           nestedList.getDetailCard().setHtml(" \
 					 <div class=\"custom-header\"> \
 					 <h3 class=\"custom-header-overlap\">Details</h3></div> \
-					 <ul class=\"custom-list\"> \
-				    <li class=\"custom-left-item\"> \
-				    	<div class=\"custom-wrap\"> \
-				      	<strong class=\"custom-name\">Case:</strong> \
-				         <span class=\"custom-list-idented\">" + post.get('case') + "</span> \
-				      </div> \
-				   </li> \
-					<li class=\"custom-right-item\"> \
-				      <div class=\"custom-wrap\"> \
-				         <strong class=\"custom-name\">Status:</strong> \
-				         <span>" + post.get('status') + "</span> \
-				      </div> \
-				   </li> \
-				    <li class=\"custom-left-item\"> \
-				    	<div class=\"custom-wrap\"> \
-				      	<strong class=\"custom-name\">Patches:</strong> \
-				         <span class=\"custom-list-idented\">" + post.get('patches') + "</span> \
-				      </div> \
-				   </li> \
-					<li class=\"custom-right-item\"> \
-				      <div class=\"custom-wrap\"> \
-				         <strong class=\"custom-name\">Jira:</strong> \
-				         <span>[not set yet]</span> \
-				      </div> \
-				   </li> \
-				    <li class=\"custom-left-item\"> \
-				    	<div class=\"custom-wrap\"> \
-				      	<strong class=\"custom-name\">Project:</strong> \
-				         <span class=\"custom-list-idented\">" + post.get('project') + "</span> \
-				      </div> \
-				   </li> \
-					</ul> \
-					 <div class=\"custom-header\"> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Subject:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('description') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Status:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('status') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Case:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('case') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Jira:</div> \
+							<div class=\"custom-details-cell-value left\">[not set yet]</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Project:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('project') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table collspan\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Patches:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('patches') + "</div> \
+						</div> \
+					</div> \
+					 <div class=\"collspan\">&nbsp;</div> \
+					 <div class=\"custom-header collspan\"> \
 					 <h3 class=\"custom-header-overlap\">Chronicle</h3></div> \
-					<div style=\"font-size: 0.8em;padding-left:8px;\">" + post.get('details') + "</div>");
-					 
-/*
-					 <div style=\"font-size: 1.1em;font-weight: bold;\">Case: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/>' + post.get('patches') + '<br/>Jira:[none]<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>'
-*/
+					<div style=\"font-size: 0.8em;padding-left:8px; clear: both\">" + post.get('details') + "</div>");
 			}
 			lm.ctrls = 1;
 
@@ -469,8 +470,8 @@ Ext.define("itsm.view.itsmDetail", {
 		var lm = {};
 		console.log("view.itsmDetail.showEmails");
 		if( typeof opentext.data.activeCase == 'object' ) { 
-			lm.back = 1;
-			lm.ctrls = 0;
+			lm.back = 0;
+			lm.ctrls = 1;
 			this.setUIfromMask( lm );
 			this.fireEvent("detailShowEmailsCommand", opentext.data.activeCase);
 		} else {
