@@ -350,6 +350,18 @@ Ext.define("itsm.view.itsmDetail", {
 							<div class=\"custom-details-cell-value\">" + post.get('project') + "</div> \
 						</div> \
 					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Reworking:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('rework') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Created:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('start') + "</div> \
+						</div> \
+					</div> \
 					<div class=\"custom-details-table collspan\"> \
 						<div class=\"custom-details-row\"> \
 							<div class=\"custom-details-cell-name\">Patches:</div> \
@@ -394,6 +406,18 @@ Ext.define("itsm.view.itsmDetail", {
 						<div class=\"custom-details-row\"> \
 							<div class=\"custom-details-cell-name\">Project:</div> \
 							<div class=\"custom-details-cell-value\">" + post.get('project') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Reworking:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('rework') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Created:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('start') + "</div> \
 						</div> \
 					</div> \
 					<div class=\"custom-details-table collspan\"> \
@@ -552,6 +576,7 @@ Ext.define("itsm.view.itsmDetail", {
 			if (button.getId() === 'itsmdetail_link') {
 				console.log( 'itsmdetail_link found!' );
 				setUIControlfromMask( button, mask.ctrls );
+				button.setBadgeText("");
 			}
 			if (button.getId() === 'itsmdetail_user') {
 				console.log( 'itsmdetail_user found!' );

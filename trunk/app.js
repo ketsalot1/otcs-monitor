@@ -31,7 +31,8 @@ Ext.application({
 		'patchMgmtUpdateForm',	
 		'patchMgmtInsertForm',
 		'projectMgmtInsertForm',
-		'emailView'
+		'emailView',
+		'itsmCaseLinkForm'
 	],
 
 	icon: {
@@ -111,6 +112,9 @@ Ext.application({
 		var emailView = {
 				xtype: 'emailview'
 		};
+		var itsmCaseLinkForm = {
+				xtype: 'itsmcaseform'
+		};
 
 		Ext.getStore('settings').load();
 //		console.log( 'Main, retrieved conf: ' + Ext.getStore('settings').getAt(0).get('settingsContainer')[0] );
@@ -118,7 +122,7 @@ Ext.application({
 		// Initialize the main view
 //		Ext.Viewport.add( {xtype: 'mainlistcontainer'});
 //		Ext.Viewport.add( mainListContainer);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms,itsmJiraAssignForm,emailView]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms,itsmJiraAssignForm,emailView,itsmCaseLinkForm]);
 		Ext.Viewport.setActiveItem(mainListContainer);
 	},
 
