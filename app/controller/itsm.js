@@ -66,6 +66,7 @@ Ext.define("itsm.controller.itsm", {
 			itsmLinkForms: {
 				linkCaseCommand: "onLinkSave",
 				linkJiraCommand: "onJiraSave",
+				linkCaseCommand: "onReworkSave",
 				backCaseLinkCommand: "onCaseDetailBack"
 			},
 			itsmPatchAssignForm: {
@@ -664,6 +665,50 @@ Ext.define("itsm.controller.itsm", {
 			s.getProxy().setUrl( hostName + '?cmd=jira&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","jiraId":"' + obj.jira + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load();
+
+			// The data can be reloaded after updating them
+			// in database. Th sideefect is that the nestedlist and 
+			// data source gets out of syns and various efect can occur
+			// Preferably do not refresh the data store ...
+//			it.load();
+
+			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+	},
+	// >>>
+
+	onReworkSave: function(caseData, obj) 
+	{ // <<<
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('db');
+		var it = Ext.getStore('desktopITSM');
+		var v;
+
+		console.log('controller jira to case >' + caseData.case + '<>' + caseData.id + '< with Rework item >' + obj.caseno + '<' );
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			s.getProxy().setUrl( hostName + '?cmd=set_rework&data={"src": "' + caseData.case + '", "ref": "' + obj.caseno + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load( function( record, operation, success ) { 
+				Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+					if (button.getId() === 'itsmdetail_link') {
+						if( success == true ) {
+							button.setBadgeText("Saved");
+						} else {
+							button.setBadgeText("Failed!");
+						}
+					}
+				});
+			});
 
 			// The data can be reloaded after updating them
 			// in database. Th sideefect is that the nestedlist and 

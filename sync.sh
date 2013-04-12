@@ -50,6 +50,7 @@ app/view/patchMgmtUpdateForm.js \
 app/view/patchMgmtInsertForm.js \
 app/view/projectMgmtInsertForm.js \
 app/view/emailView.js \
+app/view/itsmCaseLinkForm.js \
 styles/config.rb \
 styles/app.scss \
 service/all.data \
@@ -98,6 +99,7 @@ resources/images/iClock.png \
 resources/images/iClock1.png \
 resources/images/iProject1.png \
 resources/images/iProject2.png \
+resources/images/iRework.png \
 resources/icons/Icon@2x.png \
 resources/icons/Icon~ipad@2x.png \
 resources/icons/Icon~ipad.png \
@@ -110,8 +112,7 @@ doc/api.html"
 
 echo "** Synchronize SVN Application OTCS Monitor **"
 
-if [ -n "$1" ]
-then
+if [ -n "$1" ]; then
 	echo -n "Detecting configuration ... "
 else 
 	echo "failed"
@@ -127,8 +128,7 @@ echo " OK"
 for file in $SRC
 do
 	echo -n "checking $file ... "
-	if [ -f $file ]
-	then
+	if [ -f $file ]; then
 		echo " OK"
 	else
 		echo " failed"
@@ -137,18 +137,15 @@ do
 	fi
 done
 
-for file in $SRC
-do
+for file in $SRC; do
 	TARGET="$1/$file"
 	echo -n "copying $file ... "
 	echo $TARGET
-	if [ ! -d `dirname $TARGET` ]
-	then
+	if [ ! -d `dirname $TARGET` ]; then
    	mkdir -m 755 -p $(dirname $TARGET)
 	fi
 	`cp -f $file $1/$file`
-	if [ -f "$1/$file" ]
-	then
+	if [ -f "$1/$file" ]; then
 		echo -n " "
 	else
 		echo " Copying failed"
@@ -157,6 +154,27 @@ do
 	fi
 done
 
+if [ -n "$2" ] && [ "$2" = "css" ]; then
+   FILE="resources/css/app.css"
+   TARGET="$1/$FILE"
+	echo " "
+	echo "Copy pre-compiled CSS ... "
+   echo -n " copying $FILE ... "
+   echo $TARGET
+   if [ ! -d `dirname $TARGET` ]; then
+      mkdir -m 755 -p $(dirname $TARGET)
+   fi
+   `cp -f $FILE $1/$FILE`
+	if [ -f "$1/$FILE" ]; then
+		echo -n " "
+	else
+		echo " Copying failed"
+		echo "Check the destination path $1 and permission to write there"
+		exit -1
+	fi
+fi
+
+echo " OK"
 echo " "
 echo "Finished. SVN project files copied into $1 location"
 echo "This project depends on Sencha Touch Run-time 2.0.1.1 and node.js 0.8"

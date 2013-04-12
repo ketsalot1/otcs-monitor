@@ -27,14 +27,14 @@ database.queries = (function() {
 	return {
 		"DBQ001": 'select project_04 "id", long_text_04 "title", short_text_04 "code" from t04_project;',
 	 "DBQ001EX": 'select project_04 "id", long_text_04 "title", short_text_04 "code", category_04 "category" from t04_project;',
-		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
+		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 //		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? and modified_01 >= date_sub(CURDATE(),interval ? day) order by t01.case_01 asc;',
 //		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ003": 'select name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
 //		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 //		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
-		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.case_01 like ? and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
+		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.case_01 like ? and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
 		"DBQ006": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ007": 'insert into t03_link (id_01, id_02) values ( ?,? );',
 		"DBQ008": 'select t03.id_01 "id", t02.name_02 "patch" from t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02;',
@@ -60,15 +60,15 @@ database.queries = (function() {
 		"DBQ024": 'update t01_case set status_01 = ? where case_01 = ?;',
 		"DBQ025": 'update t01_case set jira_01 = ? where case_01 = ?;',
 //		"DBQ026": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.active_01 = 1 and t01.case_01 like ? order by t01.case_01 asc;',
-		"DBQ026": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.active_01 = 1 and t01.case_01 like ? and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
+		"DBQ026": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.active_01 = 1 and t01.case_01 like ? and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
 		"DBQ027": 'select t01.id_01 "id", t01.case_01 "case", t04.short_text_04 "owner" from t01_case t01, t04_project t04 where t01.active_01 = 1 and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
 //		"DBQ028": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.status_01 like "%lose%" and t01.active_01 = 1 order by t01.case_01 asc;',
-		"DBQ028":  'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.status_01 like "%lose%" and t01.active_01 = 1 order by t01.case_01 asc;',
+		"DBQ028":  'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.status_01 like "%lose%" and t01.active_01 = 1 order by t01.case_01 asc;',
 
 		"DBQ029": 'insert into t05_fav values( ? );',
 		"DBQ030": 'delete from t05_fav where id_01 = ?;',
 //		"DBQ031": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04, t05_fav t05 where t01.project_01 = t04.project_04 and t01.id_01 = t05.id_01 order by t01.case_01 asc;',
-		"DBQ031": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04, t05_fav t05 where t01.project_01 = t04.project_04 and t01.id_01 = t05.id_01 order by t01.case_01 asc;',
+		"DBQ031": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04, t05_fav t05 where t01.project_01 = t04.project_04 and t01.id_01 = t05.id_01 order by t01.case_01 asc;',
 
 		"opened_last_week": 'select count(*) from t01_case where start_01 > date_sub(curdate(),interval 7 day) order by start_01 asc;',
 		"closed_last_week": 'select count(*) from t01_case where stop_01 > date_sub(curdate(),interval 7 day) order by start_01 asc;',
@@ -82,8 +82,12 @@ database.queries = (function() {
 		"DBQ035": 'select count(*) as "count" from t02_patch where status_02 = "open";',
 
 //		"DBQ036a": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 in (',
-		"DBQ036a": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.case_01 in (',
+		"DBQ036a": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.case_01 in (',
 		"DBQ036b": ') order by t01.case_01 asc;',
+
+		"DBQ037": 'insert into t08_refs(src_01, ref_01, sum_08) values( ?,?,? );',
+		"DBQ038": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t08.ref_01 as "rework", t04.short_text_04 as "project" from t01_case t01, t04_project t04, t08_refs t08 where t01.project_01 = t04.project_04 and t01.case_01 = t08.src_01 order by t01.case_01 asc;',
+		"DBQ039": 'select src_01 as "src", ref_01 as "ref" from t08_refs;',
 
 		"DBQ999": 'nope'
 	};
@@ -497,8 +501,23 @@ function search( callback, data, res ) {
 							cases[iterator].patches += ", ";
 						}
 					}
+
+					connection.query(database.queries.DBQ039, function (error, rows, fields) {
+						if( !error ) { 
+							for ( var iterator in cases ) {
+								for ( var iter in rows ) {
+									if( cases[iterator].case != rows[iter].src ) continue; 
+									logger.trace( 'requestHandler: search found rework entry (' + rows[iter].ref + ') for case (' + cases[iterator].case + ')' );
+									cases[iterator].rework = rows[iter].ref;
+								}
+							}
+						}	
+						database.tools.cb_response_fetch( error, cases, fields, res, callback );
+					});
+
+				} else {
+					database.tools.cb_response_fetch( error, cases, fields, res, callback );
 				}
-				database.tools.cb_response_fetch( error, cases, fields, res, callback );
 			});
 		});
 	}
@@ -573,7 +592,7 @@ function send_file( callback, dataName, res ) {
 // >>>
 
 
-// IN PROGRESS - TODO
+// DONE
 function describeEx( callback, dataName, res ) {
 // <<<
 	var dbq;
@@ -633,6 +652,14 @@ function describeEx( callback, dataName, res ) {
 				rows[idx].title = "Activity";
 				rows[idx].code = "Feed";
 				rows[idx].icon = "resources/images/iFeed.png";
+
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 94;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Rework";
+				rows[idx].code = "Rework";
+				rows[idx].icon = "resources/images/iRework.png";
 			}
 			database.tools.cb_response_fetch( error, rows, fields, res, callback );
 		});
@@ -774,6 +801,10 @@ function send( callback, data, res ) {
 			sendFavorites( callback, res );
 			return;
 		}
+		if( dataObj.dataName == "Rework" ) {
+			sendRework( callback, res );
+			return;
+		}
 		if( dataObj.dataName == "Feed" ) {
 			mongo.retrieveRecentEmailsFromMDB( callback, data, res );
 			return;
@@ -881,8 +912,23 @@ function sendCases( callback, dataName, res ) {
 							cases[iterator].patches += ", ";
 						}
 					}
+
+					connection.query(database.queries.DBQ039, function (error, rows, fields) {
+						if( !error ) { 
+							for ( var iterator in cases ) {
+								for ( var iter in rows ) {
+									if( cases[iterator].case != rows[iter].src ) continue; 
+									logger.trace( 'requestHandler: search found rework entry (' + rows[iter].ref + ') for case (' + cases[iterator].case + ')' );
+									cases[iterator].rework = rows[iter].ref;
+								}
+							}
+						}	
+						database.tools.cb_response_fetch( error, cases, fields, res, callback );
+					});
+
+				} else {
+					database.tools.cb_response_fetch( error, cases, fields, res, callback );
 				}
-				database.tools.cb_response_fetch( error, cases, fields, res, callback );
 			});
 		});
 	}
@@ -998,8 +1044,23 @@ function sendFavorites( callback, res ) {
 							cases[iterator].patches += ", ";
 						}
 					}
+
+					connection.query(database.queries.DBQ039, function (error, rows, fields) {
+						if( !error ) { 
+							for ( var iterator in cases ) {
+								for ( var iter in rows ) {
+									if( cases[iterator].case != rows[iter].src ) continue; 
+									logger.trace( 'requestHandler: search found rework entry (' + rows[iter].ref + ') for case (' + cases[iterator].case + ')' );
+									cases[iterator].rework = rows[iter].ref;
+								}
+							}
+						}	
+						database.tools.cb_response_fetch( error, cases, fields, res, callback );
+					});
+
+				} else {
+					database.tools.cb_response_fetch( error, cases, fields, res, callback );
 				}
-				database.tools.cb_response_fetch( error, cases, fields, res, callback );
 			});
 		});
 	}
@@ -1039,8 +1100,23 @@ function sendUnarchived( callback, res ) {
 							cases[iterator].patches += ", ";
 						}
 					}
+
+					connection.query(database.queries.DBQ039, function (error, rows, fields) {
+						if( !error ) { 
+							for ( var iterator in cases ) {
+								for ( var iter in rows ) {
+									if( cases[iterator].case != rows[iter].src ) continue; 
+									logger.trace( 'requestHandler: search found rework entry (' + rows[iter].ref + ') for case (' + cases[iterator].case + ')' );
+									cases[iterator].rework = rows[iter].ref;
+								}
+							}
+						}	
+						database.tools.cb_response_fetch( error, cases, fields, res, callback );
+					});
+
+				} else {
+					database.tools.cb_response_fetch( error, cases, fields, res, callback );
 				}
-				database.tools.cb_response_fetch( error, cases, fields, res, callback );
 			});
 		});
 	}
@@ -1560,6 +1636,7 @@ function insertCase( callback, dataObj, res ) {
 }
 // >>>
 
+
 // DONE
 function insertCaseFull( callback, dataObj, res ) {
 // <<<
@@ -1603,6 +1680,70 @@ function insertCaseFull( callback, dataObj, res ) {
 
 
 // DONE
+function insertRework( callback, dataObj, res ) {
+// <<<
+	var data;
+	var sum;
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.insertRework: >' + data.src + '< >' + data.ref + '<' );
+		sum = ((1*data.src) + (1*data.ref));
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ037, [data.src, data.ref, sum], function (error, info ) {
+			database.tools.cb_response_create( error, info, res, callback );
+		});
+	} 
+	catch(e) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
+
+// IN PROGRESS - TODO
+function sendRework( callback, res ) {
+// <<<
+	var cases;
+
+	try {
+		logger.trace('requestHandler.retrieveRework:');
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ038, function (error, rows, fields) {
+			if( error ) { 
+				database.tools.response_error(error.toString(), res );
+				return;
+			}
+			// Add terminators (leaf property) in the generated list and
+			// process details. Convert the line breaks into HTML markup.
+			logger.trace( 'requestHandler: retrieveRework processing list of cases long >' + rows.length + '<' );
+			cases = rows;
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+				if( !error ) { 
+					for ( var iterator in cases ) {
+						cases[iterator].icon = "resources/images/iRework.png";
+						cases[iterator].leaf="true";
+						cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
+						cases[iterator].patches = "&nbsp;";
+						for ( var iter in rows ) {
+							if( cases[iterator].id != rows[iter].id ) continue; 
+							logger.trace( 'requestHandler: retrieveRework found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+							cases[iterator].patches += rows[iter].patch;
+							cases[iterator].patches += ", ";
+						}
+					}
+				}
+				database.tools.cb_response_fetch( error, cases, fields, res, callback );
+			});
+		});
+	} 
+	catch(e) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
+// DONE
 function newPatch( callback, dataObj, res ) {
 // <<<
 	var fileText;
@@ -1618,7 +1759,7 @@ function newPatch( callback, dataObj, res ) {
 			return;
 		}
 		var connection = database.tools.getConnection();
-		connection.query(database.queries.DBQ012, [data.patchName], function (error, info) {
+		connection.query(database.queries.DBQ012, [data.patchName], function (error, rows) {
 			database.tools.cb_response_create( error, info, res, callback );
 		});
 	} 
@@ -2163,5 +2304,7 @@ exports.getAllCases = getAllCases;
 exports.sendUnarchived=sendUnarchived;
 exports.itsmOverview=itsmOverview;
 exports.favorites=favorites;
+exports.insertRework = insertRework;
+exports.sendRework = sendRework;
 
 exports.getFeed=getFeed;
