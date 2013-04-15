@@ -80,6 +80,18 @@ Ext.define("itsm.view.itsmDetail", {
 					tap: { fn: this.onDetailProject, scope: this }
 				}
         };
+		   
+        var reworkButton = {
+            xtype: "button",
+            ui: "action",
+            iconCls: "forward_black",
+            iconMask: true,
+				hidden: true,
+				id: "itsmdetail_rework",
+//				listeners: {
+//					tap: { fn: this.onDetailRework, scope: this }
+//				}
+        };
 
         var archiveButton = {
             xtype: "button",
@@ -129,7 +141,7 @@ Ext.define("itsm.view.itsmDetail", {
 					showEmailsButton,
 					favoritesButton,
 					archiveButton,
-					userButton,
+					reworkButton,
 					linkButton,
 					editButton
 		  		]
@@ -139,6 +151,8 @@ Ext.define("itsm.view.itsmDetail", {
 			   id: 'detailPanel',
 			 	xtype: 'nestedlist',
 				title: 'OTCS Case',
+				useTitleAsBackText: false,
+				backText: 'Overview',
 //				displayField: 'description',
 //				data: { 'case': '111111', 'description': '--empty--' }, 
 //				tpl: '<div>{case} - {description}</div>',
@@ -464,7 +478,8 @@ Ext.define("itsm.view.itsmDetail", {
 		nestedList.getParent().setUIfromMask( lm );
 
 		if( nestedList.getTitle() && (nestedList.getTitle().length > 0)) {
-			console.log("nestedList.itemtap event: curretn list has title:" + nestedList.getTitle() );
+			console.log("nestedList.itemtap event: current list has title:" + nestedList.getTitle() );
+			nestedList.setTitle("Rework");
 		} else {
 			console.log("nestedList.itemtap event: current list has no title. Set to 'Activity'");
 			nestedList.setTitle("Activity");
@@ -584,6 +599,10 @@ Ext.define("itsm.view.itsmDetail", {
 			}
 			if (button.getId() === 'itsmdetail_archive') {
 				console.log( 'itsmdetail_archive found!' );
+				setUIControlfromMask( button, mask.ctrls );
+			}
+			if (button.getId() === 'itsmdetail_rework') {
+				console.log( 'itsmdetail_rework found!' );
 				setUIControlfromMask( button, mask.ctrls );
 			}
 			if (button.getId() === 'itsmdetail_fav') {

@@ -66,7 +66,8 @@ Ext.define("itsm.controller.itsm", {
 			itsmLinkForms: {
 				linkCaseCommand: "onLinkSave",
 				linkJiraCommand: "onJiraSave",
-				linkCaseCommand: "onReworkSave",
+				linkReworkCommand: "onReworkSave",
+				linkProjectCaseCommand: "onProjectAssignSave",
 				backCaseLinkCommand: "onCaseDetailBack"
 			},
 			itsmPatchAssignForm: {
@@ -118,6 +119,7 @@ Ext.define("itsm.controller.itsm", {
 	// <<<
 		var settings = Ext.getStore("settings");
 		var s = Ext.getStore('patches');
+		var p = Ext.getStore('projects');
 		var rec, data, hostName;
 	
 		console.log("controller.itsm.onPatchLinkCase: requesting Patch Assign for case: " + caseNo.id + '<, >' + caseNo.case + '<' );
@@ -129,7 +131,19 @@ Ext.define("itsm.controller.itsm", {
 	
 			s.getProxy().setUrl( hostName + '?cmd=patches&data={"filter":"open"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
-			s.load();
+			s.load( function( record, operation, success ) {
+				if( !success ) {
+					Ext.Msg.alert('Error', 'Cannot fetch patches.', Ext.emptyFn);
+				} else {
+					p.getProxy().setUrl( hostName + '?cmd=projects&data={"filter":"open"}' );
+					console.log('Request >' + s.getProxy().getUrl() + '<' );
+					p.load( function( record, operation, success ) {
+						if( !success ) {
+							Ext.Msg.alert('Error', 'Cannot fetch projects.', Ext.emptyFn);
+						}
+					});
+				}
+			});
 			//	Ext.Viewport.animateActiveItem(this.getItsmPatchAssignForm(), this.slideLeftTransition);
 			Ext.Viewport.animateActiveItem(this.getItsmLinkForms(), this.slideLeftTransition);
 		}
