@@ -1705,8 +1705,30 @@ function insertRework( callback, dataObj, res ) {
 function sendRework( callback, res ) {
 // <<<
 	var cases;
+	var R = [];
+	var chronicle = [];
+	var helper = {};
+	var start, startIdx, project;
 
 	try {
+/* <<<
+		chronicle[0] = {};
+		chronicle[0].icon = "resources/images/iCalendar2.png";
+		chronicle[0].description = "2013 (2)"; 
+		chronicle[0].support_data = {};
+		chronicle[0].support_data.feed = {};
+		chronicle[0].support_data.feed.title = "support data";
+		chronicle[0].support_data.feed.entries = [];
+
+		chronicle[1] = {};
+		chronicle[1].icon = "resources/images/iCalendar2.png";
+		chronicle[1].description = "2012 (0)"; 
+		chronicle[1].support_data = {};
+		chronicle[1].support_data.feed = {};
+		chronicle[1].support_data.feed.title = "support data";
+		chronicle[1].support_data.feed.entries = [];
+*/ // >>>
+
 		logger.trace('requestHandler.retrieveRework:');
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ038, function (error, rows, fields) {
@@ -1732,8 +1754,79 @@ function sendRework( callback, res ) {
 							cases[iterator].patches += ", ";
 						}
 					}
+
+//					chronicle[0].support_data.feed.entries = cases;
+
+/* <<<
+					R[0] = {};
+					R[0].icon = "resources/images/iRework.png";
+					R[0].description = "Desktop (2)";
+					R[0].support_data = {};
+					R[0].support_data.feed = {};
+					R[0].support_data.feed.title = "support data";
+					R[0].support_data.feed.entries = [];
+					R[0].support_data.feed.entries = chronicle;
+*/ // >>>
+
+					for( var iterator in cases ) {
+						project = cases[iterator].project;
+						start = cases[iterator].start.substr(-4,4) * 1
+						startIdx = start - 2012;	
+						if( typeof helper[project] != 'object' ) { 
+							helper[project] = {};
+							helper[project].icon = "resources/images/iRework.png";
+							helper[project].description = project;
+							helper[project].support_data = {};
+							helper[project].support_data.feed = {};
+							helper[project].support_data.feed.title = "support data";
+							helper[project].support_data.feed.entries = [];
+
+							for( var i in [0,1] ) {
+								helper[project].support_data.feed.entries[i] = {};
+								helper[project].support_data.feed.entries[i].icon = "resources/images/iCalendar2.png";
+								helper[project].support_data.feed.entries[i].description = "-- empty --"
+								helper[project].support_data.feed.entries[i].support_data = {};
+								helper[project].support_data.feed.entries[i].support_data.feed = {};
+								helper[project].support_data.feed.entries[i].support_data.feed.title = "support data";
+								helper[project].support_data.feed.entries[i].support_data.feed.entries = [];
+							}
+						} 
+/* <<<
+						if( typeof helper[project].support_data.feed.entries[startIdx] !== 'object' ) {
+							helper[project].support_data.feed.entries[startIdx] = {};
+							helper[project].support_data.feed.entries[startIdx].icon = "resources/images/iCalendar2.png";
+							helper[project].support_data.feed.entries[startIdx].description = start;
+							helper[project].support_data.feed.entries[startIdx].support_data = {};
+							helper[project].support_data.feed.entries[startIdx].support_data.feed = {};
+							helper[project].support_data.feed.entries[startIdx].support_data.feed.title = "support data";
+							helper[project].support_data.feed.entries[startIdx].support_data.feed.entries = [];
+						}
+*/ // >>>
+
+						helper[project].support_data.feed.entries[startIdx].description = start;
+						helper[project].support_data.feed.entries[startIdx].support_data.feed.entries[helper[project].support_data.feed.entries[startIdx].support_data.feed.entries.length] = cases[iterator];
+					}
+
+//					R[0] = helper.Desktop;
+
+					var keys = Object.keys(helper);
+					for( var iterator in keys ) {
+						var t = keys[iterator];
+						R[iterator] = helper[t];
+					}
+
+/*
+					R[0].icon = "resources/images/iRework.png";
+					R[0].support_data = {};
+					R[0].support_data.feed = {};
+					R[0].support_data.feed.title = "support data";
+					R[0].support_data.feed.entries = [];
+					R[0].description = "Desktop";
+					R[0].support_data.feed.entries = helper.Desktop;
+*/
 				}
-				database.tools.cb_response_fetch( error, cases, fields, res, callback );
+
+				database.tools.cb_response_fetch( error, R, fields, res, callback );
 			});
 		});
 	} 

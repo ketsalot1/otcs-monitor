@@ -26,6 +26,7 @@ app/store/settings.js \
 app/store/searchresult.js \
 app/store/aboutInfo.js \
 app/store/patches.js \
+app/store/projects.js \
 app/store/db.js \
 app/store/count.js \
 app/store/itsmOverview.js \

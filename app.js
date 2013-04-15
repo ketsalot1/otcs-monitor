@@ -12,7 +12,7 @@ Ext.application({
 	],
 
 	models: ['itsm', 'itsmOverview', 'desktopITSM', 'settings', 'aboutInfo', 'patches', 'db', 'email', 'count' ],
-	stores: ['itsm', 'itsmOverview', 'desktopITSM', 'settings', 'aboutInfo', 'patches', 'db', 'email', 'count' ],
+	stores: ['itsm', 'itsmOverview', 'desktopITSM', 'settings', 'aboutInfo', 'patches', 'projects', 'db', 'email', 'count' ],
 	controllers: ['itsm'],
 	views: [
 		'MainListContainer', 

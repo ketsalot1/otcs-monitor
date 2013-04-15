@@ -18,7 +18,7 @@ Ext.define("itsm.view.itsmProjectAssignForm", {
 			name: 'project',
 			labelWidth: '32%',
 			// TODO - can I recycle patches??
-			store: Ext.getStore('patches')
+			store: Ext.getStore('projects')
 			/*
 			options: [
 				{ text: "WEV-0975-011", value: 1},
@@ -29,73 +29,23 @@ Ext.define("itsm.view.itsmProjectAssignForm", {
 			*/
 		};
 
-		var backButton = {
-			xtype: 'button',
-			text: 'Back',
-			ui: 'back',
-//			ui: 'action',
-//			iconCls: 'delete1',
-//			iconMask: true,
-			listeners: {
-				tap: { fn: this.onBackButtonTap, scope: this }
-			}
-		};
-
-		var saveButton = {
-			xtype: 'button',
-			text: 'OK',
-			ui: 'action',
-//			iconCls: 'check2',
-//			iconMask: true,
-			listeners: {
-				tap: { fn: this.onSaveButtonTap, scope: this }
-			}
-		};
-
-		var searchButtonPanel = {
-			xtype: 'toolbar',
-			docked: 'bottom',
-			layout: { pack: 'center' },
-			items: [
-				backButton,
-				{ xtype: 'spacer'},
-				saveButton
-			]
-		};
-
 		var formFrame = {
 			xtype: 'fieldset',
-			title: 'OTCS Case Update',
+			title: 'Link Project or Owner to Case',
 			instructions: 'The case will be linked with the project you selected from the picker control.',
 			items: [
 				projectCtrl
 			]
 		};	
 
-		this.add([formFrame,searchButtonPanel]);
+		this.add([formFrame]);
 
-/*
-		var settings = Ext.getStore("settings");
-		var rec = settings.getAt(0);
-		var data = [];
-		var init;
-		try {
-			data = rec.get('settingsContainer');
-			init = data[0];
-		}
-		catch(e) {
-			console.error("Application is not configured yet");
-			init = 'http://server:port/nd';
-		}
-
-		console.log( 'ConfigurationView: ' + init );
-*/
-
-		this.setValues( {caseNo: 'WEV-0975-011' } );
+//		this.setValues( {caseNo: 'WEV-0975-011' } );
 		console.log( 'searchPanel init' );
     },
 	 // >>>
 
+	/* Prevent the handler, is handled inside parent carousel control.
 	onSaveButtonTap: function() {
 		var cn = {};
 		try {
@@ -110,7 +60,9 @@ Ext.define("itsm.view.itsmProjectAssignForm", {
 			console.error( e.message );
 			Ext.Msg.alert( e.message );
 		}
-/*
+*/
+
+/* Code snipet demoing the form submit and reset.
 		var form = this.up('formpanel');
 		form.submit({
 			success: function() {
@@ -120,12 +72,15 @@ Ext.define("itsm.view.itsmProjectAssignForm", {
 			}
 		});
 */
-	},
 
+//	},
+
+/* This handler is handled inside the carousel control
 	onBackButtonTap: function() {
 		console.log("view.PatchForm.backButtonTap" );
 		this.fireEvent('backCaseLinkCommand' );
 	}
+*/
 
 /* <<<
 	onDeleteButtonTap: function (list, record, target, index, evt, options) {
