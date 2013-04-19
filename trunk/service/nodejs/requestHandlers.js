@@ -88,6 +88,11 @@ database.queries = (function() {
 		"DBQ037": 'insert into t08_refs(src_01, ref_01, sum_08) values( ?,?,? );',
 		"DBQ038": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t08.ref_01 as "rework", t04.short_text_04 as "project" from t01_case t01, t04_project t04, t08_refs t08 where t01.project_01 = t04.project_04 and t01.case_01 = t08.src_01 order by t01.case_01 asc;',
 		"DBQ039": 'select src_01 as "src", ref_01 as "ref" from t08_refs;',
+		"DBQ040": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t08.src_01 as "rework", t04.short_text_04 as "project" from t01_case t01, t04_project t04, t08_refs t08 where t01.project_01 = t04.project_04 and t01.case_01 = t08.ref_01 order by t01.case_01 asc;',
+
+		"DBQ041": 'insert into t09_hot values( ? );',
+		"DBQ042": 'delete from t09_hot where id_01 = ?;',
+		"DBQ043": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04, t09_hot t09 where t01.project_01 = t04.project_04 and t01.id_01 = t09.id_01 order by t01.case_01 asc;',
 
 		"DBQ999": 'nope'
 	};
@@ -660,6 +665,14 @@ function describeEx( callback, dataName, res ) {
 				rows[idx].title = "Rework";
 				rows[idx].code = "Rework";
 				rows[idx].icon = "resources/images/iRework.png";
+
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 93;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Hot Fixes this week";
+				rows[idx].code = "Hotfixes";
+				rows[idx].icon = "resources/images/iHotFix.png";
 			}
 			database.tools.cb_response_fetch( error, rows, fields, res, callback );
 		});
@@ -799,6 +812,10 @@ function send( callback, data, res ) {
 		}
 		if( dataObj.dataName == "Favorites" ) {
 			sendFavorites( callback, res );
+			return;
+		}
+		if( dataObj.dataName == "Hotfixes" ) {
+			sendHotfixes( callback, res );
 			return;
 		}
 		if( dataObj.dataName == "Rework" ) {
@@ -1301,6 +1318,105 @@ function favorites( callback, data, res ) {
 // >>>
 
 
+// TODO - IN PROGRESS
+function hotfixes( callback, data, res ) {
+// <<<
+	var resp = {};
+	var dataObj;
+	try {
+		dataObj = JSON.parse(data);
+		dataObj.caseId = database.tools.filter( dataObj.caseId );
+		logger.trace('requestHandler.hotfixes: case >' + dataObj.caseId + '< with patch id >' + dataObj.caseNo + '<'  );
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ041, [dataObj.caseId], function (error, info) {
+			if( error ) {
+				if( error.toString().indexOf('ER_DUP_ENTRY' ) > -1 ) {
+					logger.trace('requestHandler.hotfixes: set. Record removed from favorites');
+					connection.query(database.queries.DBQ042, [dataObj.caseId], function( error, info ) {
+						if( !error ) { 
+							logger.trace('requestHandler.hotfixes: set. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+							resp.code = 200;
+							resp.value = 0;
+							resp.message = info.message || "OK";
+						}
+						database.tools.cb_response_create( error, resp, res, callback ); 
+					});
+				} else {
+					database.tools.response_error(error.toString(), res );
+					return;
+				}
+			} else {
+				logger.trace('requestHandler.hotfixes: set. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+				resp.code = 200;
+				resp.value = info.affectedRows;
+				resp.message = info.message || "OK";
+				database.tools.cb_response_create( error, resp, res, callback ); 
+			}
+		});
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+} 
+// >>>
+
+
+// TODO - IN PROGRESS
+function sendHotfixes( callback, res ) {
+// <<<
+	var cases = [];
+	logger.trace('requestHandler.sendHotfixes: requested ' );
+	try {
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ043, function (error, rows, fields) {
+			if( error ) { 
+				database.tools.response_error(error.toString(), res );
+				return;
+			}
+			// Add terminators (leaf property) in the generated list and
+			// process details. Convert the line breaks into HTML markup.
+			logger.trace( 'requestHandler: sendHotfixes processing list of cases long >' + rows.length + '<' );
+			cases = rows;
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+				if( !error ) { 
+					for ( var iterator in cases ) {
+						cases[iterator].icon = "resources/images/iHotFix.png";
+						cases[iterator].leaf="true";
+						cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
+						cases[iterator].patches = "&nbsp;";
+						for ( var iter in rows ) {
+							if( cases[iterator].id != rows[iter].id ) continue; 
+							logger.trace( 'requestHandler: sendHotfixes found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+							cases[iterator].patches += rows[iter].patch;
+							cases[iterator].patches += ", ";
+						}
+					}
+
+					connection.query(database.queries.DBQ039, function (error, rows, fields) {
+						if( !error ) { 
+							for ( var iterator in cases ) {
+								for ( var iter in rows ) {
+									if( cases[iterator].case != rows[iter].src ) continue; 
+									logger.trace( 'requestHandler: search found rework entry (' + rows[iter].ref + ') for case (' + cases[iterator].case + ')' );
+									cases[iterator].rework = rows[iter].ref;
+								}
+							}
+						}	
+						database.tools.cb_response_fetch( error, cases, fields, res, callback );
+					});
+
+				} else {
+					database.tools.cb_response_fetch( error, cases, fields, res, callback );
+				}
+			});
+		});
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+} // >>>
+
+
 // DONE
 function _linkPatch( callback, data, res ) {
 // <<<
@@ -1326,7 +1442,7 @@ function _linkPatch( callback, data, res ) {
 // >>>
 
 
-// IN PROGRESS - TODO
+// DONE
 function createProjectEx( callback, data, res ) {
 // <<<
 	var resp = {};
@@ -1704,7 +1820,7 @@ function insertRework( callback, dataObj, res ) {
 // IN PROGRESS - TODO
 function sendRework( callback, res ) {
 // <<<
-	var cases;
+	var cases, referred;
 	var R = [];
 	var chronicle = [];
 	var helper = {};
@@ -1731,102 +1847,146 @@ function sendRework( callback, res ) {
 
 		logger.trace('requestHandler.retrieveRework:');
 		var connection = database.tools.getConnection();
-		connection.query(database.queries.DBQ038, function (error, rows, fields) {
+
+		connection.query(database.queries.DBQ040, function (error, rows, fields) {
 			if( error ) { 
 				database.tools.response_error(error.toString(), res );
 				return;
 			}
 			// Add terminators (leaf property) in the generated list and
 			// process details. Convert the line breaks into HTML markup.
-			logger.trace( 'requestHandler: retrieveRework processing list of cases long >' + rows.length + '<' );
-			cases = rows;
-			connection.query(database.queries.DBQ008, function (error, rows, fields) {
-				if( !error ) { 
-					for ( var iterator in cases ) {
-						cases[iterator].icon = "resources/images/iRework.png";
-						cases[iterator].leaf="true";
-						cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
-						cases[iterator].patches = "&nbsp;";
-						for ( var iter in rows ) {
-							if( cases[iterator].id != rows[iter].id ) continue; 
-							logger.trace( 'requestHandler: retrieveRework found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
-							cases[iterator].patches += rows[iter].patch;
-							cases[iterator].patches += ", ";
-						}
-					}
+			logger.trace( 'requestHandler: retrieveRework processing list of referred cases. Length >' + rows.length + '<' );
+			referred = rows;
 
-//					chronicle[0].support_data.feed.entries = cases;
-
-/* <<<
-					R[0] = {};
-					R[0].icon = "resources/images/iRework.png";
-					R[0].description = "Desktop (2)";
-					R[0].support_data = {};
-					R[0].support_data.feed = {};
-					R[0].support_data.feed.title = "support data";
-					R[0].support_data.feed.entries = [];
-					R[0].support_data.feed.entries = chronicle;
-*/ // >>>
-
-					for( var iterator in cases ) {
-						project = cases[iterator].project;
-						start = cases[iterator].start.substr(-4,4) * 1
-						startIdx = start - 2012;	
-						if( typeof helper[project] != 'object' ) { 
-							helper[project] = {};
-							helper[project].icon = "resources/images/iRework.png";
-							helper[project].description = project;
-							helper[project].support_data = {};
-							helper[project].support_data.feed = {};
-							helper[project].support_data.feed.title = "support data";
-							helper[project].support_data.feed.entries = [];
-
-							for( var i in [0,1] ) {
-								helper[project].support_data.feed.entries[i] = {};
-								helper[project].support_data.feed.entries[i].icon = "resources/images/iCalendar2.png";
-								helper[project].support_data.feed.entries[i].description = "-- empty --"
-								helper[project].support_data.feed.entries[i].support_data = {};
-								helper[project].support_data.feed.entries[i].support_data.feed = {};
-								helper[project].support_data.feed.entries[i].support_data.feed.title = "support data";
-								helper[project].support_data.feed.entries[i].support_data.feed.entries = [];
-							}
-						} 
-/* <<<
-						if( typeof helper[project].support_data.feed.entries[startIdx] !== 'object' ) {
-							helper[project].support_data.feed.entries[startIdx] = {};
-							helper[project].support_data.feed.entries[startIdx].icon = "resources/images/iCalendar2.png";
-							helper[project].support_data.feed.entries[startIdx].description = start;
-							helper[project].support_data.feed.entries[startIdx].support_data = {};
-							helper[project].support_data.feed.entries[startIdx].support_data.feed = {};
-							helper[project].support_data.feed.entries[startIdx].support_data.feed.title = "support data";
-							helper[project].support_data.feed.entries[startIdx].support_data.feed.entries = [];
-						}
-*/ // >>>
-
-						helper[project].support_data.feed.entries[startIdx].description = start;
-						helper[project].support_data.feed.entries[startIdx].support_data.feed.entries[helper[project].support_data.feed.entries[startIdx].support_data.feed.entries.length] = cases[iterator];
-					}
-
-//					R[0] = helper.Desktop;
-
-					var keys = Object.keys(helper);
-					for( var iterator in keys ) {
-						var t = keys[iterator];
-						R[iterator] = helper[t];
-					}
-
-/*
-					R[0].icon = "resources/images/iRework.png";
-					R[0].support_data = {};
-					R[0].support_data.feed = {};
-					R[0].support_data.feed.title = "support data";
-					R[0].support_data.feed.entries = [];
-					R[0].description = "Desktop";
-					R[0].support_data.feed.entries = helper.Desktop;
-*/
+			connection.query(database.queries.DBQ038, function (error, rows, fields) {
+				if( error ) { 
+					database.tools.response_error(error.toString(), res );
+					return;
 				}
+				// Add terminators (leaf property) in the generated list and
+				// process details. Convert the line breaks into HTML markup.
+				logger.trace( 'requestHandler: retrieveRework processing list of cases long >' + rows.length + '<' );
+				cases = rows;
+				connection.query(database.queries.DBQ008, function (error, rows, fields) {
+					if( !error ) { 
+						for ( var iterator in cases ) {
+							cases[iterator].icon = "resources/images/iRework.png";
+							cases[iterator].leaf="true";
+							cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
+							cases[iterator].patches = "&nbsp;";
+							for ( var iter in rows ) {
+								if( cases[iterator].id != rows[iter].id ) continue; 
+								logger.trace( 'requestHandler: retrieveRework found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+								cases[iterator].patches += rows[iter].patch;
+								cases[iterator].patches += ", ";
+							}
+							cases[iterator].id = cases[iterator].id | 0x8000;
+						}
 
-				database.tools.cb_response_fetch( error, R, fields, res, callback );
+						for ( var iterator in referred ) {
+							referred[iterator].icon = "resources/images/iLink.png";
+							referred[iterator].leaf="true";
+							referred[iterator].details = database.tools.encodeHTMLTable( referred[iterator].details );
+							referred[iterator].patches = "&nbsp;";
+							for ( var iter in rows ) {
+								if( referred[iterator].id != rows[iter].id ) continue; 
+								logger.trace( 'requestHandler: retrieveRework found patch entry (' + rows[iter].patch + ') for case (' + referred[iterator].case + ')' );
+								referred[iterator].patches += rows[iter].patch;
+								referred[iterator].patches += ", ";
+							}
+						}
+	
+	//					chronicle[0].support_data.feed.entries = cases;
+	
+	/* <<<
+						R[0] = {};
+						R[0].icon = "resources/images/iRework.png";
+						R[0].description = "Desktop (2)";
+						R[0].support_data = {};
+						R[0].support_data.feed = {};
+						R[0].support_data.feed.title = "support data";
+						R[0].support_data.feed.entries = [];
+						R[0].support_data.feed.entries = chronicle;
+	*/ // >>>
+	
+						for( var iterator in cases ) {
+							project = cases[iterator].project;
+							start = cases[iterator].start.substr(-4,4) * 1
+							startIdx = start - 2012;	
+							if( typeof helper[project] != 'object' ) { 
+								helper[project] = {};
+								helper[project].icon = "resources/images/iRework.png";
+								helper[project].description = project;
+								helper[project].support_data = {};
+								helper[project].support_data.feed = {};
+								helper[project].support_data.feed.title = "support data";
+								helper[project].support_data.feed.entries = [];
+	
+								for( var i in [0,1] ) {
+									helper[project].support_data.feed.entries[i] = {};
+									helper[project].support_data.feed.entries[i].icon = "resources/images/iCalendar2.png";
+									helper[project].support_data.feed.entries[i].description = "-- empty --"
+									helper[project].support_data.feed.entries[i].support_data = {};
+									helper[project].support_data.feed.entries[i].support_data.feed = {};
+									helper[project].support_data.feed.entries[i].support_data.feed.title = "support data";
+									helper[project].support_data.feed.entries[i].support_data.feed.entries = [];
+								}
+							} 
+	/* <<<
+							if( typeof helper[project].support_data.feed.entries[startIdx] !== 'object' ) {
+								helper[project].support_data.feed.entries[startIdx] = {};
+								helper[project].support_data.feed.entries[startIdx].icon = "resources/images/iCalendar2.png";
+								helper[project].support_data.feed.entries[startIdx].description = start;
+								helper[project].support_data.feed.entries[startIdx].support_data = {};
+								helper[project].support_data.feed.entries[startIdx].support_data.feed = {};
+								helper[project].support_data.feed.entries[startIdx].support_data.feed.title = "support data";
+								helper[project].support_data.feed.entries[startIdx].support_data.feed.entries = [];
+							}
+	*/ // >>>
+	
+							helper[project].support_data.feed.entries[startIdx].description = start;
+	
+	//						helper[project].support_data.feed.entries[startIdx].support_data.feed.entries[helper[project].support_data.feed.entries[startIdx].support_data.feed.entries.length] = cases[iterator];
+							var t = {}
+							t.icon= "resources/images/iRework.png"
+							t.description = cases[iterator].description;
+							t.support_data = {};
+							t.support_data.feed = {};
+							t.support_data.feed.title = "support data";
+							t.support_data.feed.entries = [];
+							t.support_data.feed.entries[0] = cases[iterator];
+
+							for ( var i in referred ) {
+								if( referred[i].case == cases[iterator].rework ) {
+									t.support_data.feed.entries[1] = referred[i];
+								}
+							}
+									
+							helper[project].support_data.feed.entries[startIdx].support_data.feed.entries[helper[project].support_data.feed.entries[startIdx].support_data.feed.entries.length] = t;
+	
+						}
+	
+	//					R[0] = helper.Desktop;
+	
+						var keys = Object.keys(helper);
+						for( var iterator in keys ) {
+							var t = keys[iterator];
+							R[iterator] = helper[t];
+						}
+	
+	/*
+						R[0].icon = "resources/images/iRework.png";
+						R[0].support_data = {};
+						R[0].support_data.feed = {};
+						R[0].support_data.feed.title = "support data";
+						R[0].support_data.feed.entries = [];
+						R[0].description = "Desktop";
+						R[0].support_data.feed.entries = helper.Desktop;
+	*/
+					}
+	
+					database.tools.cb_response_fetch( error, R, fields, res, callback );
+				});
 			});
 		});
 	} 
@@ -1852,7 +2012,7 @@ function newPatch( callback, dataObj, res ) {
 			return;
 		}
 		var connection = database.tools.getConnection();
-		connection.query(database.queries.DBQ012, [data.patchName], function (error, rows) {
+		connection.query(database.queries.DBQ012, [data.patchName], function (error, info) {
 			database.tools.cb_response_create( error, info, res, callback );
 		});
 	} 
@@ -2397,6 +2557,7 @@ exports.getAllCases = getAllCases;
 exports.sendUnarchived=sendUnarchived;
 exports.itsmOverview=itsmOverview;
 exports.favorites=favorites;
+exports.hotfixes=hotfixes;
 exports.insertRework = insertRework;
 exports.sendRework = sendRework;
 

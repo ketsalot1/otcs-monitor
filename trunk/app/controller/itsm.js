@@ -27,7 +27,8 @@ Ext.define("itsm.controller.itsm", {
 			itsmJiraAssignForm: "itsmjiraform",
 			itsmProjectAssignForm: "itsmprojectassignform",
 			emailView: "emailview",
-			patchMgmtView: "patchmainview"
+			patchMgmtView: "patchmainview",
+			itsmRework: 'itsmrework'
 		},
 		control: {
 			mainListContainer: {
@@ -46,7 +47,13 @@ Ext.define("itsm.controller.itsm", {
 				detailLinkProjectCommand: "onProjectLinkCase",
 				detailSetArchivedCommand: "onArchiveCase",
 				detailSetFavoritesCommand: "onSetFavorites",
-				detailShowEmailsCommand: "onShowEmails"
+				detailSetHotfixCommand: "onSetHotfix",
+				detailShowEmailsCommand: "onShowEmails",
+				searchCaseCommand: 'onSearchCase'
+			},
+			itsmRework: {
+				reworkViewBackCommand: "onBackRework",
+				detailBackCommand: "onBackMainList"
 			},
 			configurationView: {
 				saveSettingsCommand:	"onSaveSettings",
@@ -229,6 +236,51 @@ Ext.define("itsm.controller.itsm", {
 			hostName = data[0];
 	
 			s.getProxy().setUrl( hostName + '?cmd=favorites&data={"caseId": "' + caseNo.id+ '", "caseNo": "' + caseNo.case  + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load(function( record, operation, success ) {
+				if( success == true ) {
+					if( operation.getResultSet()._records[0].node.value == 0 )
+						badgeText = "0";
+					if( operation.getResultSet()._records[0].node.value == 1 )
+						badgeText = "1";
+				} else {
+					badgeText = "Err";
+				}
+	
+				//Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
+				//this.activateMainView();
+				Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+	
+				Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+					if (button.getId() === 'itsmdetail_fav') {
+						console.log( 'itsmdetail_fav found!' );
+						button.setBadgeText(badgeText);
+					}
+				});
+			}, this );
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+	// >>>
+
+	onSetHotfix : function(caseNo) {
+	// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('db');
+		var rec, data, hostName, badgeText;
+	
+		badgeText = "Err";
+	
+		console.log("controller.itsm.onSetFavorites: requesting Case Attention for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
+	
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+	
+			s.getProxy().setUrl( hostName + '?cmd=hotfixes&data={"caseId": "' + caseNo.id+ '", "caseNo": "' + caseNo.case  + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load(function( record, operation, success ) {
 				if( success == true ) {

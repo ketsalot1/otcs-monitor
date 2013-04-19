@@ -34,6 +34,7 @@ handle['insert_jira_link'] = requestHandlers.updateCaseJira; // convinience meth
 handle['get_all_cases'] = requestHandlers.getAllCases;  // dead code?
 handle['get_overview'] = requestHandlers.itsmOverview;
 handle['favorites'] = requestHandlers.favorites;
+handle['hotfixes'] = requestHandlers.hotfixes;
 handle['set_rework'] = requestHandlers.insertRework;
 handle['get_rework'] = requestHandlers.sendRework;
 /* Assign service routines to keyword in the 
