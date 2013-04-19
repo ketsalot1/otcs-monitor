@@ -13,7 +13,6 @@ app/controller/itsm.js \
 app/model/desktopITSM.js \
 app/model/itsm.js \
 app/model/settings.js \
-app/model/searchresult.js \
 app/model/aboutInfo.js \
 app/model/patches.js \
 app/model/db.js \
@@ -23,7 +22,7 @@ app/model/email.js \
 app/store/desktopITSM.js \
 app/store/itsm.js \
 app/store/settings.js \
-app/store/searchresult.js \
+app/store/searchResult.js \
 app/store/aboutInfo.js \
 app/store/patches.js \
 app/store/projects.js \
@@ -33,6 +32,7 @@ app/store/itsmOverview.js \
 app/store/email.js \
 app/view/ConfigurationView.js \
 app/view/itsmDetail.js \
+app/view/itsmRework.js \
 app/view/itsmList.js \
 app/view/Main.js \
 app/view/MainListContainer.js \
@@ -86,6 +86,8 @@ resources/images/iEmailAtt31.png \
 resources/images/iFeed.png \
 resources/images/iFeed2.png \
 resources/images/iFeed3.png \
+resources/images/iLink.png \
+resources/images/iHotFix.png \
 resources/images/iUpdated.png \
 resources/images/iOutdated.png \
 resources/images/iPending.png \

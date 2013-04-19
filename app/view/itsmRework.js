@@ -1,4 +1,4 @@
-Ext.define("itsm.view.itsmDetail", {
+Ext.define("itsm.view.itsmRework", {
 	extend: "Ext.NestedList",
 //	extend: "Ext.dataview.NestedList",
 //	extend: "Ext.Container",
@@ -15,18 +15,18 @@ Ext.define("itsm.view.itsmDetail", {
 		"Ext.data.proxy.JsonP"
 	],
 
- 	alias: "widget.itsmdetail",
-	xtype: "itsmdetail",
+ 	alias: "widget.itsmrework",
+	xtype: "itsmrework",
 
 	config:{
-		id: 'itsmDetail',
+		id: 'itsmRework',
 		fullscreen: true,
 		scrollable:'vertical',
 		title: 'OTCS Monitor',
 		ui: 'round',
 		listeners: {
 			painted: function() {
-				console.log("itsmDetail.paint!");
+				console.log("itsmRework.paint!");
 			}
 		}
 	},
@@ -39,7 +39,7 @@ Ext.define("itsm.view.itsmDetail", {
             xtype: "button",
             ui: "back",
             text: "Home",
-				id: "itsmdetail_back",
+				id: "itsmrework_back",
 				listeners: {
 					tap: { fn: this.onDetailBack, scope: this }
 				}
@@ -51,7 +51,7 @@ Ext.define("itsm.view.itsmDetail", {
             iconCls: "doc_compose1",
             iconMask: true,
 				hidden: true,
-				id: "itsmdetail_edit",
+				id: "itsmrework_edit",
 				listeners: {
 					tap: { fn: this.onDetailEdit, scope: this }
 				}
@@ -63,7 +63,7 @@ Ext.define("itsm.view.itsmDetail", {
             iconCls: "link2",
             iconMask: true,
 				hidden: true,
-				id: "itsmdetail_link",
+				id: "itsmrework_link",
 				listeners: {
 					tap: { fn: this.onDetailLink, scope: this }
 				}
@@ -75,7 +75,7 @@ Ext.define("itsm.view.itsmDetail", {
             iconCls: "user_add",
             iconMask: true,
 				hidden: true,
-				id: "itsmdetail_user",
+				id: "itsmrework_user",
 				listeners: {
 					tap: { fn: this.onDetailProject, scope: this }
 				}
@@ -87,7 +87,7 @@ Ext.define("itsm.view.itsmDetail", {
             iconCls: "forward_black",
             iconMask: true,
 				hidden: true,
-				id: "itsmdetail_rework",
+				id: "itsmrework_rework",
 				listeners: {
 					tap: { fn: this.onDetailRework, scope: this }
 				}
@@ -99,7 +99,7 @@ Ext.define("itsm.view.itsmDetail", {
             iconCls: "trash2",
             iconMask: true,
 				hidden: true,
-				id: "itsmdetail_archive",
+				id: "itsmrework_archive",
 				listeners: {
 					tap: { fn: this.onDetailArchive, scope: this }
 				}
@@ -112,7 +112,7 @@ Ext.define("itsm.view.itsmDetail", {
             iconMask: true,
 				badgeText: "",
 				hidden: true,
-				id: "itsmdetail_fav",
+				id: "itsmrework_fav",
 				listeners: {
 					tap: { fn: this.onDetailFavorites, scope: this }
 				}
@@ -125,7 +125,7 @@ Ext.define("itsm.view.itsmDetail", {
             iconMask: true,
 				badgeText: "",
 				hidden: true,
-				id: "itsmdetail_mails",
+				id: "itsmrework_mails",
 				listeners: {
 					tap: { fn: this.onDetailShowEmails, scope: this }
 				}
@@ -156,7 +156,7 @@ Ext.define("itsm.view.itsmDetail", {
 //				displayField: 'description',
 //				data: { 'case': '111111', 'description': '--empty--' }, 
 //				tpl: '<div>{case} - {description}</div>',
-				store: Ext.getStore('desktopITSM'),
+				store: Ext.getStore('searchResult'),
 				/* <<<
 				store: {
 					type: 'tree',
@@ -227,7 +227,7 @@ Ext.define("itsm.view.itsmDetail", {
 									// slopy, not sure if the Button gets the saem ID again and again ...
 									if( button.getId() === 'ext-button-7' )
 										button.setText("OTCS Case");
-									if (button.getId() === 'itsmdetail_mails') {
+									if (button.getId() === 'itsmrework_mails') {
 										console.log( 'E-Mail Details button found' );
 										if( success == true ) {
 											button.setBadgeText(Ext.getStore('count').getAt(0).get('count'));
@@ -461,7 +461,7 @@ Ext.define("itsm.view.itsmDetail", {
 					// slopy, not sure if the Button gets the saem ID again and again ...
 					if( button.getId() === 'ext-button-7' )
 						button.setText("OTCS Case");
-					if (button.getId() === 'itsmdetail_mails') {
+					if (button.getId() === 'itsmrework_mails') {
 						console.log( 'E-Mail Details button found' );
 						if( success == true ) {
 							button.setBadgeText(Ext.getStore('count').getAt(0).get('count'));
@@ -488,7 +488,7 @@ Ext.define("itsm.view.itsmDetail", {
 
 	onDetailBack: function() {
 		var lm = {};
-		console.log("view.itsmDetail.Back");
+		console.log("view.itsmRework.Back");
 		lm.back = 1;
 		lm.ctrls = 0;
 		this.setUIfromMask( lm );
@@ -497,7 +497,7 @@ Ext.define("itsm.view.itsmDetail", {
 
 	onDetailEdit: function() {
 		var lm = {};
-		console.log("view.itsmDetail.Edit");
+		console.log("view.itsmRework.Edit");
 		if( typeof opentext.data.activeCase == 'object' ) { 
 			this.fireEvent("detailEditCommand", opentext.data.activeCase);
 		} else {
@@ -507,7 +507,7 @@ Ext.define("itsm.view.itsmDetail", {
 
 	onDetailShowEmails: function() {
 		var lm = {};
-		console.log("view.itsmDetail.showEmails");
+		console.log("view.itsmRework.showEmails");
 		if( typeof opentext.data.activeCase == 'object' ) { 
 			lm.back = 0;
 			lm.ctrls = 1;
@@ -520,7 +520,7 @@ Ext.define("itsm.view.itsmDetail", {
 
 	onDetailLink: function() {
 		var lm = {};
-		console.log("view.itsmDetail.Link");
+		console.log("view.itsmRework.Link");
 		if( typeof opentext.data.activeCase == 'object' ) { 
 			this.fireEvent("detailLinkPatchCommand", opentext.data.activeCase);
 		} else {
@@ -530,7 +530,7 @@ Ext.define("itsm.view.itsmDetail", {
 
 	onDetailRework: function() {
 		var lm = {};
-		console.log("view.itsmDetail.followRework");
+		console.log("view.itsmRework.followRework");
 		if( typeof opentext.data.activeCase == 'object' && typeof opentext.data.activeCase.rework == 'number' ) { 
 			lm.back = 1;
 			lm.ctrls = 0;
@@ -540,13 +540,12 @@ Ext.define("itsm.view.itsmDetail", {
 			this.fireEvent('searchCaseCommand', lm );
 		} else {
 			console.error("No rework to follow for selected case or no case selected");
-			Ext.Msg.alert("No rework to follow");
 		}
 	},
 
 	onDetailProject: function() {
 		var lm = {};
-		console.log("view.itsmDetail.setProject");
+		console.log("view.itsmRework.setProject");
 		if( typeof opentext.data.activeCase == 'object' ) { 
 			this.fireEvent("detailLinkProjectCommand", opentext.data.activeCase);
 		} else {
@@ -556,13 +555,13 @@ Ext.define("itsm.view.itsmDetail", {
 
 	onDetailArchive: function() {
 		var lm = {};
-		console.log("view.itsmDetail.setArchived");
+		console.log("view.itsmRework.setArchived");
 
 		function onReply(btn) {
 			if( btn == "yes" ) {
 				this.fireEvent("detailSetArchivedCommand", opentext.data.activeCase);
 			} else {
-				console.log("view.itsmDetail.setArchived - update canceled");
+				console.log("view.itsmRework.setArchived - update canceled");
 			}
 		}
 
@@ -574,43 +573,12 @@ Ext.define("itsm.view.itsmDetail", {
 	},
 
 	onDetailFavorites: function() {
-		console.log("view.itsmDetail.setFavorites");
-
-		if( !this.actions ) {
-			var actionSheet = Ext.create('Ext.ActionSheet', {
-	 			alias: "widget.detailactionpanel",
-				xtype: "detailactionpanel",
-	    		items: [
-	        		{
-	            	text: 'Set/Clear Favorites',
-						scope: this,
-						handler: function() {
-							this.actions.hide();
-							if( typeof opentext.data.activeCase == 'object' ) { 
-								this.fireEvent("detailSetFavoritesCommand", opentext.data.activeCase);
-							} else {
-								console.error("No case selected");
-							}
-						}
-	        		},
-	        		{
-	            	text: 'Set/Clear Hotfix',
-						scope: this,
-						handler: function() {
-							this.actions.hide();
-							if( typeof opentext.data.activeCase == 'object' ) { 
-								this.fireEvent("detailSetHotfixCommand", opentext.data.activeCase);
-							} else {
-								console.error("No case selected");
-							}
-						}
-	        		}
-	    		]
-			});
-
-			this.actions = Ext.Viewport.add(actionSheet);
-		}	
-		this.actions.show();
+		console.log("view.itsmRework.setFavorites");
+		if( typeof opentext.data.activeCase == 'object' ) { 
+			this.fireEvent("detailSetFavoritesCommand", opentext.data.activeCase);
+		} else {
+			console.error("No case selected");
+		}
 	},
 
 	setUIfromMask: function( mask ) {
@@ -623,37 +591,37 @@ Ext.define("itsm.view.itsmDetail", {
 					ctrl.hide();
 			}
 
-			if (button.getId() === 'itsmdetail_back') {
-				console.log( 'itsmdetail_back found!' );
+			if (button.getId() === 'itsmrework_back') {
+				console.log( 'itsmrework_back found!' );
 				setUIControlfromMask( button, mask.back );
 			}
-			if (button.getId() === 'itsmdetail_mails') {
-				console.log( 'itsmdetail_back found!' );
+			if (button.getId() === 'itsmrework_mails') {
+				console.log( 'itsmrework_back found!' );
 				setUIControlfromMask( button, mask.ctrls );
 			}
-			if (button.getId() === 'itsmdetail_edit') {
-				console.log( 'itsmdetail_edit found!' );
+			if (button.getId() === 'itsmrework_edit') {
+				console.log( 'itsmrework_edit found!' );
 				setUIControlfromMask( button, mask.ctrls );
 			}
-			if (button.getId() === 'itsmdetail_link') {
-				console.log( 'itsmdetail_link found!' );
+			if (button.getId() === 'itsmrework_link') {
+				console.log( 'itsmrework_link found!' );
 				setUIControlfromMask( button, mask.ctrls );
 				button.setBadgeText("");
 			}
-			if (button.getId() === 'itsmdetail_user') {
-				console.log( 'itsmdetail_user found!' );
+			if (button.getId() === 'itsmrework_user') {
+				console.log( 'itsmrework_user found!' );
 				setUIControlfromMask( button, mask.ctrls );
 			}
-			if (button.getId() === 'itsmdetail_archive') {
-				console.log( 'itsmdetail_archive found!' );
+			if (button.getId() === 'itsmrework_archive') {
+				console.log( 'itsmrework_archive found!' );
 				setUIControlfromMask( button, mask.ctrls );
 			}
-			if (button.getId() === 'itsmdetail_rework') {
-				console.log( 'itsmdetail_rework found!' );
+			if (button.getId() === 'itsmrework_rework') {
+				console.log( 'itsmrework_rework found!' );
 				setUIControlfromMask( button, mask.ctrls );
 			}
-			if (button.getId() === 'itsmdetail_fav') {
-				console.log( 'itsmdetail_fav found!' );
+			if (button.getId() === 'itsmrework_fav') {
+				console.log( 'itsmrework_fav found!' );
 				setUIControlfromMask( button, mask.ctrls );
 				button.setBadgeText("");
 			}
