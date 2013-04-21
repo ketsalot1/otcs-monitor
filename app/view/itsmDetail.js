@@ -84,7 +84,7 @@ Ext.define("itsm.view.itsmDetail", {
         var reworkButton = {
             xtype: "button",
             ui: "action",
-            iconCls: "forward_black",
+            iconCls: "action",
             iconMask: true,
 				hidden: true,
 				id: "itsmdetail_rework",
@@ -472,9 +472,36 @@ Ext.define("itsm.view.itsmDetail", {
 				});
 			});
 		} else {
-        nestedList.getDetailCard().setHtml("<div style=\"font-size: 1.1em; font-weight: bold;\">Schedule: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+//        nestedList.getDetailCard().setHtml("<div style=\"font-size: 1.1em; font-weight: bold;\">Schedule: " + post.get('case') + '</div>Status: ' + post.get('status') + '<br/><br/><div style=\"font-size: 0.8em;\">' + post.get('details') + '</div>');
+        nestedList.getDetailCard().setHtml(" \
+					 <div class=\"custom-header\"> \
+					 <h3 class=\"custom-header-overlap\">Details</h3></div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\"> Patch:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('description') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Status:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('status') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Schedule:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('case') + "</div> \
+						</div> \
+					</div> \
+					 <div class=\"collspan\">&nbsp;</div> \
+					 <div class=\"custom-header collspan\"> \
+					 <h3 class=\"custom-header-overlap\">Fixed isues</h3></div> \
+					<div style=\"font-size: 0.8em;padding-left:8px; clear: both\">" + post.get('details') + "</div>");
+
 			lm.ctrls = 0;
 		}
+
 		nestedList.getParent().setUIfromMask( lm );
 
 		if( nestedList.getTitle() && (nestedList.getTitle().length > 0)) {
@@ -531,17 +558,44 @@ Ext.define("itsm.view.itsmDetail", {
 	onDetailRework: function() {
 		var lm = {};
 		console.log("view.itsmDetail.followRework");
-		if( typeof opentext.data.activeCase == 'object' && typeof opentext.data.activeCase.rework == 'number' ) { 
-			lm.back = 1;
-			lm.ctrls = 0;
-			this.setUIfromMask( lm );
-			lm.caseNo = opentext.data.activeCase.rework;
-			lm.searchAll = 1;
-			this.fireEvent('searchCaseCommand', lm );
-		} else {
-			console.error("No rework to follow for selected case or no case selected");
-			Ext.Msg.alert("No rework to follow");
-		}
+
+		if( !this.rework ) {
+			var reworkSheet = Ext.create('Ext.ActionSheet', {
+	 			alias: "widget.reworkactionpanel",
+				xtype: "reworkactionpanel",
+	    		items: [
+	        		{
+	            	text: 'show cross-referred rework',
+						scope: this,
+						handler: function() {
+							this.rework.hide();
+							if( typeof opentext.data.activeCase == 'object' && typeof opentext.data.activeCase.rework == 'number' ) { 
+								lm.back = 1;
+								lm.ctrls = 0;
+								this.setUIfromMask( lm );
+								lm.caseNo = opentext.data.activeCase.rework;
+								lm.searchAll = 1;
+								var nl = Ext.getCmp('detailPanel');
+								nl.traverse = true;
+								// Nasty way to get back to root node in the nested list
+								nl.onBackTap();
+								nl.onBackTap();
+								nl.onBackTap();
+								nl.onBackTap();
+								nl.onBackTap();
+								this.fireEvent('searchCaseCommand', lm );
+							} else {
+								console.error("No rework to follow for selected case or no case selected");
+								Ext.Msg.alert("No rework to follow");
+							}
+						}
+	        		}
+	    		]
+			});
+
+			this.rework = Ext.Viewport.add(reworkSheet);
+		}	
+		this.rework.show();
 	},
 
 	onDetailProject: function() {
