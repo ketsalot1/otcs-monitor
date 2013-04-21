@@ -27,8 +27,7 @@ Ext.define("itsm.controller.itsm", {
 			itsmJiraAssignForm: "itsmjiraform",
 			itsmProjectAssignForm: "itsmprojectassignform",
 			emailView: "emailview",
-			patchMgmtView: "patchmainview",
-			itsmRework: 'itsmrework'
+			patchMgmtView: "patchmainview"
 		},
 		control: {
 			mainListContainer: {
@@ -50,10 +49,6 @@ Ext.define("itsm.controller.itsm", {
 				detailSetHotfixCommand: "onSetHotfix",
 				detailShowEmailsCommand: "onShowEmails",
 				searchCaseCommand: 'onSearchCase'
-			},
-			itsmRework: {
-				reworkViewBackCommand: "onBackRework",
-				detailBackCommand: "onBackMainList"
 			},
 			configurationView: {
 				saveSettingsCommand:	"onSaveSettings",
