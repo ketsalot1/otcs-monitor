@@ -12,7 +12,9 @@ Ext.define("itsm.view.itsmDetail", {
 	requires: [
 //		"Ext.dataview.NestedList",
 		"Ext.TitleBar",
-		"Ext.data.proxy.JsonP"
+		"Ext.data.proxy.JsonP",
+		"Ext.ActionSheet",
+		"itsm.view.setCheckpointForm"
 	],
 
  	alias: "widget.itsmdetail",
@@ -27,6 +29,12 @@ Ext.define("itsm.view.itsmDetail", {
 		listeners: {
 			painted: function() {
 				console.log("itsmDetail.paint!");
+			},
+			// this is a custom even hadler inside a view. It can be used 
+			// to propagate the internal events to the main controller.
+			customEvent: function( data ) {
+				console.log( "Custom event handler" );
+				this.fireEvent( 'setCheckpointCaseCommand', opentext.data.activeCase );
 			}
 		}
 	},
@@ -384,6 +392,10 @@ Ext.define("itsm.view.itsmDetail", {
 					</div> \
 					 <div class=\"collspan\">&nbsp;</div> \
 					 <div class=\"custom-header collspan\"> \
+					 <h3 class=\"custom-header-overlap\">Synopsis</h3></div> \
+					<div style=\"font-size: 0.9em;padding-left:8px; clear: both\">" + post.get('synopsis') + "</div> \
+					 <div class=\"collspan\">&nbsp;</div> \
+					 <div class=\"custom-header collspan\"> \
 					 <h3 class=\"custom-header-overlap\">Chronicle</h3></div> \
 					<div style=\"font-size: 0.8em;padding-left:8px; clear: both\">" + post.get('details') + "</div>");
 
@@ -440,6 +452,10 @@ Ext.define("itsm.view.itsmDetail", {
 							<div class=\"custom-details-cell-value\">" + post.get('patches') + "</div> \
 						</div> \
 					</div> \
+					 <div class=\"collspan\">&nbsp;</div> \
+					 <div class=\"custom-header collspan\"> \
+					 <h3 class=\"custom-header-overlap\">Synopsis</h3></div> \
+					<div style=\"font-size: 0.9em;padding-left:8px; clear: both\">" + post.get('synopsis') + "</div> \
 					 <div class=\"collspan\">&nbsp;</div> \
 					 <div class=\"custom-header collspan\"> \
 					 <h3 class=\"custom-header-overlap\">Chronicle</h3></div> \
@@ -589,7 +605,118 @@ Ext.define("itsm.view.itsmDetail", {
 								Ext.Msg.alert("No rework to follow");
 							}
 						}
-	        		}
+	        		},
+					{
+						text: 'remove checkpoint date',
+						scope: this,
+						handler: function() {
+							this.rework.hide();	
+							if( typeof opentext.data.activeCase == 'object' ) { 
+								lm.back = 0;
+								lm.ctrls = 1;
+								this.setUIfromMask( lm );
+								this.fireEvent('resetCheckpointCaseCommand', opentext.data.activeCase );
+							} else {
+								console.error("Checkpoint cannot be removed for selected case or no case selected");
+								Ext.Msg.alert("Error removing checkpoint");
+							}
+						}
+					},
+					{
+						text: 'set checkpoint date',
+						scope: this,
+						handler: function() {
+							this.rework.hide();	
+							if( typeof opentext.data.activeCase == 'object' ) { 
+								lm.back = 0;
+								lm.ctrls = 1;
+								this.setUIfromMask( lm );
+
+								if( !this.checkpoint ) {
+									var checkpointSheet = Ext.create('Ext.Panel', {
+	 									alias: "widget.checkpointactionpanel",
+										xtype: "checkpointactionpanel",
+										scope: this,
+										modal: true,
+										hideOnMaskTap: false,
+										showAnimation: {
+											type: 'popIn',
+											duration: 250,
+											easing: 'ease-out'
+										},
+										hideAnimation: {
+											type: 'popOut',
+											duration: 250,
+											easing: 'ease-out'
+										},
+										centered: true,
+										width: Ext.os.deviceType == 'Phone' ? 260 : 400,
+										height: Ext.os.deviceType == 'Phone' ? 230 : 230,
+	    								items: [
+											{
+												xtype: 'toolbar',
+												title: 'Checkpoint Date',
+												docking: 'top',
+												scope: this,
+												items: [
+													{
+														xtype: "button",
+														ui: "back",
+														text: "Back",
+														scope: this,
+														listeners: {
+														//	tap: { fn: this.onCheckpointBackButtonTap, scope: this }
+															tap: function() {
+																console.log("onCheckpointBackButtonTap handler called");
+																this.getParent().getParent().hide();
+															}
+
+														}
+													},
+													{
+														xtype: 'spacer'
+													},
+													{
+														xtype: "button",
+														ui: "action",
+														text: "Save",
+														scope: this,
+														listeners: {
+															// element: 'element', // this one does not work. It only duplicates the count of calls to handler,
+															tap: function() {
+																console.log("onCheckpointSaveButtonTap handler called");
+																// Thogh this Panel view is constructed as an model dialog inside the main view 
+																// as an internal element, it cannot use the path traversal (getParent()) to get
+																// reference to the main view. Uses the global function to look up the main view
+																// and use it as an owner for trigerring an event. Such an even is than visible
+																// in the global controller.
+																var dt = Ext.getCmp('itsmDetail');
+																dt.fireEvent( 'setCheckpointCaseCommand', opentext.data.activeCase );
+
+																// Using propagation through an internal even handler,
+																// dt.fireEvent( 'customEvent', opentext.data.activeCase );
+																
+																// Using function call on the view level. The view function can than
+																// call the event registered with the main controller.
+																// dt.onCheckpointSaveButton( opentext.data.activeCase );
+															
+																this.getParent().getParent().hide();
+															}
+														}
+													}
+												]
+											},
+											{
+												xtype: 'setcheckpointform'
+											}
+										]
+									});
+									this.checkpoint = Ext.Viewport.add(checkpointSheet);
+								}	
+								this.checkpoint.show();
+							}
+						}
+					}
 	    		]
 			});
 
@@ -713,4 +840,9 @@ Ext.define("itsm.view.itsmDetail", {
 			}
 		});
 	},
+
+	onCheckpointSaveButton: function( data ) {
+		this.fireEvent('setCheckpointCaseCommand', data );
+	}
+
 });

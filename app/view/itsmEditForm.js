@@ -8,6 +8,12 @@ Ext.define("itsm.view.itsmEditForm", {
 		layout: 'vbox'
 	},
 
+	requires: [
+		"Ext.form.FieldSet",
+		"Ext.form.Toggle",
+		"Ext.field.Select"
+	],
+
 	initialize: function () { // <<<
 		this.callParent(arguments);
 
@@ -15,6 +21,21 @@ Ext.define("itsm.view.itsmEditForm", {
 			xtype: 'textareafield',
 			label: 'Update:',
 			name: 'caseText',
+			labelWidth: '25%',
+			minHeight: '7em'
+		};
+
+		var toggleSynopsis = {
+			xtype: 'togglefield',
+			name: 'toggleSynopsis',
+			label: 'Replace synopsis?',
+			labelWidth: '25%',
+		};
+
+		var caseSynopsis = {
+			xtype: 'textareafield',
+			label: 'Synopsis:',
+			name: 'caseSynopsis',
 			labelWidth: '25%',
 			minHeight: '7em'
 		};
@@ -53,9 +74,11 @@ Ext.define("itsm.view.itsmEditForm", {
 		var formFrame = {
 			xtype: 'fieldset',
 			title: 'OTCS Case Update',
-			instructions: 'The text you type will be added to the description of the case in the central database.',
+			instructions: 'The text you type in Update field will be time stamped and added to the chronicles. Additionanly you can change the synopsis of the case in the database.',
 			items: [
-				caseText
+				caseText,
+				toggleSynopsis,
+				caseSynopsis
 			]
 		};	
 
@@ -84,9 +107,11 @@ Ext.define("itsm.view.itsmEditForm", {
 	 // >>>
 
 	onSaveButtonTap: function() {
-		var cn = "";
+		var cn = {};
 		try {
-			cn = this.getFields().caseText.getValue();
+			cn.chronicle = this.getFields().caseText.getValue();
+			cn.synopsis = this.getFields().caseSynopsis.getValue();
+			cn.flagUseSynopsis = this.getFields().toggleSynopsis.getValue();
 			if( cn.length == 0 ) {
 			  throw( { message: 'The length of the number is zero' } );	
 			}

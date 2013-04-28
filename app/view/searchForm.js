@@ -16,14 +16,14 @@ Ext.define("itsm.view.searchForm", {
 			xtype: 'textfield',
 			label: 'Case No.:',
 			name: 'caseNo',
-			labelWidth: '29%'
+			labelWidth: '25%'
 		};
 
 		var searchAll = {
 			xtype: 'togglefield',
 			name: 'searchAll',
 			label: 'Search all?',
-			labelWidth: '62%',
+			labelWidth: '25%',
 		};
 
 		var searchButton = {

@@ -11,6 +11,8 @@ Ext.define('itsm.model.desktopITSM', {
 		   { name: 'jira', type: 'string' },
 		   { name: 'project', type: 'string' },
 		   { name: 'rework', type: 'int' },
+		   { name: 'synopsis', type: 'string' },
+		   { name: 'update', type: 'string' },
 		   { name: 'start', type: 'string' },
 		   { name: 'id', type: 'int' }
 		]
