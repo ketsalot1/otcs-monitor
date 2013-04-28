@@ -4,11 +4,14 @@ var requestHandlers = require("./requestHandlers");
 var mongoHandlers = require("./mongoHandlers");
 
 var handle = {};
+handle['set_checkpoint'] = requestHandlers.setCheckpoint;
+handle['reset_checkpoint'] = requestHandlers.resetCheckpoint;
 handle['search'] = requestHandlers.search;
 handle['send'] = requestHandlers.send;
 handle['describe'] = requestHandlers.describe;
 handle['describe_ex'] = requestHandlers.describeEx; // IN PROGRESS - TODO
 handle['save'] = requestHandlers.save;
+handle['save_ex'] = requestHandlers.saveEx2;
 handle['update_case_info'] = requestHandlers.save; // convenience to 'save'
 handle['update_case_info_ex'] = requestHandlers.saveEx;
 handle['unlink'] = requestHandlers.unlink;

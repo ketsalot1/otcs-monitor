@@ -52,6 +52,7 @@ app/view/patchMgmtInsertForm.js \
 app/view/projectMgmtInsertForm.js \
 app/view/emailView.js \
 app/view/itsmCaseLinkForm.js \
+app/view/setCheckpointForm.js \
 styles/config.rb \
 styles/app.scss \
 service/all.data \

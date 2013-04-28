@@ -34,7 +34,9 @@ database.queries = (function() {
 //		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 //		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
-		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.case_01 like ? and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
+// TODO - blocked after introducing synopsis		
+//		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.case_01 like ? and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
+		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis" from t01_case t01, t04_project t04 where t01.case_01 like ? and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
 		"DBQ006": 'select name_02 "text", id_02 "value", DATE_FORMAT(release_02, "%m/%d/%Y") "eta" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ007": 'insert into t03_link (id_01, id_02) values ( ?,? );',
 		"DBQ008": 'select t03.id_01 "id", t02.name_02 "patch" from t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02;',
@@ -93,6 +95,11 @@ database.queries = (function() {
 		"DBQ041": 'insert into t09_hot values( ? );',
 		"DBQ042": 'delete from t09_hot where id_01 = ?;',
 		"DBQ043": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04, t09_hot t09 where t01.project_01 = t04.project_04 and t01.id_01 = t09.id_01 order by t01.case_01 asc;',
+
+		"DBQ044": 'update t01_case set description_01 = ?, modified_01 = CURDATE(), synopsis_01 = ? where id_01 = ?;',
+
+		"DBQ045": 'update t01_case set next_update_01 = NULL where case_01 = ?;',
+		"DBQ046": 'update t01_case set next_update_01 = ? where case_01 = ?;',
 
 		"DBQ999": 'nope'
 	};
@@ -1238,6 +1245,70 @@ function saveEx( callback, dataObj, res ) {
 // >>>
 
 
+// TODO - IN PROGRESS
+function saveEx2( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var d = new Date();
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		data.caseId = database.tools.filter( data.caseId );
+		data.caseId = data.caseId * 1;
+		if( isNaN(data.caseId) ) {
+			throw({ "message": 'Case ID Invalid: the case id is empty or not a decimal number. Use digits only' } );
+		}	
+		if( data.caseTxt.length == 0  ) {
+			throw({ "message": 'Missing data: cannot find any text to add to the case.' } );
+		}	
+		data.flagSynopsis = data.flagSynopsis * 1;
+		if( isNaN(data.flagSynopsis) ) {
+			throw( {"message": 'cannot interpret the flag for update of synopsis.'} );
+		}	
+		data.caseTxt = database.tools.toLocalDate(d) + ' - ' + data.caseTxt;
+		logger.trace('requestHandler.save: (' + data.caseId + ') ' + data.caseNo + ": " + data.caseTxt );
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ009, [data.caseId], function (error, rows, fields) {
+			if( error ) { 
+				database.tools.response_error(error.toString(), res );
+				return;
+			}
+			if( rows.length != 1 ) {
+				database.tools.response_error("Too many or too few entries returned. Check database table T01_CASE", res );
+				return;
+			}
+			details = data.caseTxt + "\n" + rows[0].details;
+			if( data.flagSynopsis ) { // update the synopsis as well
+				connection.query(database.queries.DBQ044, [details, data.caseSynopsis, data.caseId], function (error, info) {
+					if( !error ) { 
+						resp.code = "1000";
+						resp.message = "OK";
+					}
+
+					database.tools.cb_response_create( error, resp, res, callback ); 
+				});
+			} else {
+				connection.query(database.queries.DBQ010, [details, data.caseId], function (error, info) {
+					if( !error ) { 
+						resp.code = "1000";
+						resp.message = "OK";
+					}
+
+					database.tools.cb_response_create( error, resp, res, callback ); 
+				});
+			}
+		});
+	} 
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
+
 // DONE
 function linkPatch( callback, data, res ) {
 // <<<
@@ -1629,6 +1700,7 @@ function archivePatch( callback, dataObj, res ) {
 }
 // >>>
 
+
 // DONE
 function archiveCase( callback, dataObj, res ) {
 // <<<
@@ -1663,6 +1735,81 @@ function archiveCase( callback, dataObj, res ) {
 	}
 }
 // >>>
+
+
+// TODO - IN PROGRESS
+function setCheckpoint( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.setCheckpoint: (' + data.caseNo + '), next update on: ' + data.nextUpdate  );
+		var connection = database.tools.getConnection();
+		data.caseNo = data.caseNo * 1;
+		if( isNaN(data.caseNo) ) {
+			throw( { "message": 'Case Number Invalid: the case number is empty or not a decimal number. Use digits only' } );
+		}	
+
+		data.nextUpdate = database.tools.toDBDate(database.tools.parseDate(data.nextUpdate));
+
+		connection.query(database.queries.DBQ046, [data.nextUpdate, data.caseNo], function (error, info) {
+			if( !error ) { 
+				logger.trace('requestHandler.setCheckpoint: updated with code: ' + info.insertId );
+				logger.trace('requestHandler.setCheckpoint: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+				resp.value = info.affectedRows;
+				resp.message = info.message || "OK";
+				resp.code = "200";
+				logger.trace('requestHandler.save: response object flushed to client' );
+			}
+			database.tools.cb_response_create( error, resp, res, callback ); 
+		});
+	} 
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
+
+// TODO - IN PROGRESS
+function resetCheckpoint( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var d = new Date();
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.resetCheckpoint: (' + data.caseNo + ') ' );
+		var connection = database.tools.getConnection();
+		data.caseNo = data.caseNo * 1;
+		if( isNaN(data.caseNo) ) {
+			throw( { "message": 'Case Number Invalid: the case number is empty or not a decimal number. Use digits only' } );
+		}	
+		connection.query(database.queries.DBQ045, [data.caseNo], function (error, info) {
+			if( !error ) { 
+				logger.trace('requestHandler.resetCheckpoint: updated with code: ' + info.insertId );
+				logger.trace('requestHandler.resetCheckpoint: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+				resp.value = info.affectedRows;
+				resp.message = info.message || "OK";
+				resp.code = "200";
+				logger.trace('requestHandler.save: response object flushed to client' );
+			}
+			database.tools.cb_response_create( error, resp, res, callback ); 
+		});
+	} 
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
 
 function save_to_file( callback, dataObj, res ) {
 // <<<
@@ -2529,12 +2676,15 @@ function getFeed_backup( callback, list, res ) {
 
 
 
+exports.setCheckpoint = setCheckpoint;
+exports.resetCheckpoint = resetCheckpoint;
 exports.search = search;
 exports.describe = describe;
 exports.describeEx = describeEx; // IN PROGRESS - TODO
 exports.send = send;
 exports.save = save;
 exports.saveEx = saveEx;
+exports.saveEx2 = saveEx2;
 exports.unlink = unlink;
 exports.queryDB = queryDB;
 exports.testDB = testDB;

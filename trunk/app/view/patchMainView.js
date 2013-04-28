@@ -8,6 +8,10 @@ Ext.define("itsm.view.patchMainView", {
 		}
 	},
 
+	requires: [
+		"Ext.field.DatePicker"
+	],
+
 	initialize: function () { // <<<
 		this.callParent(arguments);
 
