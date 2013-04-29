@@ -6,6 +6,7 @@ var mongoHandlers = require("./mongoHandlers");
 var handle = {};
 handle['set_checkpoint'] = requestHandlers.setCheckpoint;
 handle['reset_checkpoint'] = requestHandlers.resetCheckpoint;
+handle['get_checkpoints'] = requestHandlers.sendCheckpoints;
 handle['search'] = requestHandlers.search;
 handle['send'] = requestHandlers.send;
 handle['describe'] = requestHandlers.describe;
