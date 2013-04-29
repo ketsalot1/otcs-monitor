@@ -12,7 +12,7 @@ Ext.define('itsm.model.desktopITSM', {
 		   { name: 'project', type: 'string' },
 		   { name: 'rework', type: 'int' },
 		   { name: 'synopsis', type: 'string' },
-		   { name: 'update', type: 'string' },
+		   { name: 'checkpoint', type: 'string' },
 		   { name: 'start', type: 'string' },
 		   { name: 'id', type: 'int' }
 		]

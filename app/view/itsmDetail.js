@@ -374,6 +374,18 @@ Ext.define("itsm.view.itsmDetail", {
 					</div> \
 					<div class=\"custom-details-table right\"> \
 						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Update on:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('checkpoint') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Checkpoint:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('checkpoint') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
 							<div class=\"custom-details-cell-name left\">Reworking:</div> \
 							<div class=\"custom-details-cell-value left\">" + post.get('rework') + "</div> \
 						</div> \
@@ -432,6 +444,18 @@ Ext.define("itsm.view.itsmDetail", {
 						<div class=\"custom-details-row\"> \
 							<div class=\"custom-details-cell-name\">Project:</div> \
 							<div class=\"custom-details-cell-value\">" + post.get('project') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Update on:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('checkpoint') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Checkpoint:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('checkpoint') + "</div> \
 						</div> \
 					</div> \
 					<div class=\"custom-details-table right\"> \
