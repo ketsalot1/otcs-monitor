@@ -8,6 +8,7 @@ handle['set_checkpoint'] = requestHandlers.setCheckpoint;
 handle['reset_checkpoint'] = requestHandlers.resetCheckpoint;
 handle['get_checkpoints'] = requestHandlers.sendCheckpoints;
 handle['search'] = requestHandlers.search;
+handle['search_text'] = requestHandlers.searchText;
 handle['send'] = requestHandlers.send;
 handle['describe'] = requestHandlers.describe;
 handle['describe_ex'] = requestHandlers.describeEx; // IN PROGRESS - TODO
@@ -54,7 +55,7 @@ handle['mdb_cursor'] = mongoHandlers.cursorMDB;
 handle['mdb_insert_mail'] = mongoHandlers.insertMailMDB;
 handle['mdb_remove_mail'] = mongoHandlers.removeMailMDB;
 handle['mdb_retrieve_emails'] = mongoHandlers.retrieveEmailsFromMDB;
-handle['mdb_retrieve_email_count'] = mongoHandlers.retrieveEmailCountFromMDB
+handle['mdb_retrieve_email_count'] = mongoHandlers.retrieveEmailCountFromMDB;
 
 handle['get_feed'] = mongoHandlers.retrieveRecentEmailsFromMDB;
 

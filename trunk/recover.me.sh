@@ -6,7 +6,7 @@ if [ $COUNT -eq 0 ] ; then
    echo -n "Found : "
    echo -n $COUNT
    echo " instances of ITSM server. Server died unexpectedly, restarting"
-   cd /home/martinme/Documents/Develop/google/itsm/service/nodejs
+   cd /home/martinme/Develop/google/itsm/service/nodejs
    nohup /usr/local/bin/node --debug ./itsm.js --config ./config.json &
 else
    if [ $COUNT -eq 1 ] ; then

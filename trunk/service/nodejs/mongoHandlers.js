@@ -438,6 +438,41 @@ function selectMDB( callback, data, res ) {
 }
 // >>>
 
+function searchTextInEmailsMDB( callback, data, res ) {
+// <<<
+	try {
+		var query;
+		var r = {};
+		r.entries = [];
+
+		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
+			try {
+				if( err ) throw err;
+				var collection = db.collection('test');
+				query = { "mailSubject": new RegExp( data, 'i' ) };
+				collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+					r.code = 200;
+					r.message = "OK";
+					r.entries = docs;
+					sql.searchTextDump( callback, JSON.stringify(r), res );
+  		    	});
+			}
+			catch(e) {
+				r.code=404;
+				r.message = e.message;
+				sql.searchTextDump( callback, JSON.stringify(r), res );
+			}
+      });
+	}
+	catch(e) {
+		r.code=404;
+		r.message = e.message;
+		sql.searchTextDump( callback, JSON.stringify(r), res );
+	}
+}
+// >>>
+//
+
 // <<<
 /* 
 var Db = require('mongodb').Db
@@ -554,3 +589,5 @@ exports.removeMailMDB = removeMailMDB;
 exports.retrieveEmailsFromMDB = retrieveEmailsFromMDB; 
 exports.retrieveEmailCountFromMDB = retrieveEmailCountFromMDB;
 exports.retrieveRecentEmailsFromMDB = retrieveRecentEmailsFromMDB;
+exports.searchTextInEmailsMDB = searchTextInEmailsMDB
+

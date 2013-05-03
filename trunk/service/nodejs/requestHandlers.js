@@ -543,6 +543,93 @@ function search( callback, data, res ) {
 // >>>
 
 
+function searchText( callback, data, res ) {
+// <<<
+	var dataObj;
+
+	try {
+		dataObj = JSON.parse(data);
+		mongo.searchTextInEmailsMDB( callback, dataObj.pattern, res );
+	}
+	catch(e){
+		database.tools.response_error( e.message, res );
+	}
+} // >>>
+
+
+// TODO - IN PROGRESS
+function searchTextDump( callback, data, res ) {
+// <<<
+	var cases = [];
+	var dataObj;
+	var listObj;
+	var list;
+	var q;
+	var connection;
+	var patternS = "";
+	var patternA = [];
+
+	try {
+		dataObj = JSON.parse(data);
+		if( dataObj.code != 200 )
+			throw( {'message' : dataObj.message} );
+		for( var iterator in dataObj.entries ) {
+			patternA[iterator] = dataObj.entries[iterator].caseNo;
+		}
+		patternS = patternA.join();
+
+		logger.trace('requestHandler.searchText for patern: >' + patternS + '<');
+		q = database.queries.DBQ036a + patternS + database.queries.DBQ036b;
+		connection = database.tools.getConnection();
+		connection.query(q, function (error, rows, fields) {
+			if( error ) { 
+				database.tools.response_error(error.toString(), res );
+				return;
+			}
+			logger.trace('requestHandler: search found >' + rows.length + '< cases' );
+			cases = rows;
+			logger.trace('requestHandler: search running second quesry for patch information ...');
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+				if( !error ) { 
+					for ( var iterator in cases ) {
+						cases[iterator].icon= "resources/images/iQuestion.png";
+						cases[iterator].leaf="true";
+						cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
+						cases[iterator].patches = "&nbsp;";
+						for ( var iter in rows ) {
+							if( cases[iterator].id != rows[iter].id ) continue; 
+							logger.trace( 'requestHandler: search found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+							cases[iterator].patches += rows[iter].patch;
+							cases[iterator].patches += ", ";
+						}
+					}
+
+					connection.query(database.queries.DBQ039, function (error, rows, fields) {
+						if( !error ) { 
+							for ( var iterator in cases ) {
+								for ( var iter in rows ) {
+									if( cases[iterator].case != rows[iter].src ) continue; 
+									logger.trace( 'requestHandler: search found rework entry (' + rows[iter].ref + ') for case (' + cases[iterator].case + ')' );
+									cases[iterator].rework = rows[iter].ref;
+								}
+							}
+						}	
+						database.tools.cb_response_fetch( error, cases, fields, res, callback );
+					});
+
+				} else {
+					database.tools.cb_response_fetch( error, cases, fields, res, callback );
+				}
+			});
+		});
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
+
 // TODO - IN PROGRESS
 function sendCheckpoints( callback, res ) {
 // <<<
@@ -1339,7 +1426,7 @@ function saveEx( callback, dataObj, res ) {
 // >>>
 
 
-// TODO - IN PROGRESS
+// DONE
 function saveEx2( callback, dataObj, res ) {
 // <<<
 	var fileText;
@@ -1483,7 +1570,7 @@ function favorites( callback, data, res ) {
 // >>>
 
 
-// TODO - IN PROGRESS
+// DONE
 function hotfixes( callback, data, res ) {
 // <<<
 	var resp = {};
@@ -1526,7 +1613,7 @@ function hotfixes( callback, data, res ) {
 // >>>
 
 
-// TODO - IN PROGRESS
+// DONE
 function sendHotfixes( callback, res ) {
 // <<<
 	var cases = [];
@@ -1831,7 +1918,7 @@ function archiveCase( callback, dataObj, res ) {
 // >>>
 
 
-// TODO - IN PROGRESS
+// DONE
 function setCheckpoint( callback, dataObj, res ) {
 // <<<
 	var fileText;
@@ -1869,7 +1956,7 @@ function setCheckpoint( callback, dataObj, res ) {
 // >>>
 
 
-// TODO - IN PROGRESS
+// DONE
 function resetCheckpoint( callback, dataObj, res ) {
 // <<<
 	var fileText;
@@ -2058,7 +2145,7 @@ function insertRework( callback, dataObj, res ) {
 // >>>
 
 
-// IN PROGRESS - TODO
+// DONE
 function sendRework( callback, res ) {
 // <<<
 	var cases, referred;
@@ -2237,6 +2324,7 @@ function sendRework( callback, res ) {
 }
 // >>>
 
+
 // DONE
 function newPatch( callback, dataObj, res ) {
 // <<<
@@ -2262,6 +2350,7 @@ function newPatch( callback, dataObj, res ) {
 	}
 }
 // >>>
+//
 
 
 // DONE
@@ -2773,6 +2862,8 @@ function getFeed_backup( callback, list, res ) {
 exports.setCheckpoint = setCheckpoint;
 exports.resetCheckpoint = resetCheckpoint;
 exports.search = search;
+exports.searchText = searchText;
+exports.searchTextDump = searchTextDump;
 exports.describe = describe;
 exports.describeEx = describeEx; // IN PROGRESS - TODO
 exports.send = send;

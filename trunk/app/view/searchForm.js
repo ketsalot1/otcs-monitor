@@ -14,16 +14,23 @@ Ext.define("itsm.view.searchForm", {
 
 		var searchCase = {
 			xtype: 'textfield',
-			label: 'Case No.:',
+			label: 'Case No. or Text:',
 			name: 'caseNo',
-			labelWidth: '25%'
+			labelWidth: '33%'
 		};
 
 		var searchAll = {
 			xtype: 'togglefield',
 			name: 'searchAll',
-			label: 'Search all?',
-			labelWidth: '25%',
+			label: 'Search closed?',
+			labelWidth: '33%',
+		};
+
+		var searchAsText = {
+			xtype: 'togglefield',
+			name: 'searchAsText',
+			label: 'Full Text Search?',
+			labelWidth: '33%',
 		};
 
 		var searchButton = {
@@ -49,10 +56,11 @@ Ext.define("itsm.view.searchForm", {
 		var formFrame = {
 			xtype: 'fieldset',
 			title: 'OTCS Case Search',
-			instructions: 'Search for specific OTCS ticket. Enter the 5 digit number and press search button. Use "search all" toggle field if you want include in search archived cases.',
+			instructions: 'Search for specific OTCS ticket. Enter the 5 digit number and press search button. Use "search all" toggle field if you want include in search archived cases. Use switch "Full Text Search to search the tickets for specific pattern.',
 			items: [
 				searchCase,
-				searchAll
+				searchAll,
+				searchAsText
 			]
 		};	
 
@@ -85,8 +93,9 @@ Ext.define("itsm.view.searchForm", {
 		try {
 			cn.caseNo = this.getFields().caseNo.getValue();
 			cn.searchAll = this.getFields().searchAll.getValue();
+			cn.searchAsText = this.getFields().searchAsText.getValue();
 			if( cn.caseNo.length == 0 ) {
-			  throw( { message: 'The length of the number is zero' } );	
+			  throw( { message: 'No search pattern' } );	
 			}
 			console.log("view.searchForm.searchButtonTap: >" + cn.caseNo + "<" );
 			this.fireEvent('searchCaseCommand', cn );

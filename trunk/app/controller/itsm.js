@@ -696,7 +696,10 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			hostName = data[0];
 
-			s.getProxy().setUrl( hostName + '?cmd=search&data={"pattern":"' + params.caseNo + '","searchAll": "' + params.searchAll + '"}' );
+			if( params.searchAsText == 1 )
+				s.getProxy().setUrl( hostName + '?cmd=search_text&data={"pattern":"' + params.caseNo + '","searchAll": "' + params.searchAll + '"}' );
+			else
+				s.getProxy().setUrl( hostName + '?cmd=search&data={"pattern":"' + params.caseNo + '","searchAll": "' + params.searchAll + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 
 			s.load();

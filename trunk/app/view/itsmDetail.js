@@ -615,6 +615,7 @@ Ext.define("itsm.view.itsmDetail", {
 								this.setUIfromMask( lm );
 								lm.caseNo = opentext.data.activeCase.rework;
 								lm.searchAll = 1;
+								lm.searchAsText = 0;
 								var nl = Ext.getCmp('detailPanel');
 								nl.traverse = true;
 								// Nasty way to get back to root node in the nested list
