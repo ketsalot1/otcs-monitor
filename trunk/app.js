@@ -33,7 +33,8 @@ Ext.application({
 		'projectMgmtInsertForm',
 		'emailView',
 		'setCheckpointForm',
-		'itsmCaseLinkForm'
+		'itsmCaseLinkForm',
+		'setCaseStatusForm'
 	],
 
 	icon: {
@@ -118,7 +119,10 @@ Ext.application({
 		};
 		var setCheckpointForm = {
 				xtype: 'setcheckpointform'
-		}
+		};
+		var setCaseStatusForm = {
+				xtype: 'setcasestatusform'
+		};
 
 		Ext.getStore('settings').load();
 //		console.log( 'Main, retrieved conf: ' + Ext.getStore('settings').getAt(0).get('settingsContainer')[0] );
@@ -126,7 +130,7 @@ Ext.application({
 		// Initialize the main view
 //		Ext.Viewport.add( {xtype: 'mainlistcontainer'});
 //		Ext.Viewport.add( mainListContainer);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms,itsmJiraAssignForm,emailView,itsmCaseLinkForm,setCheckpointForm]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms,itsmJiraAssignForm,emailView,itsmCaseLinkForm,setCheckpointForm,setCaseStatusForm]);
 		Ext.Viewport.setActiveItem(mainListContainer);
 	},
 

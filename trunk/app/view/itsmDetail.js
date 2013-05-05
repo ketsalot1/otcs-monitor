@@ -710,7 +710,7 @@ Ext.define("itsm.view.itsmDetail", {
 															// element: 'element', // this one does not work. It only duplicates the count of calls to handler,
 															tap: function() {
 																console.log("onCheckpointSaveButtonTap handler called");
-																// Thogh this Panel view is constructed as an model dialog inside the main view 
+																// Though this Panel view is constructed as an modal dialog inside the main view 
 																// as an internal element, it cannot use the path traversal (getParent()) to get
 																// reference to the main view. Uses the global function to look up the main view
 																// and use it as an owner for trigerring an event. Such an even is than visible
@@ -739,6 +739,101 @@ Ext.define("itsm.view.itsmDetail", {
 									this.checkpoint = Ext.Viewport.add(checkpointSheet);
 								}	
 								this.checkpoint.show();
+							}
+						}
+					},
+					{
+						text: 'set status text',
+						scope: this,
+						handler: function() {
+							this.rework.hide();	
+							if( typeof opentext.data.activeCase == 'object' ) { 
+								lm.back = 0;
+								lm.ctrls = 1;
+								this.setUIfromMask( lm );
+
+								if( !this.statustext ) {
+									var statusSheet = Ext.create('Ext.Panel', {
+	 									alias: "widget.setstatusctionpanel",
+										xtype: "setstatusactionpanel",
+										scope: this,
+										modal: true,
+										hideOnMaskTap: false,
+										showAnimation: {
+											type: 'popIn',
+											duration: 250,
+											easing: 'ease-out'
+										},
+										hideAnimation: {
+											type: 'popOut',
+											duration: 250,
+											easing: 'ease-out'
+										},
+										centered: true,
+										width: Ext.os.deviceType == 'Phone' ? 260 : 400,
+										height: Ext.os.deviceType == 'Phone' ? 230 : 230,
+	    								items: [
+											{
+												xtype: 'toolbar',
+												title: '',
+												docking: 'top',
+												scope: this,
+												items: [
+													{
+														xtype: "button",
+														ui: "back",
+														text: "Back",
+														scope: this,
+														listeners: {
+														//	tap: { fn: this.onCheckpointBackButtonTap, scope: this }
+															tap: function() {
+																console.log("onSetStatusBackButtonTap handler called");
+																this.getParent().getParent().hide();
+															}
+
+														}
+													},
+													{
+														xtype: 'spacer'
+													},
+													{
+														xtype: "button",
+														ui: "action",
+														text: "Save",
+														scope: this,
+														listeners: {
+															// element: 'element', // this one does not work. It only duplicates the count of calls to handler,
+															tap: function() {
+																console.log("onSetStatusSaveButtonTap handler called");
+																// Though this Panel view is constructed as an modal dialog inside the main view 
+																// as an internal element, it cannot use the path traversal (getParent()) to get
+																// reference to the main view. Uses the global function to look up the main view
+																// and use it as an owner for trigerring an event. Such an even is than visible
+																// in the global controller.
+																var dt = Ext.getCmp('itsmDetail');
+																dt.fireEvent( 'setCaseStatusTextCommand', opentext.data.activeCase );
+
+																// Using propagation through an internal even handler,
+																// dt.fireEvent( 'customEvent', opentext.data.activeCase );
+																
+																// Using function call on the view level. The view function can than
+																// call the event registered with the main controller.
+																// dt.onCheckpointSaveButton( opentext.data.activeCase );
+															
+																this.getParent().getParent().hide();
+															}
+														}
+													}
+												]
+											},
+											{
+												xtype: 'setcasestatusform'
+											}
+										]
+									});
+									this.statustext = Ext.Viewport.add(statusSheet);
+								}	
+								this.statustext.show();
 							}
 						}
 					}

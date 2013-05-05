@@ -53,6 +53,7 @@ app/view/projectMgmtInsertForm.js \
 app/view/emailView.js \
 app/view/itsmCaseLinkForm.js \
 app/view/setCheckpointForm.js \
+app/view/setCaseStatusForm.js \
 styles/config.rb \
 styles/app.scss \
 service/all.data \
