@@ -29,7 +29,8 @@ Ext.define("itsm.controller.itsm", {
 			emailView: "emailview",
 			patchMgmtView: "patchmainview",
 			checkpointActionPanel: "checkpointactionpanel",
-			checkpointForm: '#setCheckpointFormId' // Refer the form by ID.
+			checkpointForm: '#setCheckpointFormId', // Refer the form by ID.
+			statusForm: '#setCaseStatusFormId' // Refer the form by ID.
 		},
 		control: {
 			mainListContainer: {
@@ -52,7 +53,8 @@ Ext.define("itsm.controller.itsm", {
 				detailShowEmailsCommand: "onShowEmails",
 				searchCaseCommand: 'onSearchCase',
 				setCheckpointCaseCommand: 'onSetCheckpoint',
-				resetCheckpointCaseCommand: 'onResetCheckpoint'
+				resetCheckpointCaseCommand: 'onResetCheckpoint',
+				setCaseStatusTextCommand: 'onSetCaseStatus',
 			},
 			checkpointActionPanel: {
 				setCheckpointCaseCommand: 'onSetCheckpoint',
@@ -240,6 +242,43 @@ Ext.define("itsm.controller.itsm", {
 			var value = this.getCheckpointForm().getFields().checkpoint.getFormattedValue();
 	
 			s.getProxy().setUrl( hostName + '?cmd=set_checkpoint&data={"caseNo": "' + caseNo.case  + '", "nextUpdate": "' + value  + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load( function( record, operation, success ) {
+				var txt = "0";
+				if( success ) {
+					txt = record[0].getData().value;
+					if( (txt * 1 ) !== 1 )
+						Ext.Msg.alert('Error', 'Checkpoint not set.', Ext.emptyFn);
+				}
+			});
+	
+			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
+//			this.activateMainView();
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+	// >>>
+
+	onSetCaseStatus : function(caseNo) {
+	// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('db');
+		var rec, data, hostName;
+	
+		console.log("controller.itsm.onSetCaseStatus: requesting Case status for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
+	
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			// Accessing the form over its reference in the main  controller. This requires 
+			// entry in the 'refs' section and Id set for the specific form (setCaseStatusFormId)
+			var value = this.getStatusForm().getFields().status.getValue();
+	
+			s.getProxy().setUrl( hostName + '?cmd=set_case_status&data={"caseNo": "' + caseNo.case  + '", "caseStatus": "' + value  + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load( function( record, operation, success ) {
 				var txt = "0";

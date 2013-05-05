@@ -17,9 +17,17 @@ if [ $[$BASE+$DAY] -le 0 ]; then
 fi
 DAY=$[$BASE+$DAY]
 BACKUPSQL=`date +"/home/martinme/Ubuntu One/My Backups/%Y%m____-backup-itsm.sql"`
-BACKUPSQL=`echo $BACKUPSQL | sed -e "s/____/${DAY}/g"` 
+if [ ${DAY} -lt 10 ]; then
+	BACKUPSQL=`echo $BACKUPSQL | sed -e "s/____/0${DAY}/g"` 
+else
+	BACKUPSQL=`echo $BACKUPSQL | sed -e "s/____/${DAY}/g"` 
+fi
 BACKUPMNG=`date +"/home/martinme/Ubuntu One/My Backups/%Y%m____-backup-mongo/itsm"`
-BACKUPMNG=`echo $BACKUPMNG | sed -e "s/____/${DAY}/g"` 
+if [ ${DAY} -lt 10 ]; then
+	BACKUPMNG=`echo $BACKUPMNG | sed -e "s/____/0${DAY}/g"` 
+else
+	BACKUPMNG=`echo $BACKUPMNG | sed -e "s/____/${DAY}/g"` 
+fi
 
 if [ -f "$BACKUPSQL" ]; then
 	echo Found restore source for MySQL: $BACKUPSQL
