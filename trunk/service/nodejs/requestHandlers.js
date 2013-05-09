@@ -32,7 +32,7 @@ database.queries = (function() {
 //		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ003": 'select name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
 //		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
-		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
+		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description", t01.jira_01 as "jira" from t01_case t01, t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 //		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
 // TODO - blocked after introducing synopsis		
 //		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project" from t01_case t01, t04_project t04 where t01.case_01 like ? and t01.project_01 = t04.project_04 order by t01.case_01 asc;',
@@ -1050,6 +1050,9 @@ function sendPatches( callback, res ) {
 							for ( var cntr in rows ) {
 								if( results[iterator].patch != rows[cntr].patch ) continue;
 								results[iterator].details += "<li>";
+								results[iterator].details += "(";
+								results[iterator].details += rows[cntr].jira;
+								results[iterator].details += ") ";
 								results[iterator].details += rows[cntr].description;
 								logger.trace('requestHandler.preparePatches: adding case >' + rows[cntr].description + '< to patch >' + results[iterator].description + '<' );
 								results[iterator].details += "</li>";

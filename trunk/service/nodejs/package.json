@@ -1,0 +1,23 @@
+{
+  "name": "Mobile OTCS",
+  "version": "0.1.0",
+  "description": "Server component to generate data for Sencha Touch 2.0 ITSM Monitor application.",
+  "keywords": [
+    "ITSM",
+    "OTCS"
+  ],
+  "author": {
+    "name": "Martin Metal",
+    "email": "martin.metal@opentext.com"
+  },
+  "engines": [
+    "node >=0.8.0",
+    "npm >= 1.1.65"
+  ],
+  "dependencies": {
+    "configure": "0.0.1"
+    "log4js": "0.5.6"
+    "mongodb": "1.2.x"
+    "mysql": "2.0.x"
+  }
+}
