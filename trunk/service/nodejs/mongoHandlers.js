@@ -471,7 +471,49 @@ function searchTextInEmailsMDB( callback, data, res ) {
 	}
 }
 // >>>
-//
+
+function countTodaysFeed( callback, res ) {
+// <<<	
+	try {
+		var feedInput = {};
+		var pattern = "";
+		var response = "";
+		var t = new Date();
+		var day;
+		var query;
+				
+		feedInput.entries = [];
+
+		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
+			if(err) throw err;
+
+			var collection = db.collection('test');
+
+			if( t.getDay() == 0 )
+				t.setDate(t.getDate() - 1);
+			if( t.getDay() == 6 )
+				t.setDate(t.getDate() - 1);
+			day = t.getDate();
+			if( day < 10 ) {
+				pattern = "0" + day.toString();
+			} else {
+				pattern = day.toString();
+			}
+			pattern = pattern + "." + (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString();
+			query = { "sentOn": new RegExp('^' + pattern ) };
+
+			collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+				if( err ) throw err;
+
+				var pattern = JSON.stringify(docs);
+				sql.sendCheckpoints( callback, pattern, res );
+			});
+		});
+	}
+	catch(e) {
+	}
+}
+// >>>
 
 // <<<
 /* 
@@ -590,4 +632,5 @@ exports.retrieveEmailsFromMDB = retrieveEmailsFromMDB;
 exports.retrieveEmailCountFromMDB = retrieveEmailCountFromMDB;
 exports.retrieveRecentEmailsFromMDB = retrieveRecentEmailsFromMDB;
 exports.searchTextInEmailsMDB = searchTextInEmailsMDB
+exports.countTodaysFeed = countTodaysFeed
 
