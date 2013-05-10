@@ -1,5 +1,5 @@
 {
-  "name": "Mobile OTCS",
+  "name": "mOTCS",
   "version": "0.1.0",
   "description": "Server component to generate data for Sencha Touch 2.0 ITSM Monitor application.",
   "keywords": [
@@ -15,9 +15,9 @@
     "npm >= 1.1.65"
   ],
   "dependencies": {
-    "configure": "0.0.1"
-    "log4js": "0.5.6"
-    "mongodb": "1.2.x"
+    "configure": "0.0.1",
+    "log4js": "0.5.6",
+    "mongodb": "1.2.x",
     "mysql": "2.0.x"
   }
 }

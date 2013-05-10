@@ -57,6 +57,10 @@ node-inspector@0.2.0beta3 /usr/local/lib/node_modules/node-inspector
         Debugging experience is great, ecactly the saem as using the script in
         your HTML projects.
 
+		  Start node-inspector like this:
+
+		  node-inspector --web-port=8686
+
 
 2. Configure Reverse proxy:
 
@@ -154,5 +158,42 @@ Appending B - additional modules installed to Node.js
 		
 		BACKUP=`date +"/home/martinme/Ubuntu One/My Backups/%Y%m%d-backup-mongo"`
 		/usr/local/bin/mongodump --collection test --db itsm --out "$BACKUP"
+
+6. Installation and deployment:
+
+	Server side:
+	
+		Install node.js server. Standard distribution requires to compile the copy
+		of the server. The readme file says what tools are required, just for
+		complition:
+
+			- make 3.81 (is part of standard distribution)
+			- Python 2.7 (is part of standard distribution)
+			- gcc (is part of standard distribution)
+			- g++ (apt-get install g++)
+
+		Follow the readme file:
+
+			./configure
+			make
+			make install
+
+		And the node.js and npm are installed in the /usr/ folder.
+
+		- copy the application logic file in the installation directory.
+		  The application log is usually stored in multiple files, one of them is
+		  the main file.
+	
+		- Navigate to the folder with application logic and type command:
+
+			sudo npm install
+
+		  This will take the package.jspn file and install all required
+		  dependencies in the folder node_modules. After that you can alrewady
+		  start your application 
+
+			node my_app.js
+
+
 
 
