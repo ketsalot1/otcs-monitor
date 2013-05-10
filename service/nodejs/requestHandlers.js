@@ -101,8 +101,8 @@ database.queries = (function() {
 		"DBQ045": 'update t01_case set next_update_01 = NULL where case_01 = ?;',
 		"DBQ046": 'update t01_case set next_update_01 = ? where case_01 = ?;',
 
-		"DBQ047": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.next_update_01 is not NULL and t01.next_update_01 >= CURDATE() order by t01.case_01 asc;',
-		"DBQ048": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.next_update_01 is not NULL and t01.next_update_01 < CURDATE() order by t01.case_01 asc;',
+		"DBQ047": 'select t01.id_01 "id", t01.case_01 "case", CONCAT( "(", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y"),") - ", t01.subject_01) as "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.next_update_01 is not NULL and t01.next_update_01 > CURDATE() order by t01.next_update_01 asc;',
+		"DBQ048": 'select t01.id_01 "id", t01.case_01 "case", CONCAT( "(", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y"),") - ", t01.subject_01) as "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.next_update_01 is not NULL and t01.next_update_01 <= CURDATE() order by t01.next_update_01 asc;',
 
 		"DBQ999": 'nope'
 	};
@@ -631,11 +631,26 @@ function searchTextDump( callback, data, res ) {
 
 
 // TODO - IN PROGRESS
-function sendCheckpoints( callback, res ) {
+function sendCheckpoints( callback, pattern, res ) {
 // <<<
 	var cases = [];
 	var temp = [];
 	var connection;
+	var listObj;
+	var listStr;
+	var tmpA = [];
+
+	try {
+		listObj = JSON.parse( pattern );
+		for ( var iterator in listObj ) {
+			tmpA.push(listObj[iterator].caseNo);
+		}
+		listStr = tmpA.join(',');
+	}
+	catch(e) {
+		logger.warn('requestHandler: sendCheckpoint > no list of cases delivered from mongo. No feeds.<' );
+		listStr = "--nope--";
+	}
 
 	try {
 		logger.trace('requestHandler.getCheckpoint for patern:');
@@ -657,7 +672,10 @@ function sendCheckpoints( callback, res ) {
 				}
 				logger.trace('requestHandler: getCheckpoint found >' + rows.length + '< cases with missed update' );
 				for ( var iterator in rows ) {
-					rows[iterator].icon= "resources/images/iOutdated1.png";
+					if( listStr.indexOf(rows[iterator].case) == -1 )
+						rows[iterator].icon= "resources/images/iOutdated1.png";
+					 else 
+						rows[iterator].icon= "resources/images/iUpdated.png";
 				}
 				cases = temp.concat(rows);
 				connection.query(database.queries.DBQ008, function (error, rows, fields) {
@@ -1007,7 +1025,8 @@ function send( callback, data, res ) {
 			return;
 		}
 		if( dataObj.dataName == "Checkpoints" ) {
-			sendCheckpoints( callback, res );
+			mongo.countTodaysFeed( callback, res );
+//			sendCheckpoints( callback, res );
 			return;
 		}
 		if( dataObj.dataName == "Feed" ) {
