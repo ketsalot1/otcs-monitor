@@ -2959,23 +2959,68 @@ function getFeed( callback, list, res ) {
 											R.support_data.feed.entries[3].support_data.feed.entries[iterator].id =  R.support_data.feed.entries[3].support_data.feed.entries[iterator].id | 0xC000;  
 										}
 										// >>>
+
+										// <<< -----> 5th level v
+										R.support_data.feed.entries[4] = {};
+										R.support_data.feed.entries[4].icon = "resources/images/iCalendar2.png";
+										R.support_data.feed.entries[4].description = listObj.entries[4].dateStr;
+										R.support_data.feed.entries[4].support_data = {};
+										R.support_data.feed.entries[4].support_data.feed = {};
+										R.support_data.feed.entries[4].support_data.feed.title = "support data";
+										R.support_data.feed.entries[4].support_data.feed.entries = [];
+								
+										if( listObj.entries[4].searchStr.length == 0 ) 
+											listObj.entries[4].searchStr= "999999999"; // set non-null but non-existent string.
+										var query = database.queries.DBQ036a + listObj.entries[4].searchStr + database.queries.DBQ036b;
+										connection.query(query, function (error, rows, fields) {
+											if( error ) { 
+												database.tools.response_error(error.toString(), res );
+												return;
+											}
+											// Add terminators (leaf property) in the generated list and
+											// process details. Convert the line breaks into HTML markup.
+											logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
+											R.support_data.feed.entries[4].support_data.feed.entries = rows;
+											connection.query(database.queries.DBQ008, function (error, rows, fields) {
+												if( error ) { 
+													database.tools.response_error(error.toString(), res );
+													return;
+												}
+												for ( var iterator in R.support_data.feed.entries[4].support_data.feed.entries ) {
+													R.support_data.feed.entries[4].support_data.feed.entries[iterator].icon = "resources/images/iFeed3.png";
+													R.support_data.feed.entries[4].support_data.feed.entries[iterator].description = iterator + ': ' + R.support_data.feed.entries[4].support_data.feed.entries[iterator].description;
+													R.support_data.feed.entries[4].support_data.feed.entries[iterator].leaf="true";
+													R.support_data.feed.entries[4].support_data.feed.entries[iterator].details = database.tools.encodeHTMLTable( R.support_data.feed.entries[4].support_data.feed.entries[iterator].details );
+													R.support_data.feed.entries[4].support_data.feed.entries[iterator].patches = "&nbsp;";
+													for ( var iter in rows ) {
+														if( R.support_data.feed.entries[4].support_data.feed.entries[iterator].id != rows[iter].id ) continue; 
+														logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[3].support_data.feed.entries[iterator].case + ')' );
+														R.support_data.feed.entries[4].support_data.feed.entries[iterator].patches += rows[iter].patch;
+														R.support_data.feed.entries[4].support_data.feed.entries[iterator].patches += ", ";
+													}
+													R.support_data.feed.entries[4].support_data.feed.entries[iterator].id =  R.support_data.feed.entries[4].support_data.feed.entries[iterator].id | 0xC000;  
+												}
+												// >>>
+
 // ----> -----> ----> ----> -----> ----> ----> -----> ----> ----> -----> ---->
 
-										R.responseDetails = null;
-										R.responseStatus = 200;
+												R.responseDetails = null;
+												R.responseStatus = 200;
 
-										res.writeHead(200, {
-											'Content-Type': 'x-application/json'
+												res.writeHead(200, {
+													'Content-Type': 'x-application/json'
+												});
+												if( callback )
+													res.write( callback + '(' );
+												res.write(JSON.stringify(R));
+												if( callback )
+													res.write(')');
+												res.end();
+
+												logger.trace('requestHandler.getFeed: response object flushed to client' );
+												database.tools.closeConnection();
+											});
 										});
-										if( callback )
-											res.write( callback + '(' );
-										res.write(JSON.stringify(R));
-										if( callback )
-											res.write(')');
-										res.end();
-
-										logger.trace('requestHandler.getFeed: response object flushed to client' );
-										database.tools.closeConnection();
 									});
 								});
 							});

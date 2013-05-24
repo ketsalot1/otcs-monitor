@@ -237,6 +237,12 @@ function retrieveRecentEmailsFromMDB( callback, data, res ) {
 			var query = { "sentOn": new RegExp('^' + pattern ) };
 >>> */
 
+			dataObj.daysBack = dataObj.daysBack * 1;
+			if( isNaN(dataObj.daysBack) ) {
+				dataObj.daysBack = 0;
+			}	
+			t.setDate(t.getDate() - dataObj.daysBack);
+
 			if( t.getDay() == 0 )
 				t.setDate(t.getDate() - 1);
 			if( t.getDay() == 6 )
@@ -347,8 +353,38 @@ function retrieveRecentEmailsFromMDB( callback, data, res ) {
 									feedInput.entries[3].searchStr = feedInput.entries[3].searchStr + ", " + docs[iterator].caseNo;
 								}
 							}
-							pattern = JSON.stringify(feedInput);
-							sql.getFeed( callback, pattern, res );
+							// --------------------- 4 -----------------------------
+							t.setDate(t.getDate()-1);
+							if( t.getDay() == 0 )
+								t.setDate(t.getDate() - 1);
+							if( t.getDay() == 6 )
+								t.setDate(t.getDate() - 1);
+							day = t.getDate();
+							if( day < 10 ) {
+								pattern = "0" + day.toString();
+							} else {
+								pattern = day.toString();
+							}
+							pattern = pattern + "." + (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString();
+							query = { "sentOn": new RegExp('^' + pattern ) };
+					
+							collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+								if( err ) throw err;
+					
+								feedInput.entries[4] = {};
+								feedInput.entries[4].dateStr = pattern;
+								feedInput.entries[4].searchStr = "";
+	
+								if( docs && (docs.length) > 0 ) {
+									feedInput.entries[4].searchStr = docs[0].caseNo;
+									for ( var iterator in docs ) {
+										feedInput.entries[4].searchStr = feedInput.entries[4].searchStr + ", " + docs[iterator].caseNo;
+									}
+								}
+
+								pattern = JSON.stringify(feedInput);
+								sql.getFeed( callback, pattern, res );
+							});
 				     	});
 			     	});
 		     	});
