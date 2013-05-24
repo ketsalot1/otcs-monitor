@@ -26,7 +26,7 @@ database.queries = (function() {
 // <<<
 	return {
 		"DBQ001": 'select project_04 "id", long_text_04 "title", short_text_04 "code" from t04_project;',
-	 "DBQ001EX": 'select project_04 "id", long_text_04 "title", short_text_04 "code", category_04 "category" from t04_project;',
+	 "DBQ001EX": 'select project_04 "id", long_text_04 "title", short_text_04 "code", category_04 "category" from t04_project where project_04 not in (?);',
 		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 //		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? and modified_01 >= date_sub(CURDATE(),interval ? day) order by t01.case_01 asc;',
 //		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
@@ -787,18 +787,57 @@ function send_file( callback, dataName, res ) {
 function describeEx( callback, dataName, res ) {
 // <<<
 	var dbq;
+	var dataObj = {};
+
 	logger.trace('requestHandler.describeEx' );
+
+	try {
+		dataObj=JSON.parse(dataName);
+	}
+	catch(e) {
+		logger.warn("describeEx: parsing of arguments failed, sending back complete descriptor");
+		dataObj.context = "all";
+	}
+
 	try {
 		logger.trace('requestHandler.describeEx: constructing descriptor file' );
+
+		if( dataObj.context == "all" ) {
+			describeAll( callback, res );
+		}
+		if( dataObj.context == "dashboard" ) {
+			describeDashboard( callback, res );
+		}
+		if( dataObj.context == "activities" ) {
+			describeProjects( callback, res );
+		}
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
+
+// DONE
+function describeAll( callback, res ) {
+// <<<
+	var dbq;
+
+	logger.trace('requestHandler.describeAll' );
+
+	try {
+		logger.trace('requestHandler.describeAll: constructing descriptor file' );
+
 		var connection = database.tools.getConnection();
-		connection.query(database.queries.DBQ001EX, function (error, rows, fields) {
+		connection.query(database.queries.DBQ001EX, [0], function (error, rows, fields) {
 			if( !error ) {
 				// Add time stamp to the response
 				var tmp = new Date();
 				for ( var iterator in rows ) {
 					rows[iterator].icon= "resources/images/iQuestion.png";
 					if( rows[iterator].id == 99 ) {
-//						rows[iterator].category = "Dashboard";
+	//					rows[iterator].category = "Dashboard";
 						rows[iterator].icon = "resources/images/iUnassigned-2.png";
 					}
 				  	if( (rows[iterator].category).match("OTCS Cases")) {
@@ -810,7 +849,7 @@ function describeEx( callback, dataName, res ) {
 							rows[iterator].icon = "resources/images/iProject2.png";
 					}
 				}
-				logger.trace( 'requestHandler.describe: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
+				logger.trace( 'requestHandler.describeAll: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
 				// Add new entry for patches
 				var idx = rows.length;
 				rows[idx] = {};
@@ -876,6 +915,141 @@ function describeEx( callback, dataName, res ) {
 	}
 }
 // >>>
+
+
+// DONE
+function describeDashboard( callback, res ) {
+// <<<
+	var dbq;
+	var reply = [];
+	var idx = 0;
+
+	logger.trace('requestHandler.describeDashboard' );
+
+	try {
+		logger.trace('requestHandler.describeDashboard: constructing descriptor file' );
+
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ001EX, [0], function (error, rows, fields) {
+			if( !error ) {
+				// Add time stamp to the response
+				var tmp = new Date();
+				for ( var iterator in rows ) {
+					if( rows[iterator].id == 99 ) {
+						reply[idx] = {};
+						reply[idx] = rows[iterator];
+						reply[idx].icon = "resources/images/iUnassigned-2.png";
+						idx++;
+					}
+				}
+				// Add new entry for patches
+				reply[idx] = {};
+				reply[idx].id = 98;
+				reply[idx].category = "Dashboard";
+				reply[idx].title = "Patches";
+				reply[idx].code = "Patches";
+				reply[idx].icon = "resources/images/iPatches.png";
+
+				idx++;
+				reply[idx] = {};
+				reply[idx].id = 97;
+				reply[idx].category = "Dashboard";
+				reply[idx].title = "Archive queue";
+				reply[idx].code = "Transient";
+				reply[idx].icon = "resources/images/iArchive2.png";
+
+				idx++;
+				reply[idx] = {};
+				reply[idx].id = 96;
+				reply[idx].category = "Dashboard";
+				reply[idx].title = "Favorites";
+				reply[idx].code = "Favorites";
+				reply[idx].icon = "resources/images/iStar.png";
+	
+				idx++;
+				reply[idx] = {};
+				reply[idx].id = 95;
+				reply[idx].category = "Dashboard";
+				reply[idx].title = "Activity";
+				reply[idx].code = "Feed";
+				reply[idx].icon = "resources/images/iFeed.png";
+
+				idx++;
+				reply[idx] = {};
+				reply[idx].id = 94;
+				reply[idx].category = "Dashboard";
+				reply[idx].title = "Rework";
+				reply[idx].code = "Rework";
+				reply[idx].icon = "resources/images/iRework.png";
+
+				idx++;
+				reply[idx] = {};
+				reply[idx].id = 93;
+				reply[idx].category = "Dashboard";
+				reply[idx].title = "Hot Fixes this week";
+				reply[idx].code = "Hotfixes";
+				reply[idx].icon = "resources/images/iHotFix.png";
+
+				idx++;
+				reply[idx] = {};
+				reply[idx].id = 92;
+				reply[idx].category = "Dashboard";
+				reply[idx].title = "Committed Updates";
+				reply[idx].code = "Checkpoints";
+				reply[idx].icon = "resources/images/iPending.png";
+			}
+			database.tools.cb_response_fetch( error, reply, fields, res, callback );
+		});
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
+
+// DONE
+function describeProjects( callback, res ) {
+// <<<
+	var dbq;
+
+	logger.trace('requestHandler.describeAll' );
+
+	try {
+		logger.trace('requestHandler.describeAll: constructing descriptor file' );
+
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ001EX, [99], function (error, rows, fields) {
+			if( !error ) {
+				// Add time stamp to the response
+				var tmp = new Date();
+				for ( var iterator in rows ) {
+					rows[iterator].icon= "resources/images/iQuestion.png";
+					if( rows[iterator].id == 99 ) {
+	//					rows[iterator].category = "Dashboard";
+						rows[iterator].icon = "resources/images/iUnassigned-2.png";
+					}
+				  	if( (rows[iterator].category).match("OTCS Cases")) {
+						rows[iterator].category = rows[iterator].category + " (" + database.tools.toLocalDate(tmp) + ")";
+						rows[iterator].icon = "resources/images/iCases.png";
+					}
+				  	if( (rows[iterator].category).match("Project")) {
+							rows[iterator].category = rows[iterator].category + " (" + database.tools.toLocalDate(tmp) + ")";
+							rows[iterator].icon = "resources/images/iProject2.png";
+					}
+				}
+				logger.trace( 'requestHandler.describeAll: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
+				// Add new entry for patches
+			}
+			database.tools.cb_response_fetch( error, rows, fields, res, callback );
+		});
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
 
 // DONE
 function describe( callback, dataName, res ) {

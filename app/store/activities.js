@@ -1,4 +1,4 @@
-Ext.define("itsm.store.itsm", {
+Ext.define("itsm.store.activities", {
 	extend: "Ext.data.Store",
 /* <<<
 	// Debuggin version. Without connection to source

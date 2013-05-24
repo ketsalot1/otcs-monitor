@@ -20,6 +20,8 @@ app/model/count.js \
 app/model/itsmOverview.js \
 app/model/email.js \
 app/store/desktopITSM.js \
+app/store/activities.js \
+app/store/dashboard.js \
 app/store/itsm.js \
 app/store/settings.js \
 app/store/searchResult.js \
@@ -33,6 +35,7 @@ app/store/email.js \
 app/view/ConfigurationView.js \
 app/view/itsmDetail.js \
 app/view/itsmRework.js \
+app/view/itsmListContainer.js \
 app/view/itsmList.js \
 app/view/Main.js \
 app/view/MainListContainer.js \
@@ -126,6 +129,17 @@ else
 fi
 
 echo " OK"
+
+if [ -z "$2" ]; then
+	echo "Warn, no device given, assuming iPad"
+	cp -fvp ./app/view/MainListContainer.ipad.js ./app/view/MainListContainer.js
+else
+	if [ "$1" == "iPad" ]; then
+		cp -fvp ./app/view/MainListContainer.ipad.js ./app/view/MainListContainer.js
+	else 
+		cp -fvp ./app/view/MainListContainer.iphone.js ./app/view/MainListContainer.js
+	fi
+fi
 
 #
 # List all the files here ...

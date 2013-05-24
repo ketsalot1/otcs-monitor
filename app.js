@@ -11,12 +11,37 @@ Ext.application({
 		'Ext.MessageBox'
 	],
 
-	models: ['itsm', 'itsmOverview', 'desktopITSM', 'settings', 'aboutInfo', 'patches', 'db', 'email', 'count' ],
-	stores: ['itsm', 'itsmOverview', 'desktopITSM', 'settings', 'aboutInfo', 'patches', 'projects', 'db', 'email', 'count', 'searchResult' ],
+	models: [
+		'itsm', 
+		'itsmOverview', 
+		'desktopITSM', 
+		'settings', 
+		'aboutInfo', 
+		'patches', 
+		'db', 
+		'email', 
+		'count' 
+	],
+	stores: [
+		'itsm', 
+		'activities', 
+		'dashboard', 
+		'itsmOverview', 
+		'desktopITSM', 
+		'settings', 
+		'aboutInfo', 
+		'patches', 
+		'projects', 
+		'db', 
+		'email', 
+		'count', 
+		'searchResult'
+	],
 	controllers: ['itsm'],
 	views: [
 		'MainListContainer', 
 		'itsmList', 
+		'itsmListContainer', 
 		'itsmDetail', 
 		'itsmOverview',
 		'ConfigurationView',
@@ -68,6 +93,9 @@ Ext.application({
 		};
 		var itsmList =	{
 				xtype: "itsmlist"
+		};
+		var itsmListContainer =	{
+				xtype: "itsmlistcontainer"
 		};
 		var itsmDetail =  {
 				xtype: "itsmdetail"
@@ -130,7 +158,7 @@ Ext.application({
 		// Initialize the main view
 //		Ext.Viewport.add( {xtype: 'mainlistcontainer'});
 //		Ext.Viewport.add( mainListContainer);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms,itsmJiraAssignForm,emailView,itsmCaseLinkForm,setCheckpointForm,setCaseStatusForm]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmListContainer,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms,itsmJiraAssignForm,emailView,itsmCaseLinkForm,setCheckpointForm,setCaseStatusForm]);
 		Ext.Viewport.setActiveItem(mainListContainer);
 	},
 

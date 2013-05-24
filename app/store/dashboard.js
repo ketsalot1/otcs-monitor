@@ -1,4 +1,4 @@
-Ext.define("itsm.store.itsm", {
+Ext.define("itsm.store.dashboard", {
 	extend: "Ext.data.Store",
 /* <<<
 	// Debuggin version. Without connection to source
@@ -52,7 +52,7 @@ Ext.define("itsm.store.itsm", {
 			}
 		},
 
-		sorters: [{ property: 'category', direction: 'DESC'}],
+		sorters: [{ property: 'category', direction: 'ASC'}],
 		grouper: {
 			sortProperty: "category",
 			direction: "ASC",

@@ -5,7 +5,7 @@ Ext.define("itsm.view.itsmOverview", {
 		items: [
 			{
 				html: "<div id='itsm-statistics-container' style='margin: 0px 8px; padding-top: 10px'><h1>Not Initialized</h1></div>",
-				style: 'color: white; background-color: #125c91; border: 4px; border-radius: 12px; border-shadow: 7px 7px 7px blue;'
+				style: 'color: white; background-color: #125c91; border: 4px; border-radius: 12px; padding: 8px; border-shadow: 7px 7px 7px blue;'
 			},
 			{
 //				html: "<div id='otcs-image-container-6m'></div>"
