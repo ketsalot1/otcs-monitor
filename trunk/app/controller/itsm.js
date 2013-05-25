@@ -432,7 +432,19 @@ Ext.define("itsm.controller.itsm", {
 	// <<<
 		console.log("controller.itsm.onITSMDetail");
 		console.log( record );
-		this.activateITSMDetail(record);
+		if( record === "Feed_with_question" )
+			Ext.Msg.prompt( "Feed", "Weeks back", function(button,text) {
+				if( button == "ok" ) {
+					if( isNaN( text * 7 ))
+ 						this.activateITSMDetail("Feed", 0);
+					else
+ 						this.activateITSMDetail("Feed", (text*7));
+				} else {
+ 					this.activateITSMDetail("Feed", 7);
+				}
+			}, this );
+		else 		  
+			this.activateITSMDetail(record, 0);
 	},
 	// >>>
 	
@@ -487,7 +499,7 @@ Ext.define("itsm.controller.itsm", {
 	},
 	// >>>
 	
-	activateITSMDetail: function (record) 
+	activateITSMDetail: function (record, daysBack) 
 	{ // <<<
 		console.log("controller.itsm.activateITSMDetail");
 	
@@ -502,7 +514,7 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			var hostName = data[0];
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
-			s.getProxy().setUrl( hostName + '?cmd=send&data={"dataName":"' + record + '","daysBack":"0"}' );
+			s.getProxy().setUrl( hostName + '?cmd=send&data={"dataName":"' + record + '","daysBack":"' + daysBack + '"}' );
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
 	
 			s.load();

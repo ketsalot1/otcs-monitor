@@ -52,7 +52,7 @@ Ext.define("itsm.store.itsm", {
 			}
 		},
 
-		sorters: [{ property: 'category', direction: 'DESC'}],
+		sorters: [{ property: 'id', direction: 'DESC'}],
 		grouper: {
 			sortProperty: "category",
 			direction: "ASC",
