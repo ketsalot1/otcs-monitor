@@ -40,7 +40,7 @@ Ext.define("itsm.controller.itsm", {
 				patchMgmtCommand: "onPatchMgmt",
 				searchCommand: "onSearch",
 				initImageCommand: "onInitImages",
-//				swapChartCommand: "onChartSwap"
+				swapChartCommand: "onChartSwap"
 			},
 			itsmDetail: {
 				detailBackCommand: "onBackMainList",
@@ -625,7 +625,7 @@ Ext.define("itsm.controller.itsm", {
 	},	
 	// >>>
 
-/*
+
 	onChartSwap: function(obj)
 	{ // <<<
 		var what = obj;
@@ -689,7 +689,7 @@ Ext.define("itsm.controller.itsm", {
 
 		Ext.Viewport.animateActiveItem(mainView, this.slideRightTransition);
 	}, // >>>
-*/
+
 
 	onSaveSettings: function(hostName) 
 	{ // <<<
