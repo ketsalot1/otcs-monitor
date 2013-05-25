@@ -23,18 +23,6 @@ Ext.define("itsm.view.MainListContainer", {
 
 		console.log("view.mainListContainer.initialize event fired");
 
-/*
-		var chartButton = {
-			xtype: "button",
-			ui: "action",
-			iconCls: 'chart2',
-			iconMask: true,
-			listeners: {
-				tap: { fn: this.onChartButtonTap, scope: this }
-			}
-		};
-*/
-
 		var searchButton = {
 			xtype: "button",
 			ui: "action",
@@ -89,60 +77,8 @@ Ext.define("itsm.view.MainListContainer", {
 
 		var itsmList = {
 			xtype: "itsmlistcontainer",
-//			flex: "2.7",
 			flex: "1",
-//			store: Ext.getStore("itsm"),
-//			listeners: {
-//				disclose: { fn: this.onNotesListDisclose, scope: this }
-//			}
 		};
-
-/*
-		var itsmOverview = {
-			xtype: 'itsmoverview',
-			flex: "0",
-			listeners: {
-				activeitemchange: { fn: this.onCarouseItemChange, scope: this }
-			},
-*/
-
-//			flex: "2.3" // Hide initially
-/* <<<  
-			xtype: 'carousel',
-			defaults: {
-				styleHtmlContent: true
-			},
-			listeners: {
-				activeitemchange: { fn: this.onCarouseItemChange, scope: this }
-			},
-			items: [
-				{
-//					html: "<img src='resources/images/otcs-6m.png' width='284px'/>"
-					html: "<div id='otcs-image-container-6m'></div>"
-				},
-				{
-//					html: "<img src='resources/images/otcs-1y.png' width='284px'/>"
-					html: "<div id='otcs-image-container-1y'></div>"
-				},
-				{
-//					html: "<img src='resources/images/otcs-5y.png' width='284px'/>"
-					html: "<div id='otcs-image-container-5y'></div>"
-				},
-				{
-//					html: "<img src='resources/images/otcs-5y.png' width='284px'/>"
-					xtype: 'aboutscreen',
-					store: Ext.getStore("aboutInfo"),
-					style: 'background-color: #5AB5F5; border: 4px; border-radius: 12px; border-shadow: 7px 7px 7px blue;'
-				}
-			],
->>> */
-//		};
-
-		//opentext.data.carousel = itsmOverview;
-		/* Right after the main view is initialized, get the data for the 
-		 * the application. Use sequenced call, as the server side cannot 
-		 * handle paralell requests yet!
-		 */
 
 		var settings = Ext.getStore('settings');
 		var rec = settings.getAt(0);
@@ -152,6 +88,8 @@ Ext.define("itsm.view.MainListContainer", {
 			var hostName = data[0];
 
 			var s = Ext.getStore("dashboard");
+			var o = Ext.getStore('itsmOverview');
+			var activities = Ext.getStore('activities');
 
 			/* new command structure */
 			s.getProxy().setUrl( hostName + '?cmd=describe_ex&data={"context":"dashboard"}' );
@@ -159,7 +97,6 @@ Ext.define("itsm.view.MainListContainer", {
 			s.load( function( record, operation, success ) {
 				console.log("Dashboard descriptor loaded, requesting statistics ... " );
 				// First after on DB calls returns, trigger "initialize the Statistics" ...
-				var o = Ext.getStore('itsmOverview');
 				o.getProxy().setUrl( hostName + '?cmd=get_overview&data={"n":"n"}' );
 				console.log( 'controller: URL=' + o.getProxy().getUrl() );
 				o.load(function( record, operation, success ) {
@@ -189,7 +126,6 @@ Ext.define("itsm.view.MainListContainer", {
 					htmlCode += "</p>";
 					cont.innerHTML = htmlCode;
 
-					var activities = Ext.getStore('activities');
 					activities.getProxy().setUrl( hostName + '?cmd=describe_ex&data={"context":"activities"}' );
 					console.log( 'controller: URL=' + activities.getProxy().getUrl() );
 					activities.load(function( record, operation, success ) {
