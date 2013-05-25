@@ -1,0 +1,179 @@
+// Sencha touch 2.2 specific only!
+//
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+
+// Your custom code goes here...
+//@include pictos-iconmask('settings_black');
+//@include pictos-iconmask('chart2');
+//@include pictos-iconmask('doc_compose1');
+//@include pictos-iconmask('doc_send');
+//@include pictos-iconmask('link2');
+//@include pictos-iconmask('check2');
+//@include pictos-iconmask('delete1');
+//@include pictos-iconmask('doc_drawer');
+//@include pictos-iconmask('organize');
+//@include pictos-iconmask('user_add');
+//@include pictos-iconmask('trash2');
+//@include pictos-iconmask('mail');
+//@include pictos-iconmask('forward_black');
+
+// The pictos does not exist anymore, a specific font is used instead. It supposedly much more
+// efficient comparend with images used for icon butotns. The method is completely different compared
+// to Sencha 2.0 and 2.1. First of all, the font must exist. It is not by default copied into
+// required directory by the 'sencha generate app' command. It must be copied manually like this:
+//
+// copy folder /webroot/my_generated_app/touch/resources/themes/fonts 
+//
+// into
+//
+// /webroot/my_generated_app/resources/sass/stylesheets/
+//
+// which will result into 
+//
+// /webroot/my_generated_app/resources/sass/stylesheets/fonts/pictos/pictos-web.ttf [eot,vsg,eoff].
+//
+// then navigate to /webroot/my_generated_app and run
+//
+// compass compile resources/sass 
+//
+@include icon-font('Pictos', inline-font-files('pictos/pictos-web.woff', woff, 'pictos/pictos-web.ttf', truetype,'pictos/pictos-web.svg', svg));
+
+// Following table is mapping the symbolic name of an icon (e.g. doc_compose) with the key "W" inside the font 'Pictos'.
+// The tricky part is to figure out what image coresponds to what key. I found the map for font pictos at http://pictos.cc/font/
+// or alternatively you can install the TTF font and use some OS tool to display the font together with the character key.
+@include icon('doc_compose1', 'W', 'Pictos');
+@include icon('link2', 'A', 'Pictos');
+@include icon('doc_drawer', 'l', 'Pictos');
+@include icon('user_add', 'U', 'Pictos');
+@include icon('trash2', '#', 'Pictos');
+@include icon('mail', 'M', 'Pictos');
+@include icon('forward_black', '9', 'Pictos');
+
+// Follows the custom style for detail panel.
+
+.custom-header {
+	background:#eee url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAABCAIAAACUgoPjAAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB90EBwkvBv6Nnf8AAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAEklEQVQI12M8dOw9AwMDAwMDABOfAnkD62PsAAAAAElFTkSuQmCC) repeat-x 0 8px; 
+	display: block;
+	position: relative;
+}
+
+.custom-header-overlap {
+	background: #eee;
+	display: inline;
+	padding-right: 8px;
+}
+
+.custom-list {
+	display: block;
+	list-style-image: none;
+	list-style-position: outside;
+	list-style-type: none;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0px;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	padding-bottom: 0px;
+	padding-left: 8px;
+	padding-right: 0px;
+	padding-top: 0px;
+}
+
+.custom-left-item {
+	clear: left;
+	float: left;
+}
+
+.custom-right-item {
+	clear: right;
+	float: right;
+	width: 18em;
+}
+
+.custom-list-idented {
+	display: inline;
+}
+
+.custom-name {
+	background: transparent;
+	color: #666;
+	float: left;
+	font-weight: normal;
+	margin: 0 0 0 -110px;
+}
+
+.custom-wrap {
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0px;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	padding-bottom: 2px;
+	padding-left: 110px;
+/*
+	padding-right: 130px;
+*/
+	padding-top: 0px;
+	text-align: left;
+}
+
+#detail-card-table {
+	display: table;
+}
+
+.custom-row {
+	display: table-row;
+}
+.custom-cell {
+	display: table-cell;
+	padding-left:4px;
+	padding-right: 8px;
+	padding-top: 9px;
+/*
+	border-right: 1px;
+	border-right-color: lightgray;
+	border-right-style: solid;
+*/
+}
+
+.custom-details-table {
+	display: table;
+}
+
+.custom-details-row {
+	display: table-row;
+}
+
+.custom-details-cell-name {
+	display: table-cell;
+	padding-right: 8px;
+	padding-top: 6px;
+	padding-left: 8px;
+	font-weight: bold;
+	color: #666;
+	min-width: 100px;
+}
+
+.custom-details-cell-value {
+	display: table-cell;
+	padding-right: 8px;
+	padding-top: 6px;
+	padding-left: 8px;
+	min-width: 140px;
+}
+
+.right {
+	float: right; 
+}
+
+.collspan {
+	clear: both;
+}
+
+.left {
+	text-align: left;
+}

@@ -350,9 +350,9 @@ Ext.define("itsm.controller.itsm", {
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load(function( record, operation, success ) {
 				if( success == true ) {
-					if( operation.getResultSet()._records[0].node.value == 0 )
+					if( operation.getResultSet()._records[0].data.value == 0 )
 						badgeText = "0";
-					if( operation.getResultSet()._records[0].node.value == 1 )
+					if( operation.getResultSet()._records[0].data.value == 1 )
 						badgeText = "1";
 				} else {
 					badgeText = "Err";
