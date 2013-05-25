@@ -116,25 +116,34 @@ node-inspector@0.2.0beta3 /usr/local/lib/node_modules/node-inspector
    That will install the 0.8.17 version of compass, which is incompatible with
    SASS 3.0 (HAML).
 
-4. Protocol specification:
-   http://host:port/otds?cmd=<command>&payload01=<data01>&payload02=<data02>
+ 3.1 Sencha 2.2 specific
 
-   command  |  data01     |  data02
-   -----------------------------------
-   send     |  filename   |  n/a
-   search   |  caseNo     |  n/a
-   save     |  caseNo     |  text         
-   unlink   |  n/a        |  n/a
+ 	Sencha 2.2 completely reworks the styling. The pictos are not used as base64 encoded images
+	inlined inside the CSS any more, a dedicated TTF is used instead. The font is delivered
+	together with Sencha 2.2 however does not contain all the pictos that were available in the 
+	sencha 2.0 and 2.1. Certain reduction must happen.
+
+	Second, the technique of using the TTF instead of PNG inlined images differs remarkably compared
+	to the original technique. See comments inside the app.sass file under the "style/2.2" folder
+	for further details.
+
+	The mentioned sass file must be manually compiled into /webroot/my_generated_app/resources/sass
+	folder and compiled as described inside the sass file itself.
+
+4. Protocol specification:
+   http://host:port/otds?cmd=<command>&data={"key1":"value1","key2":"value2",...}
+
+	The API documentation is under /itsm/doc/api.html
 
 Appendix A.
 
    get nodejs. Use URL http://nodejs.org and follow instructions for install.
-   The UNIX variante is build for the system from sources and installed. No
+   The UNIX variant is build for the system from sources and installed. No
    problem found with it.
       
 Appending B - additional modules installed to Node.js
 
-	Install the modules to the filder, where the node scripts are stored. Module
+	Install the modules to the folder, where the node scripts are stored. Module
 	installation will add sub-folders in the root directory.
 
 	npm install mysql@2.0.0-alpha2

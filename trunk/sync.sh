@@ -2,12 +2,6 @@
 
 SRC="\
 app.js \
-app.json \
-index.html \
-packager.json \
-project.1204.vim \
-project.asus.vim \
-project.lin.dell.vim \
 readme.txt \
 app/controller/itsm.js \
 app/model/desktopITSM.js \
@@ -212,3 +206,8 @@ echo " "
 echo "In chrome browser you can connect to inspector and debug your application server logic."
 echo "Make sure that the Sencha Touch application has been generated before"
 echo "you synchronize your project files. Second, node.js must be installed"
+echo " "
+echo "ATTENTION"
+echo "The project can be used against the Sencha 2.2 library. The difference is the style sheet"
+echo "compilation. You have to use app.sass from the 'styles/2.2' folder and follow instructions"
+echo "given in the app.sass itself about how to deploy".
