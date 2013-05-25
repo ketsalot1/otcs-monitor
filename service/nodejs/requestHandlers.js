@@ -852,20 +852,21 @@ function describeAll( callback, res ) {
 				logger.trace( 'requestHandler.describeAll: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
 				// Add new entry for patches
 				var idx = rows.length;
+
 				rows[idx] = {};
 				rows[idx].id = 98;
 				rows[idx].category = "Dashboard";
-				rows[idx].title = "Patches";
-				rows[idx].code = "Patches";
-				rows[idx].icon = "resources/images/iPatches.png";
+				rows[idx].title = "Committed Updates";
+				rows[idx].code = "Checkpoints";
+				rows[idx].icon = "resources/images/iPending.png";
 
 				idx++;
 				rows[idx] = {};
 				rows[idx].id = 97;
 				rows[idx].category = "Dashboard";
-				rows[idx].title = "Archive queue";
-				rows[idx].code = "Transient";
-				rows[idx].icon = "resources/images/iArchive2.png";
+				rows[idx].title = "Hot Fixes this week";
+				rows[idx].code = "Hotfixes";
+				rows[idx].icon = "resources/images/iHotFix.png";
 
 				idx++;
 				rows[idx] = {};
@@ -887,25 +888,33 @@ function describeAll( callback, res ) {
 				rows[idx] = {};
 				rows[idx].id = 94;
 				rows[idx].category = "Dashboard";
-				rows[idx].title = "Rework";
-				rows[idx].code = "Rework";
-				rows[idx].icon = "resources/images/iRework.png";
+				rows[idx].title = "Activity chronicle";
+				rows[idx].code = "Feed_with_question";
+				rows[idx].icon = "resources/images/iFeed.png";
 
 				idx++;
 				rows[idx] = {};
 				rows[idx].id = 93;
 				rows[idx].category = "Dashboard";
-				rows[idx].title = "Hot Fixes this week";
-				rows[idx].code = "Hotfixes";
-				rows[idx].icon = "resources/images/iHotFix.png";
+				rows[idx].title = "Patches";
+				rows[idx].code = "Patches";
+				rows[idx].icon = "resources/images/iPatches.png";
 
 				idx++;
 				rows[idx] = {};
 				rows[idx].id = 92;
 				rows[idx].category = "Dashboard";
-				rows[idx].title = "Committed Updates";
-				rows[idx].code = "Checkpoints";
-				rows[idx].icon = "resources/images/iPending.png";
+				rows[idx].title = "Archive queue";
+				rows[idx].code = "Transient";
+				rows[idx].icon = "resources/images/iArchive2.png";
+
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 91;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Rework";
+				rows[idx].code = "Rework";
+				rows[idx].icon = "resources/images/iRework.png";
 			}
 			database.tools.cb_response_fetch( error, rows, fields, res, callback );
 		});
@@ -997,6 +1006,14 @@ function describeDashboard( callback, res ) {
 				reply[idx].title = "Committed Updates";
 				reply[idx].code = "Checkpoints";
 				reply[idx].icon = "resources/images/iPending.png";
+
+				idx++;
+				reply[idx] = {};
+				reply[idx].id = 91;
+				reply[idx].category = "Dashboard";
+				reply[idx].title = "Activity chronicle";
+				reply[idx].code = "Feed_with_question";
+				reply[idx].icon = "resources/images/iFeed.png";
 			}
 			database.tools.cb_response_fetch( error, reply, fields, res, callback );
 		});
