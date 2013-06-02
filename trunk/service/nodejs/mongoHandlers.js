@@ -1,4 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
+var Server = require('mongodb').Server;
 var sql = require("./requestHandlers");
 
 /*
@@ -23,11 +24,14 @@ function removeMailMDB( callback, data, res ) {
 	var obj = JSON.parse(data);
 
 	try {
-		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
-			if(err) throw err;
-	
-			console.log("connected");
-	
+		// Set up the connection to the local db
+		var mongoclient = new MongoClient(new Server("localhost", 27017, {native_parser: true}));
+
+		// Open the connection to the server
+		mongoclient.open(function(err, mongoclient) {
+
+			// Get the first db and do an update document on it
+			var db = mongoclient.db("itsm");
 			var collection = db.collection('test');
 	
       	collection.remove({"caseNo":obj.caseNo}, {w:1}, function(err, docs) {
@@ -43,6 +47,7 @@ function removeMailMDB( callback, data, res ) {
 				res.write(JSON.stringify(r));
 				res.write('}},"responseDetails":null,"responseStatus":200}');
 				res.end();
+				mongoclient.close();
 			});  
 		});
 	}
@@ -88,6 +93,41 @@ function insertMailMDB( callback, data, res ) {
 	}
 }
 // >>>
+
+function insertMailMDBEx( callback, data, res ) {
+// <<<
+	var r = {};
+	var obj = JSON.parse(data);
+
+	// Set up the connection to the local db
+	var mongoclient = new MongoClient(new Server("localhost", 27017, {native_parser: true}));
+
+	// Open the connection to the server
+	mongoclient.open(function(err, mongoclient) {
+
+		// Get the first db and do an update document on it
+		var db = mongoclient.db("itsm");
+		var collection = db.collection('test');
+		collection.insert(obj, {w:1}, function(err, result) {
+			if(err) throw err;
+			res.writeHead(200, {
+				'Content-Type': 'x-application/json'
+			});
+
+			r.code = 200;
+			r.message = "OK";
+	
+			res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+			res.write(JSON.stringify(r));
+			res.write('}},"responseDetails":null,"responseStatus":200}');
+			res.end();
+			// Close the connection
+			mongoclient.close();
+		});
+	});
+}
+// >>>
+
 
 function testMDB( callback, data, res ) {
 // <<<
@@ -157,7 +197,7 @@ function cursorMDB( callback, data, res ) {
 }
 // >>>
 
-function retrieveEmailsFromMDB( callback, data, res ) {
+function retrieveEmailsFromMDB_deprecated( callback, data, res ) {
 // <<<
 	try {
 		dataObj = JSON.parse(data);
@@ -182,13 +222,69 @@ function retrieveEmailsFromMDB( callback, data, res ) {
 				res.writeHead(200, {
 					'Content-Type': 'x-application/json'
 				});
-				res.write( callback + '(' );
+				if( callback )
+					res.write( callback + '(' );
+
 				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
-
 				res.write(JSON.stringify(docs));
-
 				res.write('}},"responseDetails":null,"responseStatus":200}');
-				res.end(')');
+
+				if( callback )
+					res.write(')');
+
+				res.end();
+      	});
+		});
+	}
+	catch(e) {
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
+function retrieveEmailsFromMDB( callback, data, res ) {
+// <<<
+	try {
+		dataObj = JSON.parse(data);
+		// Set up the connection to the local db
+		var mongoclient = new MongoClient(new Server("localhost", 27017, {native_parser: true}));
+
+		// Open the connection to the server
+		mongoclient.open(function(err, mongoclient) {
+
+			// Get the first db and do an update document on it
+			var db = mongoclient.db("itsm");
+			var collection = db.collection('test');
+	
+	     	collection.find({"caseNo":dataObj.caseNo}).toArray(function(err, docs) {
+				if( err ) throw err;
+	
+				for ( var iterator in docs ) {
+					docs[iterator].leaf="true";
+					docs[iterator].icon="resources/images/iEmail31.png";
+					if( typeof( docs[iterator].attachments ) != "undefined" ) {
+						if((typeof(docs[iterator].attachments.length ) == "number" ) && ( docs[iterator].attachments.length > 0 )) {
+							docs[iterator].icon="resources/images/iEmailAtt31.png";
+						}
+					}
+				}
+	
+				res.writeHead(200, {
+					'Content-Type': 'x-application/json'
+				});
+				if( callback )
+					res.write( callback + '(' );
+	
+				res.write('{"support_data": { "feed": { "title":"support data", "entries":');
+				res.write(JSON.stringify(docs));
+				res.write('}},"responseDetails":null,"responseStatus":200}');
+	
+				if( callback )
+					res.write(')');
+	
+				res.end();
+				mongoclient.close();
       	});
 		});
 	}
@@ -221,9 +317,14 @@ function retrieveRecentEmailsFromMDB( callback, data, res ) {
 
 		feedInput.entries = [];
 
-		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
-			if(err) throw err;
+		// Set up the connection to the local db
+		var mongoclient = new MongoClient(new Server("localhost", 27017, {native_parser: true}));
 
+		// Open the connection to the server
+		mongoclient.open(function(err, mongoclient) {
+
+			// Get the first db and do an update document on it
+			var db = mongoclient.db("itsm");
 			var collection = db.collection('test');
 
 /* <<<
@@ -383,6 +484,7 @@ function retrieveRecentEmailsFromMDB( callback, data, res ) {
 								}
 
 								pattern = JSON.stringify(feedInput);
+								mongoclient.close();
 								sql.getFeed( callback, pattern, res );
 							});
 				     	});
@@ -403,9 +505,13 @@ function retrieveEmailCountFromMDB( callback, data, res ) {
 	var reply = {};
 	try {
 		dataObj = JSON.parse(data);
-		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
-			if(err) throw err;
+		var mongoclient = new MongoClient(new Server("localhost", 27017, {native_parser: true}));
 
+		// Open the connection to the server
+		mongoclient.open(function(err, mongoclient) {
+
+			// Get the first db and do an update document on it
+			var db = mongoclient.db("itsm");
 			var collection = db.collection('test');
 
       	collection.find({"caseNo":dataObj.caseNo}).count(function(err, docs) {
@@ -427,6 +533,7 @@ function retrieveEmailCountFromMDB( callback, data, res ) {
 					res.end(')');
 				else
 					res.end();
+				mongoclient.close();
       	});
 		});
 	}
@@ -481,15 +588,21 @@ function searchTextInEmailsMDB( callback, data, res ) {
 		var r = {};
 		r.entries = [];
 
-		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
+		// Set up the connection to the local db
+		var mongoclient = new MongoClient(new Server("localhost", 27017, {native_parser: true}));
+
+		// Open the connection to the server
+		mongoclient.open(function(err, mongoclient) {
 			try {
-				if( err ) throw err;
+				// Get the first db and do an update document on it
+				var db = mongoclient.db("itsm");
 				var collection = db.collection('test');
 				query = { "mailSubject": new RegExp( data, 'i' ) };
 				collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
 					r.code = 200;
 					r.message = "OK";
 					r.entries = docs;
+					mongoclient.close();
 					sql.searchTextDump( callback, JSON.stringify(r), res );
   		    	});
 			}
@@ -520,9 +633,14 @@ function countTodaysFeed( callback, res ) {
 				
 		feedInput.entries = [];
 
-		MongoClient.connect('mongodb://localhost:27017/itsm', function(err, db) {
-			if(err) throw err;
+		// Set up the connection to the local db
+		var mongoclient = new MongoClient(new Server("localhost", 27017, {native_parser: true}));
 
+		// Open the connection to the server
+		mongoclient.open(function(err, mongoclient) {
+
+			// Get the first db and do an update document on it
+			var db = mongoclient.db("itsm");
 			var collection = db.collection('test');
 
 			if( t.getDay() == 0 )
@@ -542,6 +660,7 @@ function countTodaysFeed( callback, res ) {
 				if( err ) throw err;
 
 				var pattern = JSON.stringify(docs);
+				mongoclient.close();
 				sql.sendCheckpoints( callback, pattern, res );
 			});
 		});
@@ -662,7 +781,7 @@ Db.connect(format("mongodb://%s:%s/node-mongo-examples?w=1", host, port), functi
 exports.testMDB = testMDB;
 exports.selectMDB = selectMDB;
 exports.cursorMDB = cursorMDB;
-exports.insertMailMDB = insertMailMDB;
+exports.insertMailMDB = insertMailMDBEx;
 exports.removeMailMDB = removeMailMDB;
 exports.retrieveEmailsFromMDB = retrieveEmailsFromMDB; 
 exports.retrieveEmailCountFromMDB = retrieveEmailCountFromMDB;
