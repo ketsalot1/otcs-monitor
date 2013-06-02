@@ -79,7 +79,7 @@ Ext.define("itsm.view.ConfigurationView", {
 		}
 		catch(e) {
 			console.error("Application is not configured yet");
-			init = 'http://server:port/nd';
+			init = 'http://ubumameesx00.opentext.net/motcs/rest';
 		}
 
 		console.log( 'ConfigurationView: ' + init );

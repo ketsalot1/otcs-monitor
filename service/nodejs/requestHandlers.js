@@ -55,8 +55,10 @@ database.queries = (function() {
 //		"DBQ018": 'update t01_case set project_01 = ? where id_01 = ?;',
 		"DBQ018": 'update t01_case set project_01 = ? where case_01 = ?;',
 		"DBQ019": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?, "Just Arrived",  "\n", CURDATE(), 99, 1 );',
+		"DBQ019ex": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?, "Just Arrived",  "\n", ?, 99, 1 );',
 		"DBQ020": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?,?,?,?,?,? );',
 		"DBQ021": 'update t01_case set active_01 = 0, stop_01 = CURDATE() where case_01 = ?;',
+		"DBQ021ex": 'update t01_case set active_01 = 0, start_01 = ?, stop_01 = ? where case_01 = ?;',
 		"DBQ022": 'update t02_patch set status_02 = "archived" where id_02 = ?;',
 		"DBQ023": 'select id_02 as "id" from t02_patch where id_02 in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 0 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and id_02 not in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and status_02 not like "archived";',
 		"DBQ024": 'update t01_case set status_01 = ? where case_01 = ?;',
@@ -2095,6 +2097,42 @@ function archivePatch( callback, dataObj, res ) {
 // >>>
 
 
+// TODO - NEW
+function archiveCaseEx( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var d = new Date();
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.archiveCaseEx: (' + data.caseNo + '): start = ' + data.startDate + ', stop = ' + data.stopDate );
+		var connection = database.tools.getConnection();
+		data.caseNo = data.caseNo * 1;
+		if( isNaN(data.caseNo) ) {
+			throw( { "message": 'Case Number Invalid: the case number is empty or not a decimal number. Use digits only' } );
+		}	
+		connection.query(database.queries.DBQ021ex, [data.startDate, data.stopDate, data.caseNo], function (error, info) {
+			if( !error ) { 
+				logger.trace('requestHandler.archiveCaseEx: updated with code: ' + info.insertId );
+				logger.trace('requestHandler.archiveCaseEx: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
+				resp.value = info.affectedRows;
+				resp.message = info.message || "OK";
+				resp.code = "200";
+				logger.trace('requestHandler.archiveCaseEx: response object flushed to client' );
+			}
+			database.tools.cb_response_create( error, resp, res, callback ); 
+		});
+	} 
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
+
 // DONE
 function archiveCase( callback, dataObj, res ) {
 // <<<
@@ -2257,6 +2295,41 @@ function unlink( callback, dummy, res ) {
 }
 //>>>
 
+
+// DONE
+function insertCaseEx( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.newCaseEx: >' + data.caseNo + '< >' + data.caseSubject + '< >' + data.caseCreated + '<' );
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ005, [data.caseNo], function (error, rows, fields) {
+			if( rows.length > 0 ) {
+				database.tools.cb_response_create( error, {"message":"Submitted case already exist"}, res, callback ); 
+			} else {
+				data.caseNo = data.caseNo * 1;
+				if( isNaN(data.caseNo) ) {
+					database.tools.response_error( 'Case Number Invalid: the case number is empty or not a decimal number. Use digits only', res );
+				}	
+				if( data.caseNo == 0 ) {
+					database.tools.response_error( 'Case Number Invalid: the case number is zero.', res );
+				}	
+				connection.query(database.queries.DBQ019ex, [data.caseNo, data.caseSubject, data.caseCreated], function (error, info) {
+					database.tools.cb_response_create( error, info, res, callback );
+				});
+			}
+		});
+	} 
+	catch(e) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
 
 // DONE
 function insertCase( callback, dataObj, res ) {
@@ -3141,8 +3214,10 @@ exports.createProject = createProject;
 exports.createProjectEx = createProjectEx; // IN PROGRESS - TODO
 exports.updateProject = updateProject;
 exports.insertCase = insertCase;
+exports.insertCaseEx = insertCaseEx;
 exports.insertCaseFull = insertCaseFull;
 exports.archiveCase = archiveCase;
+exports.archiveCaseEx = archiveCaseEx;
 exports.archivePatch = archivePatch;
 exports.archivePatchEx = archivePatchEx;
 exports.updateCaseJira = updateCaseJira;
