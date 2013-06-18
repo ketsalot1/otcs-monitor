@@ -78,6 +78,7 @@ Ext.define("itsm.controller.itsm", {
 				linkCaseCommand: "onLinkSave",
 				linkJiraCommand: "onJiraSave",
 				linkReworkCommand: "onReworkSave",
+				linkReferenceCommand: "onReferenceSave",
 				linkProjectCaseCommand: "onProjectAssignSave",
 				backCaseLinkCommand: "onCaseDetailBack"
 			},
@@ -432,19 +433,28 @@ Ext.define("itsm.controller.itsm", {
 	// <<<
 		console.log("controller.itsm.onITSMDetail");
 		console.log( record );
-		if( record === "Feed_with_question" )
-			Ext.Msg.prompt( "Feed", "Weeks back", function(button,text) {
+		if( record === "Authoring" ) {
+			Ext.Msg.prompt( "Author", "Name", function(button,text) {
 				if( button == "ok" ) {
-					if( isNaN( text * 7 ))
- 						this.activateITSMDetail("Feed", 0);
-					else
- 						this.activateITSMDetail("Feed", (text*7));
-				} else {
- 					this.activateITSMDetail("Feed", 7);
+					this.activateITSMDetail( record, 0, text );
 				}
 			}, this );
-		else 		  
-			this.activateITSMDetail(record, 0);
+		} else {
+			if( record === "Feed_with_question" ) {
+				Ext.Msg.prompt( "Feed", "Weeks back", function(button,text) {
+					if( button == "ok" ) {
+						if( isNaN( text * 7 ))
+ 							this.activateITSMDetail("Feed", 0, "all");
+						else
+ 							this.activateITSMDetail("Feed", (text*7), "all" );
+					} else {
+ 						this.activateITSMDetail("Feed", 7, "all" );
+					}
+				}, this );
+			} else { 		  
+				this.activateITSMDetail(record, 0, "all" );
+			}
+		}
 	},
 	// >>>
 	
@@ -499,7 +509,7 @@ Ext.define("itsm.controller.itsm", {
 	},
 	// >>>
 	
-	activateITSMDetail: function (record, daysBack) 
+	activateITSMDetail: function (record, daysBack, author ) 
 	{ // <<<
 		console.log("controller.itsm.activateITSMDetail");
 	
@@ -514,7 +524,7 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			var hostName = data[0];
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
-			s.getProxy().setUrl( hostName + '?cmd=send&data={"dataName":"' + record + '","daysBack":"' + daysBack + '"}' );
+			s.getProxy().setUrl( hostName + '?cmd=send&data={"dataName":"' + record + '","daysBack":"' + daysBack + '","author":"' + author + '"}' );
 			console.log( 'controller: URL=' + s.getProxy().getUrl() );
 	
 			s.load();
@@ -891,6 +901,50 @@ Ext.define("itsm.controller.itsm", {
 			hostName = data[0];
 
 			s.getProxy().setUrl( hostName + '?cmd=set_rework&data={"src": "' + caseData.case + '", "ref": "' + obj.caseno + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load( function( record, operation, success ) { 
+				Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+					if (button.getId() === 'itsmdetail_link') {
+						if( success == true ) {
+							button.setBadgeText("Saved");
+						} else {
+							button.setBadgeText("Failed!");
+						}
+					}
+				});
+			});
+
+			// The data can be reloaded after updating them
+			// in database. Th sideefect is that the nestedlist and 
+			// data source gets out of syns and various efect can occur
+			// Preferably do not refresh the data store ...
+//			it.load();
+
+			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideLeftTransition);
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+	},
+	// >>>
+
+	onReferenceSave: function(caseData, obj) 
+	{ // <<<
+		var rec,hostName;
+		var data = [];
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('db');
+		var it = Ext.getStore('desktopITSM');
+		var v;
+
+		console.log('controller jira to case >' + caseData.case + '<>' + caseData.id + '< with refence item >' + obj.refid + '<' );
+
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			s.getProxy().setUrl( hostName + '?cmd=set_reference&data={"caseNo": "' + caseData.case + '", "refId": "' + obj.refid + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load( function( record, operation, success ) { 
 				Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
