@@ -49,6 +49,7 @@ app/view/patchMgmtInsertForm.js \
 app/view/projectMgmtInsertForm.js \
 app/view/emailView.js \
 app/view/itsmCaseLinkForm.js \
+app/view/itsmRefLinkForm.js \
 app/view/setCheckpointForm.js \
 app/view/setCaseStatusForm.js \
 styles/config.rb \
@@ -71,9 +72,11 @@ resources/images/otcs-5y.png \
 resources/images/otcs-1y.png \
 resources/images/otcs-6m.png \
 resources/images/iUnassigned-2.png \
+resources/images/iUser1.png \
 resources/images/iFavorites.png \
 resources/images/iCases.png \
 resources/images/iPatches.png \
+resources/images/iPatch.png \
 resources/images/iStar.png \
 resources/images/iArchive.png \
 resources/images/iArchive2.png \

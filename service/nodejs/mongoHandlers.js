@@ -500,6 +500,155 @@ function retrieveRecentEmailsFromMDB( callback, data, res ) {
 }
 // >>>
 
+function retrieveRecentEmailsByAuthorFromMDB( callback, data, res ) {
+// <<<
+	try {
+		var dataObj = JSON.parse(data);
+		var feedInput = {};
+		var pattern = "";
+		var response = "";
+		var t = new Date();
+		var day;
+		var query;
+				
+/* <<<
+		// Perform basic date calculation (add/subtract days from a date)
+		var day = new Date();
+		day.setDate(day.getDate() - 7);
+		day.toString();
+		(day.getMonth()+1).toString();
+		(day.getYear()+1900).toString();
+>>> */
+
+		feedInput.entries = [];
+
+		// Set up the connection to the local db
+		var mongoclient = new MongoClient(new Server("localhost", 27017, {native_parser: true}));
+
+		// Open the connection to the server
+		mongoclient.open(function(err, mongoclient) {
+
+			// Get the first db and do an update document on it
+			var db = mongoclient.db("itsm");
+			var collection = db.collection('test');
+
+/* <<<
+			day -= parseInt(dataObj.daysBack); // TODO - debugging
+			if( day < 10 ) {
+				pattern = "0" + day.toString();
+			} else {
+				pattern = day.toString();
+			}
+			pattern = pattern + "." + (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString();
+			var query = { "sentOn": new RegExp('^' + pattern ) };
+>>> */
+
+			pattern = (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString() + " ";
+			query = { "sentOn": new RegExp('^...' + pattern ), "mailSender": new RegExp( dataObj.author) };
+
+			collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+				if( err ) throw err;
+
+				feedInput.entries[0] = {};
+				feedInput.entries[0].dateStr = pattern;
+				feedInput.entries[0].searchStr = "";
+
+				if( docs && (docs.length) > 0 ) {
+					feedInput.entries[0].searchStr = docs[0].caseNo;
+					for ( var iterator in docs ) {
+						feedInput.entries[0].searchStr = feedInput.entries[0].searchStr + ", " + docs[iterator].caseNo;
+					}
+				}
+				// --------------------- 1 -----------------------------
+		
+				pattern = (t.getMonth()).toString() + "." + (t.getYear()+1900).toString() + " ";
+				query = { "sentOn": new RegExp('^...' + pattern ), "mailSender": new RegExp( dataObj.author ) };
+
+				collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+					if( err ) throw err;
+		
+					feedInput.entries[1] = {};
+					feedInput.entries[1].dateStr = pattern;
+					feedInput.entries[1].searchStr = "";
+
+					if( docs && (docs.length) > 0 ) {
+						feedInput.entries[1].searchStr = docs[0].caseNo;
+						for ( var iterator in docs ) {
+							feedInput.entries[1].searchStr = feedInput.entries[1].searchStr + ", " + docs[iterator].caseNo;
+						}
+					}
+					// --------------------- 2 -----------------------------
+			
+					pattern = (t.getMonth()-1).toString() + "." + (t.getYear()+1900).toString() + " ";
+					query = { "sentOn": new RegExp('^...' + pattern ), "mailSender": new RegExp( dataObj.author ) };
+
+					collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+						if( err ) throw err;
+			
+						feedInput.entries[2] = {};
+						feedInput.entries[2].dateStr = pattern;
+						feedInput.entries[2].searchStr = "";
+	
+						if( docs && (docs.length) > 0 ) {
+							feedInput.entries[2].searchStr = docs[0].caseNo;
+							for ( var iterator in docs ) {
+								feedInput.entries[2].searchStr = feedInput.entries[2].searchStr + ", " + docs[iterator].caseNo;
+							}
+						}
+						// --------------------- 3 -----------------------------
+
+						pattern = (t.getMonth()-2).toString() + "." + (t.getYear()+1900).toString() + " ";
+						query = { "sentOn": new RegExp('^...' + pattern ), "mailSender": new RegExp( dataObj.author ) };
+
+						collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+							if( err ) throw err;
+				
+							feedInput.entries[3] = {};
+							feedInput.entries[3].dateStr = pattern;
+							feedInput.entries[3].searchStr = "";
+
+							if( docs && (docs.length) > 0 ) {
+								feedInput.entries[3].searchStr = docs[0].caseNo;
+								for ( var iterator in docs ) {
+									feedInput.entries[3].searchStr = feedInput.entries[3].searchStr + ", " + docs[iterator].caseNo;
+								}
+							}
+							// --------------------- 4 -----------------------------
+					
+							pattern = (t.getMonth()-3).toString() + "." + (t.getYear()+1900).toString() + " ";
+							query = { "sentOn": new RegExp('^...' + pattern ), "mailSender": new RegExp( dataObj.author ) };
+
+							collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
+								if( err ) throw err;
+					
+								feedInput.entries[4] = {};
+								feedInput.entries[4].dateStr = pattern;
+								feedInput.entries[4].searchStr = "";
+	
+								if( docs && (docs.length) > 0 ) {
+									feedInput.entries[4].searchStr = docs[0].caseNo;
+									for ( var iterator in docs ) {
+										feedInput.entries[4].searchStr = feedInput.entries[4].searchStr + ", " + docs[iterator].caseNo;
+									}
+								}
+
+								pattern = JSON.stringify(feedInput);
+								mongoclient.close();
+								sql.getFeed( callback, pattern, res );
+							});
+				     	});
+			     	});
+		     	});
+      	});
+		});
+	}
+	catch(e) {
+		res.writeHead(404);
+		res.end(e.name + ': ' + e.message);
+	}
+}
+// >>>
+
 function retrieveEmailCountFromMDB( callback, data, res ) {
 // <<<
 	var reply = {};
@@ -786,6 +935,7 @@ exports.removeMailMDB = removeMailMDB;
 exports.retrieveEmailsFromMDB = retrieveEmailsFromMDB; 
 exports.retrieveEmailCountFromMDB = retrieveEmailCountFromMDB;
 exports.retrieveRecentEmailsFromMDB = retrieveRecentEmailsFromMDB;
+exports.retrieveRecentEmailsByAuthorFromMDB = retrieveRecentEmailsByAuthorFromMDB
 exports.searchTextInEmailsMDB = searchTextInEmailsMDB
 exports.countTodaysFeed = countTodaysFeed
 

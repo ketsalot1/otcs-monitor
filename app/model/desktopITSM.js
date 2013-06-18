@@ -9,6 +9,7 @@ Ext.define('itsm.model.desktopITSM', {
 		   { name: 'details', type: 'string' },
 		   { name: 'patches', type: 'string' },
 		   { name: 'jira', type: 'string' },
+		   { name: 'reference', type: 'string' },
 		   { name: 'project', type: 'string' },
 		   { name: 'rework', type: 'int' },
 		   { name: 'synopsis', type: 'string' },

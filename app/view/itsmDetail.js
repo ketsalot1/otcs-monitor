@@ -380,8 +380,8 @@ Ext.define("itsm.view.itsmDetail", {
 					</div> \
 					<div class=\"custom-details-table\"> \
 						<div class=\"custom-details-row\"> \
-							<div class=\"custom-details-cell-name\">Checkpoint:</div> \
-							<div class=\"custom-details-cell-value\">" + post.get('checkpoint') + "</div> \
+							<div class=\"custom-details-cell-name\">Reference:</div> \
+							<div class=\"custom-details-cell-value\">[<a href=\"https://jira.opentext.com/browse/" + post.get('reference') + "\">" + post.get('reference') + "</a>]</div> \
 						</div> \
 					</div> \
 					<div class=\"custom-details-table right\"> \
@@ -454,8 +454,8 @@ Ext.define("itsm.view.itsmDetail", {
 					</div> \
 					<div class=\"custom-details-table\"> \
 						<div class=\"custom-details-row\"> \
-							<div class=\"custom-details-cell-name\">Checkpoint:</div> \
-							<div class=\"custom-details-cell-value\">" + post.get('checkpoint') + "</div> \
+							<div class=\"custom-details-cell-name\">Reference:</div> \
+							<div class=\"custom-details-cell-value\">[<a href=\"https://jira.opentext.com/browse/" + post.get('reference') + "\">" + post.get('reference') + "</a>]</div> \
 						</div> \
 					</div> \
 					<div class=\"custom-details-table right\"> \

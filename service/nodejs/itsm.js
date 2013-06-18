@@ -43,6 +43,7 @@ handle['get_overview'] = requestHandlers.itsmOverview;
 handle['favorites'] = requestHandlers.favorites;
 handle['hotfixes'] = requestHandlers.hotfixes;
 handle['set_rework'] = requestHandlers.insertRework;
+handle['set_reference'] = requestHandlers.updateReferenceJira;
 handle['get_rework'] = requestHandlers.sendRework;
 /* Assign service routines to keyword in the 
  * parameters in the incoming query. Assuming
@@ -60,5 +61,6 @@ handle['mdb_retrieve_emails'] = mongoHandlers.retrieveEmailsFromMDB;
 handle['mdb_retrieve_email_count'] = mongoHandlers.retrieveEmailCountFromMDB;
 
 handle['get_feed'] = mongoHandlers.retrieveRecentEmailsFromMDB;
+handle['get_feed_by_author'] = mongoHandlers.retrieveRecentEmailsByAuthorFromMDB; 
 
 server.service( router.route, handle );

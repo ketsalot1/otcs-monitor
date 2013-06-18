@@ -72,6 +72,9 @@ Ext.define("itsm.view.itsmLinkForms", {
 					xtype: 'itsmprojectassignform'
 				},
 				{
+					xtype: 'itsmreferenceform'
+				},
+				{
 					xtype: 'itsmcaseform'
 				}
 			]
@@ -144,12 +147,25 @@ Ext.define("itsm.view.itsmLinkForms", {
 				this.fireEvent('linkProjectCaseCommand', opentext.data.activeCase, obj );
 			}
 			//
-			// The fourth page is for rework insertion
+			// The fourth page is for reference insertion
 			if( this.getItems().items[0].activeIndex == 3 ) {
-				var form = Ext.ComponentQuery.query('itsmcaseform')[0];
+				var form = Ext.ComponentQuery.query('itsmreferenceform')[0];
 				if( typeof form == "undefined" ) 
 					throw({name:"Form Problem", message:"Cannot find requested form"});
 				var src = this.getItems().items[0].getItems().items[4];
+				if( form.getId() != src.getId() ) 
+					throw({name:"Form Problem", message:"Cannot find requested form"});
+				obj.refid = src.getFields().refID.getValue();
+				console.log("view.ProjectForm.saveButtonTap: Refeneced Jira iD >" + obj.refid + "<" );
+				this.fireEvent('linkReferenceCommand', opentext.data.activeCase, obj );
+			}
+			//
+			// The fifth page is for rework insertion
+			if( this.getItems().items[0].activeIndex == 4 ) {
+				var form = Ext.ComponentQuery.query('itsmcaseform')[0];
+				if( typeof form == "undefined" ) 
+					throw({name:"Form Problem", message:"Cannot find requested form"});
+				var src = this.getItems().items[0].getItems().items[5];
 				if( form.getId() != src.getId() ) 
 					throw({name:"Form Problem", message:"Cannot find requested form"});
 				obj.caseno = src.getFields().caseno.getValue();

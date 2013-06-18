@@ -27,7 +27,7 @@ database.queries = (function() {
 	return {
 		"DBQ001": 'select project_04 "id", long_text_04 "title", short_text_04 "code" from t04_project;',
 	 "DBQ001EX": 'select project_04 "id", long_text_04 "title", short_text_04 "code", category_04 "category" from t04_project where project_04 not in (?);',
-		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
+		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint", t01.ref_01 as "reference" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 //		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? and modified_01 >= date_sub(CURDATE(),interval ? day) order by t01.case_01 asc;',
 //		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ003": 'select name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
@@ -105,6 +105,8 @@ database.queries = (function() {
 
 		"DBQ047": 'select t01.id_01 "id", t01.case_01 "case", CONCAT( "(", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y"),") - ", t01.subject_01) as "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.next_update_01 is not NULL and t01.next_update_01 > CURDATE() order by t01.next_update_01 asc;',
 		"DBQ048": 'select t01.id_01 "id", t01.case_01 "case", CONCAT( "(", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y"),") - ", t01.subject_01) as "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.next_update_01 is not NULL and t01.next_update_01 <= CURDATE() order by t01.next_update_01 asc;',
+
+		"DBQ050": 'update t01_case set ref_01 = ? where case_01 = ?;',
 
 		"DBQ999": 'nope'
 	};
@@ -841,7 +843,7 @@ function describeAll( callback, res ) {
 					if( rows[iterator].id == 99 ) {
 	//					rows[iterator].category = "Dashboard";
 						rows[iterator].icon = "resources/images/iUnassigned-2.png";
-					}
+					;}
 				  	if( (rows[iterator].category).match("OTCS Cases")) {
 						rows[iterator].category = rows[iterator].category + " (" + database.tools.toLocalDate(tmp) + ")";
 						rows[iterator].icon = "resources/images/iCases.png";
@@ -898,13 +900,21 @@ function describeAll( callback, res ) {
 				rows[idx] = {};
 				rows[idx].id = 93;
 				rows[idx].category = "Dashboard";
+				rows[idx].title = "Activity by Author";
+				rows[idx].code = "Authoring";
+				rows[idx].icon = "resources/images/iUser1.png";
+
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 92;
+				rows[idx].category = "Dashboard";
 				rows[idx].title = "Patches";
 				rows[idx].code = "Patches";
 				rows[idx].icon = "resources/images/iPatches.png";
 
 				idx++;
 				rows[idx] = {};
-				rows[idx].id = 92;
+				rows[idx].id = 91;
 				rows[idx].category = "Dashboard";
 				rows[idx].title = "Archive queue";
 				rows[idx].code = "Transient";
@@ -912,11 +922,12 @@ function describeAll( callback, res ) {
 
 				idx++;
 				rows[idx] = {};
-				rows[idx].id = 91;
+				rows[idx].id = 90;
 				rows[idx].category = "Dashboard";
 				rows[idx].title = "Rework";
 				rows[idx].code = "Rework";
 				rows[idx].icon = "resources/images/iRework.png";
+
 			}
 			database.tools.cb_response_fetch( error, rows, fields, res, callback );
 		});
@@ -1015,6 +1026,14 @@ function describeDashboard( callback, res ) {
 				reply[idx].category = "Dashboard";
 				reply[idx].title = "Activity chronicle";
 				reply[idx].code = "Feed_with_question";
+				reply[idx].icon = "resources/images/iFeed.png";
+
+				idx++;
+				reply[idx] = {};
+				reply[idx].id = 90;
+				reply[idx].category = "Dashboard";
+				reply[idx].title = "Activity by Author";
+				reply[idx].code = "Authoring";
 				reply[idx].icon = "resources/images/iFeed.png";
 			}
 			database.tools.cb_response_fetch( error, reply, fields, res, callback );
@@ -1226,6 +1245,10 @@ function send( callback, data, res ) {
 			mongo.retrieveRecentEmailsFromMDB( callback, data, res );
 			return;
 		}
+		if( dataObj.dataName == "Authoring" ) {
+			mongo.retrieveRecentEmailsByAuthorFromMDB( callback, data, res );
+			return;
+		}
 		sendCases( callback, dataObj.dataName, res );
 	}
 	catch( e ) {
@@ -1330,6 +1353,7 @@ function sendCases( callback, dataName, res ) {
 							logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
 							cases[iterator].patches += rows[iter].patch;
 							cases[iterator].patches += ", ";
+							cases[iterator].icon = "resources/images/iPatch.png";
 						}
 					}
 
@@ -2704,6 +2728,7 @@ function updateProject( callback, dataObj, res ) {
 }
 // >>>
 
+
 // DONE
 function updateCaseJira( callback, dataObj, res ) {
 // <<<
@@ -2721,6 +2746,33 @@ function updateCaseJira( callback, dataObj, res ) {
 		}	
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ025, [data.jiraId, data.caseNo], function (error, info) {
+			database.tools.cb_response_create( error, info, res, callback );
+		});
+	} 
+	catch(e) {
+		database.tools.response_error( e.message, res );
+	}
+}
+// >>>
+
+
+// TODO - NEW
+function updateReferenceJira( callback, dataObj, res ) {
+// <<<
+	var fileText;
+	var data;
+	var details;
+	var resp = {};
+
+	try {
+		data = JSON.parse(dataObj);
+		logger.trace('requestHandler.updateCaseJira - Case: ' + data.caseNo + ' with Jira >' + data.refId + '<' );
+		data.caseNo = data.caseNo * 1;
+		if( isNaN(data.caseNo) ) {
+			throw( {'message':'Case Number Invalid: the case number is empty or not a decimal number. Use digits only.' } );
+		}	
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ050, [data.refId, data.caseNo], function (error, info) {
 			database.tools.cb_response_create( error, info, res, callback );
 		});
 	} 
@@ -3084,7 +3136,7 @@ function getFeed( callback, list, res ) {
 													R.support_data.feed.entries[4].support_data.feed.entries[iterator].patches = "&nbsp;";
 													for ( var iter in rows ) {
 														if( R.support_data.feed.entries[4].support_data.feed.entries[iterator].id != rows[iter].id ) continue; 
-														logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[3].support_data.feed.entries[iterator].case + ')' );
+														logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + R.support_data.feed.entries[4].support_data.feed.entries[iterator].case + ')' );
 														R.support_data.feed.entries[4].support_data.feed.entries[iterator].patches += rows[iter].patch;
 														R.support_data.feed.entries[4].support_data.feed.entries[iterator].patches += ", ";
 													}
@@ -3210,6 +3262,7 @@ exports.linkPatch = linkPatch;
 exports.newPatch = newPatch;
 exports.updatePatch = updatePatch;
 exports.updateCaseStatus = updateCaseStatus;
+exports.updateReferenceJira = updateReferenceJira;
 exports.createProject = createProject;
 exports.createProjectEx = createProjectEx; // IN PROGRESS - TODO
 exports.updateProject = updateProject;
