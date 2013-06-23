@@ -374,8 +374,8 @@ Ext.define("itsm.view.itsmDetail", {
 					</div> \
 					<div class=\"custom-details-table right\"> \
 						<div class=\"custom-details-row\"> \
-							<div class=\"custom-details-cell-name left\">Update on:</div> \
-							<div class=\"custom-details-cell-value left\">" + post.get('checkpoint') + "</div> \
+							<div class=\"custom-details-cell-name left\">Created:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('start') + "</div> \
 						</div> \
 					</div> \
 					<div class=\"custom-details-table\"> \
@@ -386,14 +386,26 @@ Ext.define("itsm.view.itsmDetail", {
 					</div> \
 					<div class=\"custom-details-table right\"> \
 						<div class=\"custom-details-row\"> \
-							<div class=\"custom-details-cell-name left\">Reworking:</div> \
-							<div class=\"custom-details-cell-value left\">" + post.get('rework') + "</div> \
+							<div class=\"custom-details-cell-name left\">Update:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('checkpoint') + "</div> \
 						</div> \
 					</div> \
 					<div class=\"custom-details-table\"> \
 						<div class=\"custom-details-row\"> \
-							<div class=\"custom-details-cell-name\">Created:</div> \
-							<div class=\"custom-details-cell-value\">" + post.get('start') + "</div> \
+							<div class=\"custom-details-cell-name\">Reworking:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('rework') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Closed:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('stop') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Age:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('age') + "</div> \
 						</div> \
 					</div> \
 					<div class=\"custom-details-table collspan\"> \
@@ -448,8 +460,8 @@ Ext.define("itsm.view.itsmDetail", {
 					</div> \
 					<div class=\"custom-details-table right\"> \
 						<div class=\"custom-details-row\"> \
-							<div class=\"custom-details-cell-name left\">Update on:</div> \
-							<div class=\"custom-details-cell-value left\">" + post.get('checkpoint') + "</div> \
+							<div class=\"custom-details-cell-name left\">Created:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('start') + "</div> \
 						</div> \
 					</div> \
 					<div class=\"custom-details-table\"> \
@@ -460,14 +472,26 @@ Ext.define("itsm.view.itsmDetail", {
 					</div> \
 					<div class=\"custom-details-table right\"> \
 						<div class=\"custom-details-row\"> \
-							<div class=\"custom-details-cell-name left\">Reworking:</div> \
-							<div class=\"custom-details-cell-value left\">" + post.get('rework') + "</div> \
+							<div class=\"custom-details-cell-name left\">Update:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('checkpoint') + "</div> \
 						</div> \
 					</div> \
 					<div class=\"custom-details-table\"> \
 						<div class=\"custom-details-row\"> \
-							<div class=\"custom-details-cell-name\">Created:</div> \
-							<div class=\"custom-details-cell-value\">" + post.get('start') + "</div> \
+							<div class=\"custom-details-cell-name\">Reworking:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('rework') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table right\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name left\">Closed:</div> \
+							<div class=\"custom-details-cell-value left\">" + post.get('stop') + "</div> \
+						</div> \
+					</div> \
+					<div class=\"custom-details-table\"> \
+						<div class=\"custom-details-row\"> \
+							<div class=\"custom-details-cell-name\">Age:</div> \
+							<div class=\"custom-details-cell-value\">" + post.get('age') + "</div> \
 						</div> \
 					</div> \
 					<div class=\"custom-details-table collspan\"> \

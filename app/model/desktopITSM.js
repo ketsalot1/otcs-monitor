@@ -15,6 +15,8 @@ Ext.define('itsm.model.desktopITSM', {
 		   { name: 'synopsis', type: 'string' },
 		   { name: 'checkpoint', type: 'string' },
 		   { name: 'start', type: 'string' },
+		   { name: 'stop', type: 'string' },
+		   { name: 'age', type: 'string' },
 		   { name: 'id', type: 'int' }
 		]
    }
