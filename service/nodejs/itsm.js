@@ -2,6 +2,7 @@ var server = require("./service");
 var router = require("./router");
 var requestHandlers = require("./requestHandlers");
 var mongoHandlers = require("./mongoHandlers");
+var jQueryHandlers = require("./jQueryHandlers");
 
 var handle = {};
 handle['set_checkpoint'] = requestHandlers.setCheckpoint;
@@ -62,5 +63,7 @@ handle['mdb_retrieve_email_count'] = mongoHandlers.retrieveEmailCountFromMDB;
 
 handle['get_feed'] = mongoHandlers.retrieveRecentEmailsFromMDB;
 handle['get_feed_by_author'] = mongoHandlers.retrieveRecentEmailsByAuthorFromMDB; 
+
+handle['jq_get'] = jQueryHandlers.getData;
 
 server.service( router.route, handle );

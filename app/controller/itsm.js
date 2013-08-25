@@ -30,6 +30,7 @@ Ext.define("itsm.controller.itsm", {
 			patchMgmtView: "patchmainview",
 			checkpointActionPanel: "checkpointactionpanel",
 			checkpointForm: '#setCheckpointFormId', // Refer the form by ID.
+			patchETAForm: '#setPatchETAFormId', // Refer the form by ID.
 			statusForm: '#setCaseStatusFormId' // Refer the form by ID.
 		},
 		control: {
@@ -53,6 +54,8 @@ Ext.define("itsm.controller.itsm", {
 				detailShowEmailsCommand: "onShowEmails",
 				searchCaseCommand: 'onSearchCase',
 				setCheckpointCaseCommand: 'onSetCheckpoint',
+				setPatchETACommand: 'onUpdatePatchPanel',
+				setPatchStatusCommand: 'onUpdatePatchForm',
 				resetCheckpointCaseCommand: 'onResetCheckpoint',
 				setCaseStatusTextCommand: 'onSetCaseStatus',
 			},
@@ -94,7 +97,7 @@ Ext.define("itsm.controller.itsm", {
 				backCommand: "onBackMainList",
 				insertProjectCommand: "onNewProject",
 				insertPatchCommand: "onNewPatch",
-				updatePatchCommand: "onUpdatePatch",
+				updatePatchCommand: "onUpdatePatchForm",
 				archivePatchCommand: "onArchivePatch"
 			},
 			emailView: {
@@ -243,6 +246,43 @@ Ext.define("itsm.controller.itsm", {
 			var value = this.getCheckpointForm().getFields().checkpoint.getFormattedValue();
 	
 			s.getProxy().setUrl( hostName + '?cmd=set_checkpoint&data={"caseNo": "' + caseNo.case  + '", "nextUpdate": "' + value  + '"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load( function( record, operation, success ) {
+				var txt = "0";
+				if( success ) {
+					txt = record[0].getData().value;
+					if( (txt * 1 ) !== 1 )
+						Ext.Msg.alert('Error', 'Checkpoint not set.', Ext.emptyFn);
+				}
+			});
+	
+			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
+//			this.activateMainView();
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+	// >>>
+
+	onSetPatchETA : function(caseNo) {
+	// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('db');
+		var rec, data, hostName;
+	
+		console.log("controller.itsm.onSetCheckpoint: requesting Case checkpoint for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
+	
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+
+			// Accessing the form over its reference in the main  controller. This requires 
+			// entry in the 'refs' section and Id set for the specific form (checkpointForm)
+			var value = this.getPatchETAForm().getFields().eta.getFormattedValue();
+	
+			s.getProxy().setUrl( hostName + '?cmd=set_patch_eta&data={"caseNo": "' + caseNo.case  + '", "nextUpdate": "' + value  + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load( function( record, operation, success ) {
 				var txt = "0";
@@ -1086,6 +1126,28 @@ Ext.define("itsm.controller.itsm", {
 	},
 // >>>
 
+	onUpdatePatchForm: function(obj) {
+	// <<<
+		this.onUpdatePatch( obj );
+	},
+	// >>>
+
+	onUpdatePatchPanel: function(obj) {
+	// <<<
+		var value;
+
+		try {
+			// Accessing the form over its reference in the main  controller. This requires 
+			// entry in the 'refs' section and Id set for the specific form (checkpointForm)
+			obj.patchETA = this.getPatchETAForm().getFields().eta.getFormattedValue();
+			this.onUpdatePatch( obj );
+		}
+		catch(e) {
+			console.error( e.message );
+		}
+	},
+	// >>>
+	
 	onUpdatePatch: function(obj) {
 // <<<
 		var rec,hostName;
@@ -1108,7 +1170,7 @@ Ext.define("itsm.controller.itsm", {
 			console.log('Request >' + db.getProxy().getUrl() + '<' );
 			db.load( function( record, operation, success ) {
 				Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
-					if (button.getId() === 'patch_mgmt_save') {
+					if ((button.getId() === 'patch_mgmt_save') || (button.getId() === 'itsmdetail_patch_cmd')) {
 						console.log( 'patch management panel: save button found!' );
 						if( success == true ) {
 							button.setBadgeText("Saved!");

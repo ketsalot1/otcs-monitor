@@ -3,6 +3,14 @@ function route(handle, params, res) {
 
 	try {
 		var callback = params['processSupportData'];
+
+		if( !callback ) {
+			callback=params['callback'];
+		}
+		/* jQuery does not allow to define the name of callback parameter
+		 * it is always called 'callback'. Sencha required to specify
+		 * the name 
+		 */
 		var cmd = params['cmd'];
 		var pars = params['data'];
 

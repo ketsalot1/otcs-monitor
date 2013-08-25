@@ -52,6 +52,7 @@ app/view/itsmCaseLinkForm.js \
 app/view/itsmRefLinkForm.js \
 app/view/setCheckpointForm.js \
 app/view/setCaseStatusForm.js \
+app/view/setPatchETAForm.js \
 styles/config.rb \
 styles/app.scss \
 service/all.data \

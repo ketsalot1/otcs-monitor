@@ -29,8 +29,8 @@ database.queries = (function() {
 	 "DBQ001EX": 'select project_04 "id", long_text_04 "title", short_text_04 "code", category_04 "category" from t04_project where project_04 not in (?);',
 		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", DATE_FORMAT(t01.stop_01,"%d-%m-%Y") as "stop", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint", t01.ref_01 as "reference", t01.start_01 as "startObj", t01.stop_01 as "stopObj" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
 //		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? and modified_01 >= date_sub(CURDATE(),interval ? day) order by t01.case_01 asc;',
-//		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
-		"DBQ003": 'select name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%d-%m-%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
+//		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%m/%d/%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
+		"DBQ003": 'select id_02 as "patchId", name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%m/%d/%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
 //		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 		"DBQ004": 'select t02.name_02 "patch", t01.subject_01 "description", t01.jira_01 as "jira" from t01_case t01, t02_patch t02, t03_link t03 where t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01;',
 //		"DBQ005": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01 where t01.case_01 like ? order by t01.case_01 asc;',
@@ -107,6 +107,7 @@ database.queries = (function() {
 		"DBQ048": 'select t01.id_01 "id", t01.case_01 "case", CONCAT( "(", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y"),") - ", t01.subject_01) as "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.next_update_01 is not NULL and t01.next_update_01 <= CURDATE() order by t01.next_update_01 asc;',
 
 		"DBQ050": 'update t01_case set ref_01 = ? where case_01 = ?;',
+		"DBQ060": 'select t01.active_01 as "active", t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", DATE_FORMAT(t01.stop_01,"%d-%m-%Y") as "stop", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint", t01.ref_01 as "reference", t01.start_01 as "startObj", t01.stop_01 as "stopObj", t02.name_02 as "patches" from  t01_case t01, t02_patch t02, t03_link t03, t04_project t04 where t01.project_01 = t04.project_04 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t01.case_01 asc;',
 
 		"DBQ999": 'nope'
 	};
@@ -922,13 +923,21 @@ connection.query(database.queries.DBQ001EX, [0], function (error, rows, fields) 
 	 rows[idx] = {};
 	 rows[idx].id = 91;
 	 rows[idx].category = "Dashboard";
+	 rows[idx].title = "Patches Details";
+	 rows[idx].code = "PatchDetails";
+	 rows[idx].icon = "resources/images/iPatches.png";
+
+	 idx++;
+	 rows[idx] = {};
+	 rows[idx].id = 90;
+	 rows[idx].category = "Dashboard";
 	 rows[idx].title = "Archive queue";
 	 rows[idx].code = "Transient";
 	 rows[idx].icon = "resources/images/iArchive2.png";
 
 	 idx++;
 	 rows[idx] = {};
-	 rows[idx].id = 90;
+	 rows[idx].id = 89;
 	 rows[idx].category = "Dashboard";
 	 rows[idx].title = "Rework";
 	 rows[idx].code = "Rework";
@@ -1222,6 +1231,10 @@ try {
 var dataObj = JSON.parse(data);
 logger.trace('requestHandler.send: requested project: ' + dataObj.dataName );
 
+if( dataObj.dataName == "PatchDetails" ) {
+ sendPatchDetails( callback, res );
+ return;
+}
 if( dataObj.dataName == "Patches" ) {
  sendPatches( callback, res );
  return;
@@ -2713,7 +2726,7 @@ function updatePatch( callback, dataObj, res ) {
 		if(( typeof data.patchStatus != 'string') || ( data.patchStatus.length == 0 ) ) {
 			throw( {'message':'Patch Status Invalid: the patch status is not a string or the string is empty.'} );
 		}	
-		data.patchETA = database.tools.toDBDate(database.tools.arseDate(data.patchETA));
+		data.patchETA = database.tools.toDBDate(database.tools.parseDate(data.patchETA));
 		var connection = database.tools.getConnection();
 		connection.query(database.queries.DBQ013, [data.patchETA, data.patchStatus, data.patchId], function (error, info) {
 			if( info.warningCount > 0 ) {
@@ -3209,6 +3222,86 @@ function getFeed( callback, list, res ) {
 	}
 } // >>>
 
+
+// TODO - UNDER CONSTRUCTION
+function sendPatchDetails( callback, res ) {
+// <<<
+	logger.trace('requestHandler.getPatchDetails' );
+	var results;
+	var R = {};
+	R.support_data = {};
+	R.support_data.feed = {};
+	R.support_data.feed.title = "support data";
+	R.support_data.feed.entries = [];
+
+	try {
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ003, function (error, rows, fields) {
+ 			if( error ) { 
+		 		database.tools.response_error(error.toString(), res);
+		 		return;
+ 			}
+ 			logger.trace('requestHandler.preparePatches: processing list of patches >' + rows.length + '<' );
+ 			results = rows;
+
+			for( var iterator in rows ) {
+				if( typeof R.support_data.feed.entries[iterator] === 'undefined' )
+					R.support_data.feed.entries[iterator] = {};
+				R.support_data.feed.entries[iterator].icon = "resources/images/iPatches.png";
+				R.support_data.feed.entries[iterator].description = rows[iterator].description;
+				R.support_data.feed.entries[iterator].support_data = {};
+				R.support_data.feed.entries[iterator].support_data.feed = {};
+				R.support_data.feed.entries[iterator].support_data.feed.title = "support data";
+				R.support_data.feed.entries[iterator].support_data.feed.entries = [];
+			}
+
+ 			logger.trace('requestHandler.preparePatches: list of patches stored in results. Length = ' + results.length + '<' );
+ 			connection.query(database.queries.DBQ060, function (error, rows, fields) {
+		 		try {
+			 		var idc = 0;
+		 			if( !error ) {
+			 			for ( var iterator in results ) {
+				 			logger.trace('requestHandler.preparePatches: assigning details to patch >' + results[iterator].description + '<' );
+				 			for ( var cntr in rows ) {
+					 			if( results[iterator].patch != rows[cntr].patches ) continue;
+								var i = R.support_data.feed.entries[iterator].support_data.feed.entries.length;
+								R.support_data.feed.entries[iterator].support_data.feed.entries[i] = rows[cntr];
+								R.support_data.feed.entries[iterator].support_data.feed.entries[i].leaf = 'true';
+								if( rows[cntr].active === 1 ) {
+									R.support_data.feed.entries[iterator].support_data.feed.entries[i].icon = 'resources/images/iFeed.png';
+								} else {
+									R.support_data.feed.entries[iterator].support_data.feed.entries[i].icon = 'resources/images/iPatches.png';
+								}
+			 					R.support_data.feed.entries[iterator].support_data.feed.entries[i].details = database.tools.encodeHTMLTable( rows[cntr].details );
+				 			}
+			 			}
+		 			}
+					R.responseDetails = null;
+					R.responseStatus = 200;
+
+					res.writeHead(200, {
+						'Content-Type': 'x-application/json'
+					});
+					if( callback )
+						res.write( callback + '(' );
+					res.write(JSON.stringify(R));
+					if( callback )
+						res.write(')');
+					res.end();
+
+					logger.trace('requestHandler.getFeed: response object flushed to client' );
+					database.tools.closeConnection();
+	 			}
+	 			catch( e ) {
+		 			database.tools.response_error( e.message, res );
+				}
+ 			});
+ 		});
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+} // >>>
 
 // OBSOLETED
 function getFeed_backup( callback, list, res ) {
