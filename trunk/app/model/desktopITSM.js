@@ -17,7 +17,8 @@ Ext.define('itsm.model.desktopITSM', {
 		   { name: 'start', type: 'string' },
 		   { name: 'stop', type: 'string' },
 		   { name: 'age', type: 'string' },
-		   { name: 'id', type: 'int' }
+		   { name: 'id', type: 'int' },
+		   { name: 'patchId', type: 'int' }
 		]
    }
 });

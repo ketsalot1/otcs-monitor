@@ -56,6 +56,7 @@ badd +1623 requestHandlers.js
 badd +1 router.js
 badd +1 log4js.configuration.json
 badd +207 mongoHandlers.js
+badd +0 jQueryHandlers.js
 silent! argdel *
 edit itsm.js
 set splitbelow splitright
@@ -71,11 +72,11 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 15 + 15) / 31)
-exe 'vert 1resize ' . ((&columns * 63 + 70) / 140)
-exe '2resize ' . ((&lines * 13 + 15) / 31)
-exe 'vert 2resize ' . ((&columns * 63 + 70) / 140)
-exe 'vert 3resize ' . ((&columns * 76 + 70) / 140)
+exe '1resize ' . ((&lines * 17 + 16) / 32)
+exe 'vert 1resize ' . ((&columns * 63 + 70) / 141)
+exe '2resize ' . ((&lines * 12 + 16) / 32)
+exe 'vert 2resize ' . ((&columns * 63 + 70) / 141)
+exe 'vert 3resize ' . ((&columns * 77 + 70) / 141)
 argglobal
 setlocal keymap=
 setlocal noarabic
@@ -173,12 +174,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 49 - ((12 * winheight(0) + 7) / 15)
+let s:l = 67 - ((14 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-49
-normal! 020l
+67
+normal! 0
 wincmd w
 argglobal
 edit service.js
@@ -278,7 +279,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 11 - ((8 * winheight(0) + 6) / 13)
+let s:l = 11 - ((8 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -383,18 +384,18 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 21 - ((0 * winheight(0) + 14) / 29)
+let s:l = 21 - ((0 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 21
 normal! 0
 wincmd w
-exe '1resize ' . ((&lines * 15 + 15) / 31)
-exe 'vert 1resize ' . ((&columns * 63 + 70) / 140)
-exe '2resize ' . ((&lines * 13 + 15) / 31)
-exe 'vert 2resize ' . ((&columns * 63 + 70) / 140)
-exe 'vert 3resize ' . ((&columns * 76 + 70) / 140)
+exe '1resize ' . ((&lines * 17 + 16) / 32)
+exe 'vert 1resize ' . ((&columns * 63 + 70) / 141)
+exe '2resize ' . ((&lines * 12 + 16) / 32)
+exe 'vert 2resize ' . ((&columns * 63 + 70) / 141)
+exe 'vert 3resize ' . ((&columns * 77 + 70) / 141)
 tabedit requestHandlers.js
 set splitbelow splitright
 set nosplitbelow
@@ -500,11 +501,15 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1623 - ((103 * winheight(0) + 15) / 30)
+2957
+normal zo
+2957
+normal zo
+let s:l = 3183 - ((228 * winheight(0) + 15) / 31)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1623
+3183
 normal! 0
 tabedit mongoHandlers.js
 set splitbelow splitright
@@ -611,11 +616,11 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 15) / 30)
+let s:l = 695 - ((674 * winheight(0) + 15) / 31)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+695
 normal! 0
 tabedit log4js.configuration.json
 set splitbelow splitright
@@ -685,6 +690,7 @@ setlocal matchpairs=(:),{:},[:]
 setlocal nomodeline
 setlocal modifiable
 setlocal nrformats=octal,hex
+set number
 setlocal nonumber
 setlocal numberwidth=4
 setlocal omnifunc=
@@ -700,6 +706,7 @@ setlocal shiftwidth=8
 setlocal noshortname
 setlocal nosmartindent
 setlocal softtabstop=0
+set spell
 setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=~/custom.en.ascii.add
@@ -720,13 +727,126 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 14) / 29)
+let s:l = 1 - ((0 * winheight(0) + 15) / 31)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
 normal! 0
-tabnext 2
+tabedit jQueryHandlers.js
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winheight=1 winwidth=1
+argglobal
+setlocal keymap=
+setlocal noarabic
+setlocal noautoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal cindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+setlocal commentstring=/*%s*/
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal noexpandtab
+if &filetype != 'javascript'
+setlocal filetype=javascript
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=1
+set foldmarker=<<<,>>>
+setlocal foldmarker=<<<,>>>
+set foldmethod=marker
+setlocal foldmethod=marker
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=qcrto
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=2
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal nomodeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=3
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=0
+set spell
+setlocal spell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=~/custom.en.ascii.add
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=
+setlocal swapfile
+setlocal synmaxcol=3000
+if &syntax != 'javascript'
+setlocal syntax=javascript
+endif
+setlocal tabstop=3
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal nowinfixheight
+setlocal nowinfixwidth
+set nowrap
+setlocal nowrap
+setlocal wrapmargin=0
+21
+normal zo
+let s:l = 46 - ((27 * winheight(0) + 15) / 31)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+46
+normal! 025l
+tabnext 5
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif

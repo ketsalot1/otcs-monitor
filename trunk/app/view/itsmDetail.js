@@ -14,7 +14,8 @@ Ext.define("itsm.view.itsmDetail", {
 		"Ext.TitleBar",
 		"Ext.data.proxy.JsonP",
 		"Ext.ActionSheet",
-		"itsm.view.setCheckpointForm"
+		"itsm.view.setCheckpointForm",
+		"itsm.view.setPatchETAForm"
 	],
 
  	alias: "widget.itsmdetail",
@@ -42,6 +43,18 @@ Ext.define("itsm.view.itsmDetail", {
     initialize: function () { // <<<
 
         this.callParent(arguments);
+
+        var patchActionButton = {
+            xtype: "button",
+            ui: "action",
+            iconCls: "action",
+            iconMask: true,
+				hidden: true,
+				id: "itsmdetail_patch_cmd",
+				listeners: {
+					tap: { fn: this.onDetailPatchAction, scope: this }
+				}
+        };
 
         var backButton = {
             xtype: "button",
@@ -151,7 +164,8 @@ Ext.define("itsm.view.itsmDetail", {
 					archiveButton,
 					reworkButton,
 					linkButton,
-					editButton
+					editButton,
+					patchActionButton
 		  		]
         };
 
@@ -319,7 +333,7 @@ Ext.define("itsm.view.itsmDetail", {
 	},
 >>> */
 
-	onBack: function(nestedList) {
+	onBack: function(nestedList) { // <<<
 		var lm = {};
 		console.log('nestedList.back event');
 //   	this.callParent(arguments);
@@ -328,12 +342,13 @@ Ext.define("itsm.view.itsmDetail", {
 		lm.ctrls = 0;
 		nestedList.getParent().setUIfromMask( lm );
 	},
+	// >>>
 
-	onItemTap: function(nestedList, list, index, element, post) {
+	onItemTap: function(nestedList, list, index, element, post) { // <<<
 		var lm = {};
 		console.log('nestedList.itemtap event');
 
-		opentext.data.activeCase = { 'case': post.get('case'), 'id': post.get('id'), 'rework':post.get('rework') }; 
+		opentext.data.activeCase = { 'case': post.get('case'), 'id': post.get('id'), 'rework':post.get('rework'), 'patch':post.get('patchId') }; 
 
 		lm.back = 0;
 		// patches entries has the detail card only.
@@ -564,6 +579,7 @@ Ext.define("itsm.view.itsmDetail", {
 					<div style=\"font-size: 0.8em;padding-left:8px; clear: both\">" + post.get('details') + "</div>");
 
 			lm.ctrls = 0;
+			lm.patch = 1;
 		}
 
 		nestedList.getParent().setUIfromMask( lm );
@@ -576,8 +592,9 @@ Ext.define("itsm.view.itsmDetail", {
 			nestedList.setTitle("Activity");
 		}
 	},
+	// >>>
 
-	onDetailBack: function() {
+	onDetailBack: function() { // <<<
 		var lm = {};
 		console.log("view.itsmDetail.Back");
 		lm.back = 1;
@@ -585,8 +602,9 @@ Ext.define("itsm.view.itsmDetail", {
 		this.setUIfromMask( lm );
 		this.fireEvent("detailBackCommand", this);
 	},
+	// >>>
 
-	onDetailEdit: function() {
+	onDetailEdit: function() { // <<<
 		var lm = {};
 		console.log("view.itsmDetail.Edit");
 		if( typeof opentext.data.activeCase == 'object' ) { 
@@ -595,8 +613,173 @@ Ext.define("itsm.view.itsmDetail", {
 			console.error("No case selected");
 		}
 	},
+	// >>>
+	
+	onDetailPatchAction: function() { // <<<
+		var lm = {};
+		lm.back = 0;
+		lm.ctrls = 0;
+		lm.patch = 1;
+		this.setUIfromMask( lm );
 
-	onDetailShowEmails: function() {
+		if( !this.patchCtrls ) {
+			var patchCtrlsSheet = Ext.create('Ext.ActionSheet', {
+	 			alias: "widget.patchctrlsactionpanel",
+				xtype: "patchctrlsactionpanel",
+	    		items: [
+					{
+						text: 'close this patch',
+						scope: this,
+						handler: function() {
+							this.patchCtrls.hide();	
+							if( typeof opentext.data.activeCase == 'object' ) { 
+								var obj = {};
+
+								function onReply(btn) {
+									if( btn === 'yes' ) {
+										// Though this Panel view is constructed as an modal dialog inside the main view 
+										// as an internal element, it cannot use the path traversal (getParent()) to get
+										// reference to the main view. Uses the global function to look up the main view
+										// and use it as an owner for trigerring an event. Such an even is than visible
+										// in the global controller.
+										var dt = Ext.getCmp('itsmDetail');
+										dt.fireEvent( 'setPatchStatusCommand', obj );
+									} else {
+										console.log( 'itsmDetail: cancelling close a patch command' );
+									}
+								}
+
+								obj.patchId = opentext.data.activeCase.patch;
+								obj.patchETA = opentext.data.activeCase.case;
+								obj.patchStatus = "developed";
+
+								console.log("onPatchStatusSaveButtonTap handler called");
+
+								lm.back = 0;
+								lm.ctrls = 0;
+								lm.patch = 1;
+								this.setUIfromMask( lm );
+
+								Ext.Msg.confirm("Confirmation", "Close the Patch?", onReply, this );
+
+							} else {
+								console.error("Cannot close the unknown patch. No patch is selected.");
+								Ext.Msg.alert("Error closing a patch");
+							}
+						}
+					},
+					{
+						text: 'set new ETA',
+						scope: this,
+						handler: function() {
+							this.patchCtrls.hide();	
+							if( typeof opentext.data.activeCase == 'object' ) { 
+								lm.back = 0;
+								lm.ctrls = 0;
+								lm.patch = 1;
+								this.setUIfromMask( lm );
+
+								if( !this.patchETA ) {
+									var patchETASheet = Ext.create('Ext.Panel', {
+	 									alias: "widget.patchetaactionpanel",
+										xtype: "patchetaactionpanel",
+										scope: this,
+										modal: true,
+										hideOnMaskTap: false,
+										showAnimation: {
+											type: 'popIn',
+											duration: 250,
+											easing: 'ease-out'
+										},
+										hideAnimation: {
+											type: 'popOut',
+											duration: 250,
+											easing: 'ease-out'
+										},
+										centered: true,
+										width: Ext.os.deviceType == 'Phone' ? 260 : 400,
+										height: Ext.os.deviceType == 'Phone' ? 230 : 230,
+	    								items: [
+											{
+												xtype: 'toolbar',
+												title: 'Patch ETA',
+												docking: 'top',
+												scope: this,
+												items: [
+													{
+														xtype: "button",
+														ui: "back",
+														text: "Back",
+														scope: this,
+														listeners: {
+														//	tap: { fn: this.onCheckpointBackButtonTap, scope: this }
+															tap: function() {
+																console.log("onPatchETABackButtonTap handler called");
+																this.getParent().getParent().hide();
+															}
+
+														}
+													},
+													{
+														xtype: 'spacer'
+													},
+													{
+														xtype: "button",
+														ui: "action",
+														text: "Save",
+														scope: this,
+														listeners: {
+															// element: 'element', // this one does not work. It only duplicates the count of calls to handler,
+															tap: function() {
+																var obj = {};
+
+																obj.patchId = opentext.data.activeCase.patch;
+																obj.patchETA = opentext.data.activeCase.case;
+																obj.patchStatus = "open";
+
+																console.log("onPatchETASaveButtonTap handler called");
+																// Though this Panel view is constructed as an modal dialog inside the main view 
+																// as an internal element, it cannot use the path traversal (getParent()) to get
+																// reference to the main view. Uses the global function to look up the main view
+																// and use it as an owner for trigerring an event. Such an even is than visible
+																// in the global controller.
+																var dt = Ext.getCmp('itsmDetail');
+																dt.fireEvent( 'setPatchETACommand', obj );
+
+																// Using propagation through an internal even handler,
+																// dt.fireEvent( 'customEvent', opentext.data.activeCase );
+																
+																// Using function call on the view level. The view function can than
+																// call the event registered with the main controller.
+																// dt.onCheckpointSaveButton( opentext.data.activeCase );
+															
+																this.getParent().getParent().hide();
+															}
+														}
+													}
+												]
+											},
+											{
+												xtype: 'setpatchetaform'
+											}
+										]
+									});
+									this.patchETA = Ext.Viewport.add(patchETASheet);
+								}	
+								this.patchETA.show();
+							}
+						}
+					}
+	    		]
+			});
+
+			this.patchCtrls = Ext.Viewport.add(patchCtrlsSheet);
+		}	
+		this.patchCtrls.show();
+	},
+	// >>>
+
+	onDetailShowEmails: function() { // <<<
 		var lm = {};
 		console.log("view.itsmDetail.showEmails");
 		if( typeof opentext.data.activeCase == 'object' ) { 
@@ -608,8 +791,9 @@ Ext.define("itsm.view.itsmDetail", {
 			console.error("No case selected");
 		}
 	},
+	// >>>
 
-	onDetailLink: function() {
+	onDetailLink: function() { // <<<
 		var lm = {};
 		console.log("view.itsmDetail.Link");
 		if( typeof opentext.data.activeCase == 'object' ) { 
@@ -618,8 +802,9 @@ Ext.define("itsm.view.itsmDetail", {
 			console.error("No case selected");
 		}
 	},
+	// >>>
 
-	onDetailRework: function() {
+	onDetailRework: function() { // <<<
 		var lm = {};
 		console.log("view.itsmDetail.followRework");
 
@@ -868,8 +1053,9 @@ Ext.define("itsm.view.itsmDetail", {
 		}	
 		this.rework.show();
 	},
+	// >>>
 
-	onDetailProject: function() {
+	onDetailProject: function() { // <<<
 		var lm = {};
 		console.log("view.itsmDetail.setProject");
 		if( typeof opentext.data.activeCase == 'object' ) { 
@@ -878,8 +1064,9 @@ Ext.define("itsm.view.itsmDetail", {
 			console.error("No case selected");
 		}
 	},
+	// >>>
 
-	onDetailArchive: function() {
+	onDetailArchive: function() { // <<<
 		var lm = {};
 		console.log("view.itsmDetail.setArchived");
 
@@ -897,8 +1084,9 @@ Ext.define("itsm.view.itsmDetail", {
 			console.error("No case selected");
 		}
 	},
+	// >>>
 
-	onDetailFavorites: function() {
+	onDetailFavorites: function() { // <<<
 		console.log("view.itsmDetail.setFavorites");
 
 		if( !this.actions ) {
@@ -937,8 +1125,9 @@ Ext.define("itsm.view.itsmDetail", {
 		}	
 		this.actions.show();
 	},
+	// >>>
 
-	setUIfromMask: function( mask ) {
+	setUIfromMask: function( mask ) { // <<<
 		Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
 				// if the button is the change iconCls button, continue
 			function setUIControlfromMask( ctrl, mask ) {
@@ -948,6 +1137,11 @@ Ext.define("itsm.view.itsmDetail", {
 					ctrl.hide();
 			}
 
+			if (button.getId() === 'itsmdetail_patch_cmd') {
+				console.log( 'itsmdetail_patch_cmd found!' );
+				setUIControlfromMask( button, mask.patch );
+				button.setBadgeText("");
+			}
 			if (button.getId() === 'itsmdetail_back') {
 				console.log( 'itsmdetail_back found!' );
 				setUIControlfromMask( button, mask.back );
@@ -984,9 +1178,11 @@ Ext.define("itsm.view.itsmDetail", {
 			}
 		});
 	},
+	// >>>
 
-	onCheckpointSaveButton: function( data ) {
+	onCheckpointSaveButton: function( data ) { // <<<
 		this.fireEvent('setCheckpointCaseCommand', data );
 	}
+	// >>>
 
 });

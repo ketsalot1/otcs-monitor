@@ -58,6 +58,7 @@ Ext.application({
 		'projectMgmtInsertForm',
 		'emailView',
 		'setCheckpointForm',
+		'setPatchETAForm',
 		'itsmCaseLinkForm',
 		'itsmRefLinkForm',
 		'setCaseStatusForm'
@@ -155,6 +156,9 @@ Ext.application({
 		var setCaseStatusForm = {
 				xtype: 'setcasestatusform'
 		};
+		var setPatchETAForm = {
+				xtype: 'setpatchetaform'
+		};
 
 		Ext.getStore('settings').load();
 //		console.log( 'Main, retrieved conf: ' + Ext.getStore('settings').getAt(0).get('settingsContainer')[0] );
@@ -162,7 +166,7 @@ Ext.application({
 		// Initialize the main view
 //		Ext.Viewport.add( {xtype: 'mainlistcontainer'});
 //		Ext.Viewport.add( mainListContainer);
-		Ext.Viewport.add([mainListContainer,searchForm,itsmListContainer,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms,itsmJiraAssignForm,emailView,itsmCaseLinkForm,itsmRefLinkForm,setCheckpointForm,setCaseStatusForm]);
+		Ext.Viewport.add([mainListContainer,searchForm,itsmListContainer,itsmList,itsmDetail,configurationView,itsmOverview,aboutScreen,itsmEditForm,itsmPatchForm,itsmProjectAssignForm,patchMainView,patchMgmtUpdateForm,patchMgmtInsertForm,itsmLinkForms,itsmJiraAssignForm,emailView,itsmCaseLinkForm,itsmRefLinkForm,setCheckpointForm,setCaseStatusForm,setPatchETAForm ]);
 		Ext.Viewport.setActiveItem(mainListContainer);
 	},
 
