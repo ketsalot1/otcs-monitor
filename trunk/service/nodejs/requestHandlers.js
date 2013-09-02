@@ -138,7 +138,7 @@ database.tools = (function() {
 		 * insert functions.
 		 */
 		encodeHTMLTable: function( str ) {
-			var tmp = (str).replace(/\n/g, '</span></div><div class="custom-row"><span class="custom-cell"><strong>').replace(/([0-9]) - /g, "$1</strong></span><span class=\"custom-cell\">");
+			var tmp = (str).replace(/\n\n\n$/, '').replace(/\n\n$/, '').replace(/\n$/, '' ).replace(/\n/g, '</span></div><div class="custom-row"><span class="custom-cell"><strong>').replace(/([0-9]) - /g, "$1</strong></span><span class=\"custom-cell\">");
 			tmp += '&nbsp;</strong></span><span class="custom-cell">&nbsp;</span></div></div>';
 			return('<div id="detail-card-table"><div class="custom-row"><span class="custom-cell"><strong>' + tmp ); 
 		},
