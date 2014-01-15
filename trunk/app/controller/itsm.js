@@ -492,7 +492,20 @@ Ext.define("itsm.controller.itsm", {
 					}
 				}, this );
 			} else { 		  
-				this.activateITSMDetail(record, 0, "all" );
+				if( record === "Overaged" ) {
+					Ext.Msg.prompt( "Overaged", "Age in days", function(button,text) {
+						if( button == "ok" ) {
+							if( isNaN( text * 7 ))
+ 								this.activateITSMDetail(record, 90, "all");
+							else
+ 								this.activateITSMDetail(record, parseInt(text), "all" );
+						} else {
+ 							this.activateITSMDetail(record, 90, "all" );
+						}
+					}, this );
+				} else {
+					this.activateITSMDetail(record, 0, "all" );
+				}
 			}
 		}
 	},

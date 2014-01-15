@@ -17,6 +17,8 @@ function route(handle, params, res) {
 		 */
 		var cmd = params['cmd'];
 		var pars = params['data'];
+		console.log("router: got command: " + cmd );
+		console.log("router: got params: " + pars );
 
 		if( typeof pars === 'undefined' ) {
 			for( var iterator in params ) {
