@@ -3,6 +3,7 @@ var router = require("./router");
 var requestHandlers = require("./requestHandlers");
 var mongoHandlers = require("./mongoHandlers");
 var jQueryHandlers = require("./jQueryHandlers");
+var spicerHandlers = require("./spicerTests");
 
 var handle = {};
 handle['set_checkpoint'] = requestHandlers.setCheckpoint;
@@ -65,5 +66,7 @@ handle['get_feed'] = mongoHandlers.retrieveRecentEmailsFromMDB;
 handle['get_feed_by_author'] = mongoHandlers.retrieveRecentEmailsByAuthorFromMDB; 
 
 handle['jq_get'] = jQueryHandlers.getData;
+
+handle['spicer'] = spicerHandlers.getPages;
 
 server.service( router.route, handle );

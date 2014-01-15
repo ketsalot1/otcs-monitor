@@ -28,6 +28,7 @@ database.queries = (function() {
 		"DBQ001": 'select project_04 "id", long_text_04 "title", short_text_04 "code" from t04_project;',
 	 "DBQ001EX": 'select project_04 "id", long_text_04 "title", short_text_04 "code", category_04 "category" from t04_project where project_04 not in (?);',
 		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", DATE_FORMAT(t01.stop_01,"%d-%m-%Y") as "stop", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint", t01.ref_01 as "reference", t01.start_01 as "startObj", t01.stop_01 as "stopObj" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? order by t01.case_01 asc;',
+		"DBQ202": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira", t01.modified_01 as "modified", DATE_FORMAT(t01.start_01,"%d-%m-%Y") as "start", DATE_FORMAT(t01.stop_01,"%d-%m-%Y") as "stop", t04.short_text_04 as "project", t01.synopsis_01 as "synopsis", DATE_FORMAT(t01.next_update_01,"%d-%m-%Y") as "checkpoint", t01.ref_01 as "reference", t01.start_01 as "startObj", t01.stop_01 as "stopObj" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t01.start_01 < date_sub(curdate(),interval ? day) order by t01.case_01 asc;',
 //		"DBQ002": 'select t01.id_01 "id", t01.case_01 "case", t01.subject_01 "description", t01.status_01 "status", t01.description_01 "details", t01.jira_01 "jira" from t01_case t01, t04_project t04 where t01.project_01 = t04.project_04 and t01.active_01 = 1 and t04.short_text_04 = ? and modified_01 >= date_sub(CURDATE(),interval ? day) order by t01.case_01 asc;',
 //		"DBQ003": 'select name_02 "description", DATE_FORMAT(release_02,"%m/%d/%Y") "case" from t02_patch where status_02 like "open" order by name_02 asc;',
 		"DBQ003": 'select id_02 as "patchId", name_02 as "patch", CONCAT(name_02, " (",DATE_FORMAT(release_02,"%d/%m/%Y"),")") as "description", DATE_FORMAT(release_02,"%m/%d/%Y") "case" from t02_patch where status_02 like "open" order by release_02 asc;',
@@ -774,58 +775,58 @@ logger.trace('requestHandlers.search leave');
 // OBSOLETE
 function send_file( callback, dataName, res ) {
 // <<<
-var dataFile = '/tmp/' + dataName + '.data';
-logger.trace('requestHandler.send_file: requested file: ' + dataFile );
-fs.readFile(dataFile, 'utf-8', function (error, data) {
-res.writeHead(200, {
- 'Content-Type': 'text/plain'
-});
-try {
- if( error ) throw error.toString();
- res.end(callback + '(' + data + ')');
-}
-catch(e) {
- logger.error(e.name);
- res.writeHead(404);
- res.end(e.name + ': ' + e.message);
-}
-});
+	var dataFile = '/tmp/' + dataName + '.data';
+	logger.trace('requestHandler.send_file: requested file: ' + dataFile );
+	fs.readFile(dataFile, 'utf-8', function (error, data) {
+			res.writeHead(200, {
+				'Content-Type': 'text/plain'
+			});
+			try {
+				if( error ) throw error.toString();
+				res.end(callback + '(' + data + ')');
+			}
+			catch(e) {
+				logger.error(e.name);
+				res.writeHead(404);
+				res.end(e.name + ': ' + e.message);
+			}
+	});
 }
 // >>>
 
 
 // DONE
 function describeEx( callback, dataName, res ) {
-// <<<
-var dbq;
-var dataObj = {};
+	// <<<
+	var dbq;
+	var dataObj = {};
 
-logger.trace('requestHandler.describeEx' );
+	logger.trace('requestHandler.describeEx' );
 
-try {
-dataObj=JSON.parse(dataName);
-}
-catch(e) {
-logger.warn("describeEx: parsing of arguments failed, sending back complete descriptor");
-dataObj.context = "all";
-}
+	try {
+		dataObj=JSON.parse(dataName);
+	}
+	catch(e) {
+		logger.warn("describeEx: parsing of arguments failed, sending back complete descriptor");
+		dataObj.context = "all";
+	}
 
-try {
-logger.trace('requestHandler.describeEx: constructing descriptor file' );
+	try {
+		logger.trace('requestHandler.describeEx: constructing descriptor file' );
 
-if( dataObj.context == "all" ) {
- describeAll( callback, res );
-}
-if( dataObj.context == "dashboard" ) {
- describeDashboard( callback, res );
-}
-if( dataObj.context == "activities" ) {
- describeProjects( callback, res );
-}
-}
-catch( e ) {
-database.tools.response_error( e.message, res );
-}
+		if( dataObj.context == "all" ) {
+			describeAll( callback, res );
+		}
+		if( dataObj.context == "dashboard" ) {
+			describeDashboard( callback, res );
+		}
+		if( dataObj.context == "activities" ) {
+			describeProjects( callback, res );
+		}
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
 }
 // >>>
 
@@ -833,123 +834,131 @@ database.tools.response_error( e.message, res );
 // DONE
 function describeAll( callback, res ) {
 // <<<
-var dbq;
+	var dbq;
 
-logger.trace('requestHandler.describeAll' );
+	logger.trace('requestHandler.describeAll' );
 
-try {
-logger.trace('requestHandler.describeAll: constructing descriptor file' );
+	try {
+		logger.trace('requestHandler.describeAll: constructing descriptor file' );
 
-var connection = database.tools.getConnection();
-connection.query(database.queries.DBQ001EX, [0], function (error, rows, fields) {
- if( !error ) {
-	 // Add time stamp to the response
-	 var tmp = new Date();
-	 for ( var iterator in rows ) {
-		 rows[iterator].icon= "resources/images/iQuestion.png";
-		 if( rows[iterator].id == 99 ) {
-//					rows[iterator].category = "Dashboard";
-			 rows[iterator].icon = "resources/images/iUnassigned-2.png";
-		 ;}
-		 if( (rows[iterator].category).match("OTCS Cases")) {
-			 rows[iterator].category = rows[iterator].category + " (" + database.tools.toLocalDate(tmp) + ")";
-			 rows[iterator].icon = "resources/images/iCases.png";
-		 }
-		 if( (rows[iterator].category).match("Project")) {
-				 rows[iterator].category = rows[iterator].category + " (" + database.tools.toLocalDate(tmp) + ")";
-				 rows[iterator].icon = "resources/images/iProject2.png";
-		 }
-	 }
-	 logger.trace( 'requestHandler.describeAll: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
-	 // Add new entry for patches
-	 var idx = rows.length;
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ001EX, [0], function (error, rows, fields) {
+				if( !error ) {
+				// Add time stamp to the response
+				var tmp = new Date();
+				for ( var iterator in rows ) {
+					rows[iterator].icon= "resources/images/iQuestion.png";
+					if( rows[iterator].id == 99 ) {
+					//					rows[iterator].category = "Dashboard";
+						rows[iterator].icon = "resources/images/iUnassigned-2.png";
+					}
+					if( (rows[iterator].category).match("OTCS Cases")) {
+						rows[iterator].category = rows[iterator].category + " (" + database.tools.toLocalDate(tmp) + ")";
+						rows[iterator].icon = "resources/images/iCases.png";
+					}
+					if( (rows[iterator].category).match("Project")) {
+						rows[iterator].category = rows[iterator].category + " (" + database.tools.toLocalDate(tmp) + ")";
+						rows[iterator].icon = "resources/images/iProject2.png";
+					}
+				}
+				logger.trace( 'requestHandler.describeAll: added timestamp ' + database.tools.toLocalDate(tmp) + ' to response object' );
+				// Add new entry for patches
+				var idx = rows.length;
 
-	 rows[idx] = {};
-	 rows[idx].id = 98;
-	 rows[idx].category = "Dashboard";
-	 rows[idx].title = "Committed Updates";
-	 rows[idx].code = "Checkpoints";
-	 rows[idx].icon = "resources/images/iPending.png";
+				rows[idx] = {};
+				rows[idx].id = 98;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Committed Updates";
+				rows[idx].code = "Checkpoints";
+				rows[idx].icon = "resources/images/iPending.png";
 
-	 idx++;
-	 rows[idx] = {};
-	 rows[idx].id = 97;
-	 rows[idx].category = "Dashboard";
-	 rows[idx].title = "Hot Fixes this week";
-	 rows[idx].code = "Hotfixes";
-	 rows[idx].icon = "resources/images/iHotFix.png";
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 97;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Hot Fixes this week";
+				rows[idx].code = "Hotfixes";
+				rows[idx].icon = "resources/images/iHotFix.png";
 
-	 idx++;
-	 rows[idx] = {};
-	 rows[idx].id = 96;
-	 rows[idx].category = "Dashboard";
-	 rows[idx].title = "Favorites";
-	 rows[idx].code = "Favorites";
-	 rows[idx].icon = "resources/images/iStar.png";
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 96;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Favorites";
+				rows[idx].code = "Favorites";
+				rows[idx].icon = "resources/images/iStar.png";
 
-	 idx++;
-	 rows[idx] = {};
-	 rows[idx].id = 95;
-	 rows[idx].category = "Dashboard";
-	 rows[idx].title = "Activity";
-	 rows[idx].code = "Feed";
-	 rows[idx].icon = "resources/images/iFeed.png";
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 95;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Activity";
+				rows[idx].code = "Feed";
+				rows[idx].icon = "resources/images/iFeed.png";
 
-	 idx++;
-	 rows[idx] = {};
-	 rows[idx].id = 94;
-	 rows[idx].category = "Dashboard";
-	 rows[idx].title = "Activity chronicle";
-	 rows[idx].code = "Feed_with_question";
-	 rows[idx].icon = "resources/images/iFeed.png";
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 94;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Activity chronicle";
+				rows[idx].code = "Feed_with_question";
+				rows[idx].icon = "resources/images/iFeed.png";
 
-	 idx++;
-	 rows[idx] = {};
-	 rows[idx].id = 93;
-	 rows[idx].category = "Dashboard";
-	 rows[idx].title = "Activity by Author";
-	 rows[idx].code = "Authoring";
-	 rows[idx].icon = "resources/images/iUser1.png";
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 93;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Activity by Author";
+				rows[idx].code = "Authoring";
+				rows[idx].icon = "resources/images/iUser1.png";
 
-	 idx++;
-	 rows[idx] = {};
-	 rows[idx].id = 92;
-	 rows[idx].category = "Dashboard";
-	 rows[idx].title = "Patches";
-	 rows[idx].code = "Patches";
-	 rows[idx].icon = "resources/images/iPatches.png";
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 92;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Patches";
+				rows[idx].code = "Patches";
+				rows[idx].icon = "resources/images/iPatches.png";
 
-	 idx++;
-	 rows[idx] = {};
-	 rows[idx].id = 91;
-	 rows[idx].category = "Dashboard";
-	 rows[idx].title = "Patches Details";
-	 rows[idx].code = "PatchDetails";
-	 rows[idx].icon = "resources/images/iPatches.png";
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 91;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Patches Details";
+				rows[idx].code = "PatchDetails";
+				rows[idx].icon = "resources/images/iPatches.png";
 
-	 idx++;
-	 rows[idx] = {};
-	 rows[idx].id = 90;
-	 rows[idx].category = "Dashboard";
-	 rows[idx].title = "Archive queue";
-	 rows[idx].code = "Transient";
-	 rows[idx].icon = "resources/images/iArchive2.png";
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 90;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Archive queue";
+				rows[idx].code = "Transient";
+				rows[idx].icon = "resources/images/iArchive2.png";
 
-	 idx++;
-	 rows[idx] = {};
-	 rows[idx].id = 89;
-	 rows[idx].category = "Dashboard";
-	 rows[idx].title = "Rework";
-	 rows[idx].code = "Rework";
-	 rows[idx].icon = "resources/images/iRework.png";
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 89;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Rework";
+				rows[idx].code = "Rework";
+				rows[idx].icon = "resources/images/iRework.png";
 
- }
- database.tools.cb_response_fetch( error, rows, fields, res, callback );
-});
-}
-catch( e ) {
-database.tools.response_error( e.message, res );
-}
+				idx++;
+				rows[idx] = {};
+				rows[idx].id = 88;
+				rows[idx].category = "Dashboard";
+				rows[idx].title = "Over Limit";
+				rows[idx].code = "Overaged";
+				rows[idx].icon = "resources/images/iOutdated.png";
+
+				}
+				database.tools.cb_response_fetch( error, rows, fields, res, callback );
+		});
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
 }
 // >>>
 
@@ -1200,79 +1209,83 @@ database.tools.response_error( e.message, res );
 
 // DONE
 function listPatches( callback, params, res ) {
-// <<<
-var dbq = null;
-logger.trace('requestHandler.listPatches: enter ' );
-try {
-var dataObj = JSON.parse(params);
-if( dataObj.filter == 'all' ) 
- dbq = database.queries.DBQ011; 
-if( dataObj.filter == 'open' ) 
- dbq = database.queries.DBQ006; 
-if( dbq == null )
- throw({ 'message': "Filter Error: No filter or invalid filter specifified. Use 'all' or 'open' filters." });
-var connection = database.tools.getConnection();
-connection.query(dbq, function (error, rows, fields) {
- database.tools.cb_response_fetch( error, rows, fields, res, callback );
-});
-} 
-catch(e) {
-database.tools.response_error( e.message, res );
-}
+	// <<<
+	var dbq = null;
+	logger.trace('requestHandler.listPatches: enter ' );
+	try {
+		var dataObj = JSON.parse(params);
+		if( dataObj.filter == 'all' ) 
+			dbq = database.queries.DBQ011; 
+		if( dataObj.filter == 'open' ) 
+			dbq = database.queries.DBQ006; 
+		if( dbq == null )
+			throw({ 'message': "Filter Error: No filter or invalid filter specifified. Use 'all' or 'open' filters." });
+		var connection = database.tools.getConnection();
+		connection.query(dbq, function (error, rows, fields) {
+				database.tools.cb_response_fetch( error, rows, fields, res, callback );
+		});
+	} 
+	catch(e) {
+		database.tools.response_error( e.message, res );
+	}
 } // >>>
 
 
 // NO CHANGE
 function send( callback, data, res ) {
-// <<<
-var dataObj;
+	// <<<
+	var dataObj;
 
-try {
-var dataObj = JSON.parse(data);
-logger.trace('requestHandler.send: requested project: ' + dataObj.dataName );
+	try {
+		var dataObj = JSON.parse(data);
+		logger.trace('requestHandler.send: requested project: ' + dataObj.dataName );
 
-if( dataObj.dataName == "PatchDetails" ) {
- sendPatchDetails( callback, res );
- return;
-}
-if( dataObj.dataName == "Patches" ) {
- sendPatches( callback, res );
- return;
-}
-if( dataObj.dataName == "Transient" ) {
- sendUnarchived( callback, res );
- return;
-}
-if( dataObj.dataName == "Favorites" ) {
- sendFavorites( callback, res );
- return;
-}
-if( dataObj.dataName == "Hotfixes" ) {
- sendHotfixes( callback, res );
- return;
-}
-if( dataObj.dataName == "Rework" ) {
- sendRework( callback, res );
- return;
-}
-if( dataObj.dataName == "Checkpoints" ) {
- mongo.countTodaysFeed( callback, res );
-//			sendCheckpoints( callback, res );
- return;
-}
-if( dataObj.dataName == "Feed" ) {
- mongo.retrieveRecentEmailsFromMDB( callback, data, res );
- return;
-}
-if( dataObj.dataName == "Authoring" ) {
- mongo.retrieveRecentEmailsByAuthorFromMDB( callback, data, res );
- return;
-}
-sendCases( callback, dataObj.dataName, res );
-}
-catch( e ) {
-database.tools.response_error(error.toString(), res );
-}
+		if( dataObj.dataName == "PatchDetails" ) {
+			sendPatchDetails( callback, res );
+			return;
+		}
+		if( dataObj.dataName == "Patches" ) {
+			sendPatches( callback, res );
+			return;
+		}
+		if( dataObj.dataName == "Transient" ) {
+			sendUnarchived( callback, res );
+			return;
+		}
+		if( dataObj.dataName == "Favorites" ) {
+			sendFavorites( callback, res );
+			return;
+		}
+		if( dataObj.dataName == "Hotfixes" ) {
+			sendHotfixes( callback, res );
+			return;
+		}
+		if( dataObj.dataName == "Rework" ) {
+			sendRework( callback, res );
+			return;
+		}
+		if( dataObj.dataName == "Overaged" ) {
+			sendOveraged( callback, dataObj.daysBack, res );
+			return;
+		}
+		if( dataObj.dataName == "Checkpoints" ) {
+			mongo.countTodaysFeed( callback, res );
+			//			sendCheckpoints( callback, res );
+			return;
+		}
+		if( dataObj.dataName == "Feed" ) {
+			mongo.retrieveRecentEmailsFromMDB( callback, data, res );
+			return;
+		}
+		if( dataObj.dataName == "Authoring" ) {
+			mongo.retrieveRecentEmailsByAuthorFromMDB( callback, data, res );
+			return;
+		}
+		sendCases( callback, dataObj.dataName, res );
+	}
+	catch( e ) {
+		database.tools.response_error(error.toString(), res );
+	}
 } // >>>
 
 
@@ -1331,74 +1344,137 @@ database.tools.response_error( e.message, res );
 
 
 // DONE
+function sendOveraged( callback, age, res ) {
+	// <<<
+	var cases = [];
+	var reference = new Date();
+	var iAge = parseInt(age);
+
+	try {
+		logger.trace('requestHandler.sendOveraged: requesting the cases older than ' + iAge + ' days' );
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ202, [iAge], function (error, rows, fields) {
+			if( error ) { 
+				database.tools.response_error( error.toString(), res );
+				return;
+			}
+			// Add terminators (leaf property) in the generated list and
+			// process details. Convert the line breaks into HTML markup.
+			logger.trace( 'requestHandler: sendOveraged processing list of cases long >' + rows.length + '<' );
+			cases = rows;
+			connection.query(database.queries.DBQ008, function (error, rows, fields) {
+				if( !error ) { 
+					for ( var iterator in cases ) {
+						logger.trace( 'requestHandler: sendOveraged days isnce last update: ' + rows.length );
+						cases[iterator].icon = "resources/images/iOutdated1.png";
+						cases[iterator].description = iterator + ': ' + cases[iterator].description;
+						cases[iterator].leaf="true";
+						cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
+						cases[iterator].patches = "&nbsp;";
+						for ( var iter in rows ) {
+							if( cases[iterator].id != rows[iter].id ) continue; 
+							logger.trace( 'requestHandler: sendOveraged found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+							cases[iterator].patches += rows[iter].patch;
+							cases[iterator].patches += ", ";
+							cases[iterator].icon = "resources/images/iPatch.png";
+						}
+						cases[iterator].age=database.tools.getAge( cases[iterator].startObj, (cases[iterator].stopObj instanceof Date?cases[iterator].stopObj:new Date ));
+					}
+
+					connection.query(database.queries.DBQ039, function (error, rows, fields) {
+						if( !error ) { 
+							for ( var iterator in cases ) {
+								for ( var iter in rows ) {
+									if( cases[iterator].case != rows[iter].src ) continue; 
+									logger.trace( 'requestHandler: sendOveraged found rework entry (' + rows[iter].ref + ') for case (' + cases[iterator].case + ')' );
+									cases[iterator].rework = rows[iter].ref;
+								}
+							}
+						}	
+						database.tools.cb_response_fetch( error, cases, fields, res, callback );
+					});
+
+				} else {
+					database.tools.cb_response_fetch( error, cases, fields, res, callback );
+				}
+			});
+		});
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
+} // >>>
+
+
+// DONE
 function sendCases( callback, dataName, res ) {
-// <<<
-var cases = [];
-var reference = new Date();
-var delta;
-var limit1;
-var limit2;
+	// <<<
+	var cases = [];
+	var reference = new Date();
+	var delta;
+	var limit1;
+	var limit2;
 
-try {
-logger.trace('requestHandler.sendCases: requested project: ' + dataName );
-limit1 = config.updateTime.updated || 2;
-limit2 = config.updateTime.pending || 9;
-var connection = database.tools.getConnection();
-connection.query(database.queries.DBQ002, [dataName], function (error, rows, fields) {
- if( error ) { 
-	 database.tools.response_error( error.toString(), res );
-	 return;
- }
- // Add terminators (leaf property) in the generated list and
- // process details. Convert the line breaks into HTML markup.
- logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
- cases = rows;
- connection.query(database.queries.DBQ008, function (error, rows, fields) {
-	 if( !error ) { 
-		 for ( var iterator in cases ) {
-			 delta = database.tools.getAge( cases[iterator].modified, reference );
-			 logger.trace( 'requestHandler: send days isnce last update: ' + rows.length );
-			 cases[iterator].icon = "resources/images/iOutdated1.png";
-			 if( delta < limit2 )
-				 cases[iterator].icon = "resources/images/iPending1.png";
-			 if( delta < limit1 )
-				 cases[iterator].icon = "resources/images/iUpdated1.png";
-			 cases[iterator].description = iterator + ': ' + cases[iterator].description;
-			 cases[iterator].leaf="true";
-			 cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
-			 cases[iterator].patches = "&nbsp;";
-			 for ( var iter in rows ) {
-				 if( cases[iterator].id != rows[iter].id ) continue; 
-				 logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
-				 cases[iterator].patches += rows[iter].patch;
-				 cases[iterator].patches += ", ";
-				 cases[iterator].icon = "resources/images/iPatch.png";
-			 }
-			 cases[iterator].age=database.tools.getAge( cases[iterator].startObj, (cases[iterator].stopObj instanceof Date?cases[iterator].stopObj:new Date ));
-		 }
+	try {
+		logger.trace('requestHandler.sendCases: requested project: ' + dataName );
+		limit1 = config.updateTime.updated || 2;
+		limit2 = config.updateTime.pending || 9;
+		var connection = database.tools.getConnection();
+		connection.query(database.queries.DBQ002, [dataName], function (error, rows, fields) {
+				if( error ) { 
+				database.tools.response_error( error.toString(), res );
+				return;
+				}
+				// Add terminators (leaf property) in the generated list and
+				// process details. Convert the line breaks into HTML markup.
+				logger.trace( 'requestHandler: send processing list of cases long >' + rows.length + '<' );
+				cases = rows;
+				connection.query(database.queries.DBQ008, function (error, rows, fields) {
+					if( !error ) { 
+					for ( var iterator in cases ) {
+					delta = database.tools.getAge( cases[iterator].modified, reference );
+					logger.trace( 'requestHandler: send days isnce last update: ' + rows.length );
+					cases[iterator].icon = "resources/images/iOutdated1.png";
+					if( delta < limit2 )
+					cases[iterator].icon = "resources/images/iPending1.png";
+					if( delta < limit1 )
+					cases[iterator].icon = "resources/images/iUpdated1.png";
+					cases[iterator].description = iterator + ': ' + cases[iterator].description;
+					cases[iterator].leaf="true";
+					cases[iterator].details = database.tools.encodeHTMLTable( cases[iterator].details );
+					cases[iterator].patches = "&nbsp;";
+					for ( var iter in rows ) {
+					if( cases[iterator].id != rows[iter].id ) continue; 
+					logger.trace( 'requestHandler: send found patch entry (' + rows[iter].patch + ') for case (' + cases[iterator].case + ')' );
+						cases[iterator].patches += rows[iter].patch;
+						cases[iterator].patches += ", ";
+						cases[iterator].icon = "resources/images/iPatch.png";
+						}
+						cases[iterator].age=database.tools.getAge( cases[iterator].startObj, (cases[iterator].stopObj instanceof Date?cases[iterator].stopObj:new Date ));
+						}
 
-		 connection.query(database.queries.DBQ039, function (error, rows, fields) {
-			 if( !error ) { 
-				 for ( var iterator in cases ) {
-					 for ( var iter in rows ) {
-						 if( cases[iterator].case != rows[iter].src ) continue; 
-						 logger.trace( 'requestHandler: search found rework entry (' + rows[iter].ref + ') for case (' + cases[iterator].case + ')' );
-						 cases[iterator].rework = rows[iter].ref;
-					 }
-				 }
-			 }	
-			 database.tools.cb_response_fetch( error, cases, fields, res, callback );
-		 });
+						connection.query(database.queries.DBQ039, function (error, rows, fields) {
+							if( !error ) { 
+							for ( var iterator in cases ) {
+							for ( var iter in rows ) {
+							if( cases[iterator].case != rows[iter].src ) continue; 
+							logger.trace( 'requestHandler: search found rework entry (' + rows[iter].ref + ') for case (' + cases[iterator].case + ')' );
+								cases[iterator].rework = rows[iter].ref;
+								}
+								}
+								}	
+								database.tools.cb_response_fetch( error, cases, fields, res, callback );
+								});
 
-	 } else {
-		 database.tools.cb_response_fetch( error, cases, fields, res, callback );
-	 }
- });
-});
-}
-catch( e ) {
-database.tools.response_error( e.message, res );
-}
+							} else {
+							database.tools.cb_response_fetch( error, cases, fields, res, callback );
+							}
+							});
+		});
+	}
+	catch( e ) {
+		database.tools.response_error( e.message, res );
+	}
 } // >>>
 
 
@@ -3409,3 +3485,4 @@ exports.sendRework = sendRework;
 exports.sendCheckpoints = sendCheckpoints;
 
 exports.getFeed=getFeed;
+
