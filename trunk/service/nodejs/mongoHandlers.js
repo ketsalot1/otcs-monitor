@@ -18,6 +18,29 @@ var url = format("mongodb://%s:%s@%s:%s/%s"
  
 */
 
+function getDatePattern( date, num ) {
+// <<<
+
+	var mon = "";
+	var year = "";
+	var pattern = "01.2013";
+	if( "[object Date]" == Object.prototype.toString.call(date) ) {
+		var mon = date.getMonth() + 1;
+		var year = date.getYear() + 1900;
+	} else {
+		console.error( "invalid Date object" );
+		return pattern;
+	}
+
+	mon = mon - num;
+	if( mon < 1 ) {
+		mon += 12;
+		year -= 1;
+	}
+	pattern = (mon).toString() + "." + (year).toString() + " ";
+	return pattern;
+} // >>>
+
 function removeMailMDB( callback, data, res ) {
 // <<<
 	var r = {};
@@ -543,7 +566,8 @@ function retrieveRecentEmailsByAuthorFromMDB( callback, data, res ) {
 			var query = { "sentOn": new RegExp('^' + pattern ) };
 >>> */
 
-			pattern = (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString() + " ";
+//			pattern = (t.getMonth()+1).toString() + "." + (t.getYear()+1900).toString() + " ";
+			pattern = getDatePattern( t, 0 );
 			query = { "sentOn": new RegExp('^...' + pattern ), "mailSender": new RegExp( dataObj.author) };
 
 			collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
@@ -561,7 +585,8 @@ function retrieveRecentEmailsByAuthorFromMDB( callback, data, res ) {
 				}
 				// --------------------- 1 -----------------------------
 		
-				pattern = (t.getMonth()).toString() + "." + (t.getYear()+1900).toString() + " ";
+//				pattern = (t.getMonth()).toString() + "." + (t.getYear()+1900).toString() + " ";
+				pattern = getDatePattern( t, 1 );
 				query = { "sentOn": new RegExp('^...' + pattern ), "mailSender": new RegExp( dataObj.author ) };
 
 				collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
@@ -579,7 +604,8 @@ function retrieveRecentEmailsByAuthorFromMDB( callback, data, res ) {
 					}
 					// --------------------- 2 -----------------------------
 			
-					pattern = (t.getMonth()-1).toString() + "." + (t.getYear()+1900).toString() + " ";
+//					pattern = (t.getMonth()-1).toString() + "." + (t.getYear()+1900).toString() + " ";
+					pattern = getDatePattern( t, 2 );
 					query = { "sentOn": new RegExp('^...' + pattern ), "mailSender": new RegExp( dataObj.author ) };
 
 					collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
@@ -597,7 +623,8 @@ function retrieveRecentEmailsByAuthorFromMDB( callback, data, res ) {
 						}
 						// --------------------- 3 -----------------------------
 
-						pattern = (t.getMonth()-2).toString() + "." + (t.getYear()+1900).toString() + " ";
+//						pattern = (t.getMonth()-2).toString() + "." + (t.getYear()+1900).toString() + " ";
+						pattern = getDatePattern( t, 3 );
 						query = { "sentOn": new RegExp('^...' + pattern ), "mailSender": new RegExp( dataObj.author ) };
 
 						collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {
@@ -615,7 +642,8 @@ function retrieveRecentEmailsByAuthorFromMDB( callback, data, res ) {
 							}
 							// --------------------- 4 -----------------------------
 					
-							pattern = (t.getMonth()-3).toString() + "." + (t.getYear()+1900).toString() + " ";
+//							pattern = (t.getMonth()-3).toString() + "." + (t.getYear()+1900).toString() + " ";
+							pattern = getDatePattern( t, 4 );
 							query = { "sentOn": new RegExp('^...' + pattern ), "mailSender": new RegExp( dataObj.author ) };
 
 							collection.find(query,{'caseNo':1, '_id':0}).toArray(function(err,docs) {

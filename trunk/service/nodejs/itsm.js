@@ -67,6 +67,8 @@ handle['get_feed_by_author'] = mongoHandlers.retrieveRecentEmailsByAuthorFromMDB
 
 handle['jq_get'] = jQueryHandlers.getData;
 
-handle['spicer'] = spicerHandlers.getPages;
+handle['spicer_merged'] = spicerHandlers.getPages;
+handle['spicer_single'] = spicerHandlers.getPage;
+handle['GetPages'] = spicerHandlers.getPages_K;
 
 server.service( router.route, handle );
