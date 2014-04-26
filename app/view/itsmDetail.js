@@ -806,13 +806,30 @@ Ext.define("itsm.view.itsmDetail", {
 
 	onDetailRework: function() { // <<<
 		var lm = {};
-		console.log("view.itsmDetail.followRework");
+		console.log("view.itsmDetail.actionSheetMenu");
 
 		if( !this.rework ) {
 			var reworkSheet = Ext.create('Ext.ActionSheet', {
 	 			alias: "widget.reworkactionpanel",
 				xtype: "reworkactionpanel",
 	    		items: [
+					{
+						text: 'Reopen this case',
+						ui: 'decline',
+						scope: this,
+						handler: function() {
+							this.rework.hide();	
+							if( typeof opentext.data.activeCase == 'object' ) { 
+								lm.back = 0;
+								lm.ctrls = 1;
+								this.setUIfromMask( lm );
+								this.fireEvent('detailSetReopenCaseCommand', opentext.data.activeCase );
+							} else {
+								console.error("Case cannot be reopened, selected case is invalid or no case selected");
+								Ext.Msg.alert("Error reopening the case");
+							}
+						}
+					},
 	        		{
 	            	text: 'show cross-referred rework',
 						scope: this,
@@ -1170,6 +1187,7 @@ Ext.define("itsm.view.itsmDetail", {
 			if (button.getId() === 'itsmdetail_rework') {
 				console.log( 'itsmdetail_rework found!' );
 				setUIControlfromMask( button, mask.ctrls );
+				button.setBadgeText("");
 			}
 			if (button.getId() === 'itsmdetail_fav') {
 				console.log( 'itsmdetail_fav found!' );
