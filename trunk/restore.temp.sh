@@ -1,33 +1,22 @@
 #!/bin/bash
-DAY=$1
-if [ -z "$DAY" ]; then 
-	echo "No argument, fall back"
-	DAY=-1
-fi
-#if [ -z "$DAY" ] && [ "${DAY+xxx}" = "xxx" ]; then 
-if [[ `echo $DAY | sed 's/^[-+0-9][0-9]*//' | wc -c` -ne 1 ]]; then
-	echo "Input invalid, taking fallback"
-	DAY=-1
+STAMP=$1
+if [ -z "$STAMP" ]; then 
+	echo "No argument, bailing out. You have to specify the backup stamp in the format YYYYMMDD. "
+	exit 0;
 fi
 
-BASE=`date +"%d"`
-if [ $[$BASE+$DAY] -le 0 ]; then
-	echo "No month has negative day"
-   exit 0;
+#if [ -z "$DAY" ] && [ "${DAY+xxx}" = "xxx" ]; then 
+if [[ `echo $STAMP | sed 's/^[-+0-9][0-9]*//' | wc -c` -ne 1 ]]; then
+	echo -n 
+	echo -n $STAMP
+	echo " is invalid. You have to use the format YYYYMMDD only. Bailing out"
+	exit 0;
 fi
-DAY=$[$BASE+$DAY]
-BACKUPSQL=`date +"/tmp/itsmdb/%Y%m____-backup-itsm.sql"`
-if [ ${DAY} -lt 10 ]; then
-	BACKUPSQL=`echo $BACKUPSQL | sed -e "s/____/0${DAY}/g"` 
-else
-	BACKUPSQL=`echo $BACKUPSQL | sed -e "s/____/${DAY}/g"` 
-fi
-BACKUPMNG=`date +"/tmp/itsmdb/%Y%m____-backup-mongo/itsm"`
-if [ ${DAY} -lt 10 ]; then
-	BACKUPMNG=`echo $BACKUPMNG | sed -e "s/____/0${DAY}/g"` 
-else
-	BACKUPMNG=`echo $BACKUPMNG | sed -e "s/____/${DAY}/g"` 
-fi
+
+BACKUPSQL="/tmp/itsmdb/____-backup-itsm.sql"
+BACKUPSQL=`echo $BACKUPSQL | sed -e "s/____/${STAMP}/g"` 
+BACKUPMNG="/tmp/itsmdb/____-backup-mongo/itsm"
+BACKUPMNG=`echo $BACKUPMNG | sed -e "s/____/${STAMP}/g"` 
 
 if [ -f "$BACKUPSQL" ]; then
 	echo Found restore source for MySQL: $BACKUPSQL

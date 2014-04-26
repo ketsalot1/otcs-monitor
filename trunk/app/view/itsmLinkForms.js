@@ -119,6 +119,7 @@ Ext.define("itsm.view.itsmLinkForms", {
 					throw({name:"Form Problem", message:"Cannot find requested form"});
 				obj.patch = src.getFields().patch.getValue();
 				obj.drop = src.getFields().unlink.getValue();
+				obj.reset = src.getFields().reset.getValue();
 				this.fireEvent('linkCaseCommand', opentext.data.activeCase, obj );
 			}
 			//

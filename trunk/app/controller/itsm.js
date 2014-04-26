@@ -49,6 +49,7 @@ Ext.define("itsm.controller.itsm", {
 				detailLinkPatchCommand: "onPatchLinkCase",
 				detailLinkProjectCommand: "onProjectLinkCase",
 				detailSetArchivedCommand: "onArchiveCase",
+				detailSetReopenCaseCommand: "onUnarchiveCase",
 				detailSetFavoritesCommand: "onSetFavorites",
 				detailSetHotfixCommand: "onSetHotfix",
 				detailShowEmailsCommand: "onShowEmails",
@@ -206,7 +207,7 @@ Ext.define("itsm.controller.itsm", {
 			data = rec.get('settingsContainer');
 			hostName = data[0];
 	
-			s.getProxy().setUrl( hostName + '?cmd=archive_case&data={"caseNo": "' + caseNo.case  + '"}' );
+			s.getProxy().setUrl( hostName + '?cmd=archive_case&data={"caseNo": "' + caseNo.case  + '", "caseState": "0"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load( function( record, operation, success ) {
 				var txt = "0";
@@ -221,6 +222,47 @@ Ext.define("itsm.controller.itsm", {
 	
 			//Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
 			this.activateMainView();
+		}
+		catch(e) {
+			Ext.Msg.alert( e.name );
+		}
+	},
+	// >>>
+	
+	onUnarchiveCase : function(caseNo) {
+	// <<<
+		var settings = Ext.getStore("settings");
+		var s = Ext.getStore('db');
+		var rec, data, hostName, badgeTxt, txt;
+	
+		console.log("controller.itsm.onUnarchiveCase: requesting Case Archival for case: >" + caseNo.id + '<, >' + caseNo.case + '<' );
+	
+		try {
+			rec = settings.getAt(0);
+			data = rec.get('settingsContainer');
+			hostName = data[0];
+	
+			s.getProxy().setUrl( hostName + '?cmd=archive_case&data={"caseNo": "' + caseNo.case  + '", "caseState": "1"}' );
+			console.log('Request >' + s.getProxy().getUrl() + '<' );
+			s.load( function( record, operation, success ) {
+				badgeTxt = "Err";
+				if( success ) {
+					txt = record[0].getData().value;
+					if( (txt * 1 ) == 1 )
+						badgeTxt="Ok"
+				}
+	
+				Ext.Array.forEach(Ext.ComponentQuery.query('button'), function (button) {
+					if (button.getId() === 'itsmdetail_rework') {
+						console.log( 'itsmdetail_rework found!' );
+						button.setBadgeText(badgeTxt);
+					}
+				});
+			});
+	
+			// Remain in the detail view ...
+			Ext.Viewport.animateActiveItem(this.getItsmDetail(), this.slideRightTransition);
+			//this.activateMainView();
 		}
 		catch(e) {
 			Ext.Msg.alert( e.name );
@@ -878,14 +920,14 @@ Ext.define("itsm.controller.itsm", {
 		var it = Ext.getStore('desktopITSM');
 		var v;
 
-		console.log('controller link case >' + caseData.case + '<>' + caseData.id + '< with Patch Id >' + obj.patch + '< Unlink >' + obj.drop + '<' );
+		console.log('controller link case >' + caseData.case + '<>' + caseData.id + '< with Patch Id >' + obj.patch + '< Unlink >' + obj.drop + '< Reset > ' + obj.reset + '<' );
 
 		try {
 			rec = settings.getAt(0);
 			data = rec.get('settingsContainer');
 			hostName = data[0];
 
-			s.getProxy().setUrl( hostName + '?cmd=link&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","patchId":"' + obj.patch + '","drop":"' + obj.drop + '"}' );
+			s.getProxy().setUrl( hostName + '?cmd=link&data={"caseId": "' + caseData.id + '", "caseNo": "' + caseData.case + '","patchId":"' + obj.patch + '","drop":"' + obj.drop + '","reset":"' + obj.reset + '"}' );
 			console.log('Request >' + s.getProxy().getUrl() + '<' );
 			s.load();
 

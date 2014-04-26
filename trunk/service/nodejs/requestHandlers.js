@@ -58,7 +58,7 @@ database.queries = (function() {
 		"DBQ019": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?, "Just Arrived",  "\n", CURDATE(), 99, 1 );',
 		"DBQ019ex": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?, "Just Arrived",  "\n", ?, 99, 1 );',
 		"DBQ020": 'insert into t01_case (case_01,subject_01,status_01,description_01,start_01,project_01,active_01) values (?,?,?,?,?,?,? );',
-		"DBQ021": 'update t01_case set active_01 = 0, stop_01 = CURDATE() where case_01 = ?;',
+		"DBQ021": 'update t01_case set active_01 = ?, stop_01 = CURDATE() where case_01 = ?;',
 		"DBQ021ex": 'update t01_case set active_01 = 0, start_01 = ?, stop_01 = ? where case_01 = ?;',
 		"DBQ022": 'update t02_patch set status_02 = "archived" where id_02 = ?;',
 		"DBQ023": 'select id_02 as "id" from t02_patch where id_02 in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 0 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and id_02 not in (select distinct t02.id_02 as "Patch ID" from t01_case t01, t02_patch t02, t03_link t03 where t01.active_01 = 1 and t02.id_02 = t03.id_02 and t03.id_01 = t01.id_01 order by t02.id_02) and status_02 not like "archived";',
@@ -1291,55 +1291,55 @@ function send( callback, data, res ) {
 
 // DONE
 function sendPatches( callback, res ) {
-// <<<
-var results = [];
+	// <<<
+	var results = [];
 
-try {
-logger.trace('requestHandler.preparePatches: enter ' );
-var connection = database.tools.getConnection();
-connection.query(database.queries.DBQ003, function (error, rows, fields) {
- if( error ) { 
-	 database.tools.response_error(error.toString(), res);
-	 return;
- }
- logger.trace('requestHandler.preparePatches: processing list of patches >' + rows.length + '<' );
- results = rows;
- logger.trace('requestHandler.preparePatches: list of patches stored in results. Length = ' + results.length + '<' );
- connection.query(database.queries.DBQ004, function (error, rows, fields) {
-	 try {
-		 var idc = 0;
-		 if( !error ) {
-			 for ( var iterator in results ) {
-				 logger.trace('requestHandler.preparePatches: assigning details to patch >' + results[iterator].description + '<' );
-				 results[iterator].id = idc++;
-				 results[iterator].status = "open";
-				 results[iterator].details = "<ol>";
-				 for ( var cntr in rows ) {
-					 if( results[iterator].patch != rows[cntr].patch ) continue;
-					 results[iterator].details += "<li>";
-					 results[iterator].details += "(";
-					 results[iterator].details += rows[cntr].jira;
-					 results[iterator].details += ") ";
-					 results[iterator].details += rows[cntr].description;
-					 logger.trace('requestHandler.preparePatches: adding case >' + rows[cntr].description + '< to patch >' + results[iterator].description + '<' );
-					 results[iterator].details += "</li>";
-				 }
-				 results[iterator].details += "</ol>";
-				 results[iterator].leaf = "true";
-				 results[iterator].icon = "resources/images/iPatches.png";
-			 }
-		 }
-		 database.tools.cb_response_fetch( error, results, fields, res, callback );
-	 }
-	 catch( e ) {
-		 database.tools.response_error( e.message, res );
-	 }
- });
-});
-}
-catch(e) {
-database.tools.response_error( e.message, res );
-}
+	try {
+	logger.trace('requestHandler.preparePatches: enter ' );
+	var connection = database.tools.getConnection();
+	connection.query(database.queries.DBQ003, function (error, rows, fields) {
+		if( error ) { 
+			database.tools.response_error(error.toString(), res);
+			return;
+		}
+		logger.trace('requestHandler.preparePatches: processing list of patches >' + rows.length + '<' );
+		results = rows;
+		logger.trace('requestHandler.preparePatches: list of patches stored in results. Length = ' + results.length + '<' );
+		connection.query(database.queries.DBQ004, function (error, rows, fields) {
+			try {
+				var idc = 0;
+				if( !error ) {
+					for ( var iterator in results ) {
+						logger.trace('requestHandler.preparePatches: assigning details to patch >' + results[iterator].description + '<' );
+						results[iterator].id = idc++;
+						results[iterator].status = "open";
+						results[iterator].details = "<ol>";
+						for ( var cntr in rows ) {
+							if( results[iterator].patch != rows[cntr].patch ) continue;
+							results[iterator].details += "<li>";
+							results[iterator].details += "(";
+							results[iterator].details += rows[cntr].jira;
+							results[iterator].details += ") ";
+							results[iterator].details += rows[cntr].description;
+							logger.trace('requestHandler.preparePatches: adding case >' + rows[cntr].description + '< to patch >' + results[iterator].description + '<' );
+							results[iterator].details += "</li>";
+						}
+						results[iterator].details += "</ol>";
+						results[iterator].leaf = "true";
+						results[iterator].icon = "resources/images/iPatches.png";
+					}
+				}
+				database.tools.cb_response_fetch( error, results, fields, res, callback );
+			}
+			catch( e ) {
+				database.tools.response_error( e.message, res );
+			}
+		});
+	});
+	}
+	catch(e) {
+	database.tools.response_error( e.message, res );
+	}
 } // >>>
 
 
@@ -1832,7 +1832,7 @@ function linkPatch( callback, data, res ) {
 	try {
 		var dataObj = JSON.parse(data);
 		dataObj.caseId = database.tools.filter( dataObj.caseId );
-		logger.trace('requestHandler.linkPatch: linking case >' + dataObj.caseId + '< with patch id >' + dataObj.patchId + '<, drop cmd >' + dataObj.drop + '<'  );
+		logger.trace('requestHandler.linkPatch: linking case >' + dataObj.caseId + '< with patch id >' + dataObj.patchId + '<, drop cmd >' + dataObj.drop + '<, reset cmd >' + dataObj.reset + '<'  );
 		dataObj.caseId = dataObj.caseId * 1;
 		if( isNaN(dataObj.caseId) ) {
 			throw({ "message": 'Case ID Invalid: the case ID is empty or not a decimal number. Use digits only' } );
@@ -1841,7 +1841,7 @@ function linkPatch( callback, data, res ) {
 		if( isNaN(dataObj.patchId) ) {
 			throw({ "message": 'Patch Code Invalid: the patch number is empty or not a decimal number. Use digits only' } );
 		}	
-		if( dataObj.drop == 1 ) {
+		if((dataObj.drop == 1) || (dataObj.reset == 1)) {
 			database.tools.getConnection().query(database.queries.DBQ014, [dataObj.caseId], function (error, info) {
 				if( error ) { 
 					database.tools.response_error(error.toString(), res );
@@ -1849,7 +1849,9 @@ function linkPatch( callback, data, res ) {
 				}
 				logger.trace('requestHandler.LinkPatch: delete done. Affected rows = ' + info.affectedRows + ' message: ' + info.message );
 				database.tools.closeConnection();
-				_linkPatch( callback, data, res );
+				if( dataObj.reset == 0 ) {
+					_linkPatch( callback, data, res );
+				}
 			});
 		} else {
 			_linkPatch( callback, data, res );
@@ -2264,13 +2266,13 @@ function archiveCase( callback, dataObj, res ) {
 
 	try {
 		data = JSON.parse(dataObj);
-		logger.trace('requestHandler.archiveCase: (' + data.caseNo + ') ' );
+		logger.trace('requestHandler.archiveCase: (' + data.caseNo + ', ' + data.caseState + ') ' );
 		var connection = database.tools.getConnection();
 		data.caseNo = data.caseNo * 1;
 		if( isNaN(data.caseNo) ) {
 			throw( { "message": 'Case Number Invalid: the case number is empty or not a decimal number. Use digits only' } );
 		}	
-		connection.query(database.queries.DBQ021, [data.caseNo], function (error, info) {
+		connection.query(database.queries.DBQ021, [data.caseState, data.caseNo], function (error, info) {
 			if( !error ) { 
 				logger.trace('requestHandler.archiveCase: updated with code: ' + info.insertId );
 				logger.trace('requestHandler.archiveCase: update addtional info - Affected rows = ' + info.affectedRows + ' message: ' + info.message );
@@ -3261,7 +3263,7 @@ function getFeed( callback, list, res ) {
 														R.support_data.feed.entries[4].support_data.feed.entries[iterator].patches += rows[iter].patch;
 														R.support_data.feed.entries[4].support_data.feed.entries[iterator].patches += ", ";
 													}
-													R.support_data.feed.entries[4].support_data.feed.entries[iterator].id =  R.support_data.feed.entries[4].support_data.feed.entries[iterator].id | 0xC000;  
+													R.support_data.feed.entries[4].support_data.feed.entries[iterator].id =  R.support_data.feed.entries[4].support_data.feed.entries[iterator].id | 0xF000;  
 												}
 												// >>>
 
@@ -3324,6 +3326,8 @@ function sendPatchDetails( callback, res ) {
 				if( typeof R.support_data.feed.entries[iterator] === 'undefined' )
 					R.support_data.feed.entries[iterator] = {};
 				R.support_data.feed.entries[iterator].icon = "resources/images/iPatches.png";
+				R.support_data.feed.entries[iterator].case = rows[iterator].case;
+				R.support_data.feed.entries[iterator].patchId = rows[iterator].patchId;
 				R.support_data.feed.entries[iterator].description = rows[iterator].description;
 				R.support_data.feed.entries[iterator].support_data = {};
 				R.support_data.feed.entries[iterator].support_data.feed = {};
@@ -3342,6 +3346,8 @@ function sendPatchDetails( callback, res ) {
 					 			if( results[iterator].patch != rows[cntr].patches ) continue;
 								var i = R.support_data.feed.entries[iterator].support_data.feed.entries.length;
 								R.support_data.feed.entries[iterator].support_data.feed.entries[i] = rows[cntr];
+								// Modify ID so that Sencha's List control does not get duplicated IDs.
+								R.support_data.feed.entries[iterator].support_data.feed.entries[i].id = rows[cntr].id | 0x8000 | R.support_data.feed.entries[iterator].patchId;
 								R.support_data.feed.entries[iterator].support_data.feed.entries[i].leaf = 'true';
 								if( rows[cntr].active === 1 ) {
 									R.support_data.feed.entries[iterator].support_data.feed.entries[i].icon = 'resources/images/iFeed.png';
